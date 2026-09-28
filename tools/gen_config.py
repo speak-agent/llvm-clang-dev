@@ -20,7 +20,12 @@ UP = ROOT / "llvm"
 OUT = ROOT / "llvm-generated" / "include"
 
 VERSION = (23, 1, 0)
+# Where the compiler runs (an openkal program: static, musl) and what it compiles for when a command
+# names no target. The two differ on purpose: MC++'s compiler is used as the llvm toolchain of a
+# Linux distribution's glibc (xim:llvm's layout and default, MC5 section 7), and a build tool that
+# passes --no-default-config for a native build gets the host's target, not the compiler's own libc.
 TRIPLE = "x86_64-unknown-linux-musl"
+DEFAULT_TARGET = "x86_64-unknown-linux-gnu"
 
 values = {
     # Version and identity.
@@ -28,7 +33,7 @@ values = {
     "PACKAGE_VERSION": "%d.%d.%d" % VERSION, "PACKAGE_NAME": "LLVM", "PACKAGE_STRING": "LLVM %d.%d.%d" % VERSION,
     "PACKAGE_BUGREPORT": "https://github.com/llvm/llvm-project/issues/", "PACKAGE_VENDOR": "",
     "BUG_REPORT_URL": "https://github.com/llvm/llvm-project/issues/",
-    "LLVM_DEFAULT_TARGET_TRIPLE": TRIPLE, "LLVM_HOST_TRIPLE": TRIPLE, "LLVM_TARGET_TRIPLE_ENV": "",
+    "LLVM_DEFAULT_TARGET_TRIPLE": DEFAULT_TARGET, "LLVM_HOST_TRIPLE": TRIPLE, "LLVM_TARGET_TRIPLE_ENV": "",
     "LLVM_NATIVE_ARCH": "X86", "LLVM_ON_UNIX": 1, "LLVM_PLUGIN_EXT": ".so", "LTDL_SHLIB_EXT": ".so",
     "HOST_LINK_VERSION": "", "LLVM_GISEL_COV_PREFIX": "",
     # Features this port turns off: no compression libraries, no network, no JIT helpers.

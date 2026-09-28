@@ -7,7 +7,7 @@
 [package]
 namespace   = "llvm"
 name        = "clang-dev"
-version     = "23.1.0.2"
+version     = "23.1.0.3"
 description = "Clang and LLVM 23.1 frontend libraries (AST, Sema, Lex, Parse, Frontend, Driver, Serialization, Index, Tooling), built by mcpp on openkal"
 license     = "Apache-2.0 WITH LLVM-exception"
 authors     = ["speak-agent"]

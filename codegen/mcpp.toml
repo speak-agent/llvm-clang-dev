@@ -9,7 +9,7 @@
 [package]
 namespace   = "llvm"
 name        = "codegen-dev"
-version     = "23.1.0.2"
+version     = "23.1.0.3"
 description = "Clang 23.1 CodeGen and the LLVM optimizer, code generator and object writers for x86-64 and AArch64, built by mcpp on openkal"
 license     = "Apache-2.0 WITH LLVM-exception"
 authors     = ["speak-agent"]

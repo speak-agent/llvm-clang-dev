@@ -15,6 +15,12 @@ libraries link into them in process. No CMake: mcpp is the build system, after t
 | `driver/mcpp.toml` | the package `llvm.clang-driver`: clang itself -- `clang_main`, cc1 and cc1as in process (upstream's `clang/tools/driver`), FrontendTool; the consumer provides `main()` and registers the targets |
 | `tools/smoke`, `tools/codegen-smoke`, `tools/driver-smoke` | the smallest programs over each package; `driver-smoke` is a working clang |
 
+The compiler runs on openkal (`LLVM_HOST_TRIPLE` x86_64-unknown-linux-musl) and compiles, when a
+command names no target, for x86_64-unknown-linux-gnu (`LLVM_DEFAULT_TARGET_TRIPLE`), as xim's LLVM
+does: MC++'s compiler serves as the llvm toolchain of a glibc Linux, and a build tool that passes
+`--no-default-config` for a native build must get that target, not the compiler's own C library
+(packaging revision 23.1.0.3).
+
 Regenerating after an upstream bump:
 
 ```
