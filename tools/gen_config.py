@@ -151,5 +151,6 @@ rev = (ROOT / "UPSTREAM-REV").read_text().split()[0] if (ROOT / "UPSTREAM-REV").
 (OUT / "llvm/Support").mkdir(parents=True, exist_ok=True)
 (OUT / "llvm/Support/VCSRevision.h").write_text('#define LLVM_REVISION "%s"\n#define LLVM_REPOSITORY "https://github.com/llvm/llvm-project"\n' % rev)
 (OUT / "llvm/Support/Extension.def").write_text("// No statically registered extensions.\n#undef HANDLE_EXTENSION\n")
-(OUT / "clang/Basic/VCSVersion.inc").write_text('#define LLVM_REVISION "%s"\n#define LLVM_REPOSITORY "https://github.com/llvm/llvm-project"\n#define CLANG_REVISION "%s"\n#define CLANG_REPOSITORY "https://github.com/llvm/llvm-project"\n' % (rev, rev))
+(ROOT / "llvm-generated/clang-lib/Basic").mkdir(parents=True, exist_ok=True)
+(ROOT / "llvm-generated/clang-lib/Basic/VCSVersion.inc").write_text('#define LLVM_REVISION "%s"\n#define LLVM_REPOSITORY "https://github.com/llvm/llvm-project"\n#define CLANG_REVISION "%s"\n#define CLANG_REPOSITORY "https://github.com/llvm/llvm-project"\n' % (rev, rev))
 print("wrote VCSRevision.h, Extension.def, VCSVersion.inc")
