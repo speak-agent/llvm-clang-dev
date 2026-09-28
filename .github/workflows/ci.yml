@@ -39,17 +39,21 @@ jobs:
           smoke=$(find target -type f -name clang-dev-smoke -path '*/bin/*' | head -1)
           "$smoke" | tee smoke.txt
           grep -q 'module=m .* errors=0' smoke.txt
-      - name: Code generation (llvm.codegen-dev)
-        working-directory: tools/codegen-smoke
+      # clang itself over llvm.clang-driver (and so llvm.codegen-dev): the driver, cc1 and cc1as in
+      # process, the link step spawned, for both back ends.
+      - name: clang in process (llvm.clang-driver)
+        working-directory: tools/driver-smoke
         run: |
           set -euo pipefail
           mcpp build -j auto
-          smoke=$(find target -type f -name codegen-smoke -path '*/bin/*' | head -1)
-          printf 'extern "C" int puts(const char*);\nint main() { puts("hello from in-process codegen"); }\n' > hello.cpp
-          "$smoke" x86_64-unknown-linux-gnu hello.cpp hello.o
-          "$smoke" aarch64-unknown-linux-gnu hello.cpp hello-arm64.o
-          "$HOME/.mcpp/registry/data/xpkgs/xim-x-llvm/$LLVM_VERSION/bin/clang++" hello.o -o hello
-          ./hello | grep -q 'hello from in-process codegen'
+          clang=$(find target -type f -name driver-smoke -path '*/bin/*' | head -1)
+          "$clang" --version
+          printf 'export module m;\nexport int answer() { return 42; }\n' > m.cppm
+          "$clang" -std=c++23 --precompile m.cppm -o m.pcm
+          printf 'extern "C" int puts(const char*);\nint main() { puts("hello from in-process clang"); }\n' > hello.cpp
+          "$clang" --target=aarch64-unknown-linux-gnu -c hello.cpp -o hello-arm64.o
+          "$clang" --target=x86_64-unknown-linux-gnu -O2 --ld-path="$HOME/.mcpp/registry/data/xpkgs/xim-x-llvm/$LLVM_VERSION/bin/ld.lld" hello.cpp -o hello
+          ./hello | grep -q 'hello from in-process clang'
 
   # llvm-generated/ is what upstream's CMake would produce from llvm/: regenerating it from the
   # sources here must change nothing.

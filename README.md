@@ -12,7 +12,8 @@ libraries link into them in process. No CMake: mcpp is the build system, after t
 | `tools/tblgen/` | mcpp workspace building llvm-min-tblgen, llvm-tblgen (option emitters only) and clang-tblgen, used to regenerate `llvm-generated/` |
 | `mcpp.toml` | the package `llvm.clang-dev`: the frontend libraries |
 | `codegen/mcpp.toml` | the package `llvm.codegen-dev`: Clang CodeGen, the LLVM optimizer, code generator and object writers for x86-64 and AArch64. Separate because mcpp links every object of a library into its consumers: a program that only reads C++ stays its size |
-| `tools/smoke`, `tools/codegen-smoke` | the smallest programs over each package |
+| `driver/mcpp.toml` | the package `llvm.clang-driver`: clang itself -- `clang_main`, cc1 and cc1as in process (upstream's `clang/tools/driver`), FrontendTool; the consumer provides `main()` and registers the targets |
+| `tools/smoke`, `tools/codegen-smoke`, `tools/driver-smoke` | the smallest programs over each package; `driver-smoke` is a working clang |
 
 Regenerating after an upstream bump:
 

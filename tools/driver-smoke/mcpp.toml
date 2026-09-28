@@ -1,0 +1,18 @@
+# clang as a program over llvm.clang-driver: the driver, cc1 and cc1as in process, the link step
+# spawned as clang spawns it.
+[package]
+name    = "driver-smoke"
+version = "0.1.0"
+
+[targets.driver-smoke]
+kind = "bin"
+main = "src/main.cpp"
+
+[build]
+ldflags = ["-Wl,--error-limit=0"]
+
+[dependencies]
+openkal-llvm-runtime = "0.15.2"
+
+[dependencies.llvm]
+clang-driver = { path = "../../driver" }
