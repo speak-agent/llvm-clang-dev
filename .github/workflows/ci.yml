@@ -39,6 +39,17 @@ jobs:
           smoke=$(find target -type f -name clang-dev-smoke -path '*/bin/*' | head -1)
           "$smoke" | tee smoke.txt
           grep -q 'module=m .* errors=0' smoke.txt
+      - name: Code generation (llvm.codegen-dev)
+        working-directory: tools/codegen-smoke
+        run: |
+          set -euo pipefail
+          mcpp build -j auto
+          smoke=$(find target -type f -name codegen-smoke -path '*/bin/*' | head -1)
+          printf 'extern "C" int puts(const char*);\nint main() { puts("hello from in-process codegen"); }\n' > hello.cpp
+          "$smoke" x86_64-unknown-linux-gnu hello.cpp hello.o
+          "$smoke" aarch64-unknown-linux-gnu hello.cpp hello-arm64.o
+          "$HOME/.mcpp/registry/data/xpkgs/xim-x-llvm/$LLVM_VERSION/bin/clang++" hello.o -o hello
+          ./hello | grep -q 'hello from in-process codegen'
 
   # llvm-generated/ is what upstream's CMake would produce from llvm/: regenerating it from the
   # sources here must change nothing.

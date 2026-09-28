@@ -1,7 +1,11 @@
 [package]
 name        = "llvm-tblgen"
 version     = "23.1.0"
-description = "llvm-tblgen with the option emitters only (for clang's Options.inc)"
+description = "llvm-tblgen: every LLVM emitter (target backends, and clang's Options.inc)"
+# C++20: at C++23 unique_ptr's destructor is constexpr and is instantiated where a member of
+# incomplete type is declared, which several emitters rely on not happening. mcpp builds this
+# workspace on its own, so the level is its alone.
+standard    = "c++20"
 license     = "Apache-2.0 WITH LLVM-exception"
 
 [targets.llvm-tblgen]
@@ -13,13 +17,17 @@ openkal-llvm-runtime.workspace = true
 tblgen-support = { path = "../support" }
 
 [build]
-# Only the option emitters: this build of llvm-tblgen exists to write clang's Options.inc
-# (-gen-opt-parser-defs), the one LLVM-project TableGen step outside llvm/include/llvm.
+# Upstream's add_tablegen(llvm-tblgen ...) sources, with LLVMTableGenBasic, LLVMTableGenCommon and
+# LLVMCodeGenTypes (utils/TableGen/{,Basic,Common}/CMakeLists.txt).
 sources = [
-  "../../../llvm/llvm/utils/TableGen/OptionParserEmitter.cpp",
-  "../../../llvm/llvm/utils/TableGen/OptionRSTEmitter.cpp",
-  "../../../llvm/llvm/utils/TableGen/Common/OptEmitter.cpp",
+  "../../../llvm/llvm/utils/TableGen/*.cpp",
+  "!../../../llvm/llvm/utils/TableGen/llvm-min-tblgen.cpp",
+  "!../../../llvm/llvm/utils/TableGen/llvm-tblgen.cpp",
   "../../../llvm/llvm/utils/TableGen/Basic/*.cpp",
+  "../../../llvm/llvm/utils/TableGen/Common/*.cpp",
+  "../../../llvm/llvm/utils/TableGen/Common/GlobalISel/*.cpp",
+  "../../../llvm/llvm/utils/TableGen/Common/GlobalISel/MatchTable/*.cpp",
+  "../../../llvm/llvm/lib/CodeGenTypes/*.cpp",
 ]
 include_dirs = ["../../../llvm/llvm/utils/TableGen", "../../../llvm-generated/include", "../../../llvm/llvm/include"]
 defines      = ["_GNU_SOURCE", "__STDC_CONSTANT_MACROS", "__STDC_FORMAT_MACROS", "__STDC_LIMIT_MACROS", "NDEBUG"]

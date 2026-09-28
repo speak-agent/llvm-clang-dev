@@ -17,7 +17,8 @@
 
 using namespace llvm;
 
-unsigned
+// Weak: llvm.codegen-dev compiles the whole OMPIRBuilder.cpp, whose definition then wins.
+[[gnu::weak]] unsigned
 OpenMPIRBuilder::getOpenMPDefaultSimdAlign(const Triple &TargetTriple,
                                            const StringMap<bool> &Features) {
   if (TargetTriple.isX86()) {

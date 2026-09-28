@@ -147,6 +147,11 @@ for name in ["Targets.def", "AsmPrinters.def", "AsmParsers.def", "Disassemblers.
 emit(UP / "clang/include/clang/Config/config.h.cmake", OUT / "clang/Config/config.h")
 emit(UP / "clang/include/clang/Basic/Version.inc.in", OUT / "clang/Basic/Version.inc")
 
+# llvm/include/llvm/CMakeLists.txt: file(READ InstrumentorRuntimeHelper.h) into a raw string of
+# InstrumentorVariables.inc (the Instrumentor pass, in llvm.codegen-dev).
+values["LLVM_INSTRUMENTOR_RUNTIME_HELPER"] = (UP / "llvm/include/llvm/Transforms/IPO/InstrumentorRuntimeHelper.h").read_text()
+emit(UP / "llvm/include/llvm/Transforms/IPO/InstrumentorVariables.inc.in", OUT / "llvm/Transforms/IPO/InstrumentorVariables.inc")
+
 rev = (ROOT / "UPSTREAM-REV").read_text().split()[0] if (ROOT / "UPSTREAM-REV").exists() else "llvmorg-%d.%d.%d" % VERSION
 (OUT / "llvm/Support").mkdir(parents=True, exist_ok=True)
 (OUT / "llvm/Support/VCSRevision.h").write_text('#define LLVM_REVISION "%s"\n#define LLVM_REPOSITORY "https://github.com/llvm/llvm-project"\n' % rev)

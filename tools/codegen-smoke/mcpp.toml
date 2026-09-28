@@ -1,0 +1,17 @@
+# The smallest program over llvm.codegen-dev: compile a C++ unit to an object file in process.
+[package]
+name    = "codegen-smoke"
+version = "0.1.0"
+
+[targets.codegen-smoke]
+kind = "bin"
+main = "src/main.cpp"
+
+[build]
+ldflags = ["-Wl,--error-limit=0"]
+
+[dependencies]
+openkal-llvm-runtime = "0.15.2"
+
+[dependencies.llvm]
+codegen-dev = { path = "../../codegen" }

@@ -1,0 +1,102 @@
+# llvm.codegen-dev: Clang's code generation and LLVM's optimizer and back ends for x86-64 and
+# AArch64, built by mcpp on openkal, over llvm.clang-dev's frontend libraries.
+#
+# A package of its own because mcpp links every object of a library package into its consumers:
+# a program that only reads C++ (mcppls through libmc++) depends on llvm.clang-dev alone and stays
+# its size; one that also emits code (the mcxx driver) adds this. The targets are registered by the
+# consumer (LLVMInitializeX86Target and friends) -- llvm/Config/Targets.def stays empty, because the
+# frontend package shares it.
+[package]
+namespace   = "llvm"
+name        = "codegen-dev"
+version     = "23.1.0.1"
+description = "Clang 23.1 CodeGen and the LLVM optimizer, code generator and object writers for x86-64 and AArch64, built by mcpp on openkal"
+license     = "Apache-2.0 WITH LLVM-exception"
+authors     = ["speak-agent"]
+
+[targets.codegen-dev]
+kind = "lib"
+
+[dependencies]
+openkal-llvm-runtime = "0.15.2"
+
+[dependencies.llvm]
+clang-dev = { path = ".." }
+
+[build]
+sources = [
+  # --- LLVM: IR-level analyses and transformations ---
+  "../llvm/llvm/lib/Analysis/*.cpp",
+  "../llvm/llvm/lib/Transforms/Utils/*.cpp",
+  "../llvm/llvm/lib/Transforms/Scalar/*.cpp",
+  "../llvm/llvm/lib/Transforms/IPO/*.cpp",
+  "../llvm/llvm/lib/Transforms/InstCombine/*.cpp",
+  "../llvm/llvm/lib/Transforms/AggressiveInstCombine/*.cpp",
+  "../llvm/llvm/lib/Transforms/Instrumentation/*.cpp",
+  "../llvm/llvm/lib/Transforms/Vectorize/*.cpp",
+  "../llvm/llvm/lib/Transforms/Vectorize/SandboxVectorizer/**/*.cpp",
+  "../llvm/llvm/lib/Transforms/Vectorize/SLPVectorizer/*.cpp",
+  "../llvm/llvm/lib/Transforms/ObjCARC/*.cpp",
+  "../llvm/llvm/lib/Transforms/Coroutines/*.cpp",
+  "../llvm/llvm/lib/Transforms/CFGuard/*.cpp",
+  "../llvm/llvm/lib/Transforms/HipStdPar/*.cpp",
+  "../llvm/llvm/lib/SandboxIR/*.cpp",
+  "../llvm/llvm/lib/Passes/*.cpp",
+  "../llvm/llvm/lib/IRPrinter/*.cpp",
+  "../llvm/llvm/lib/Extensions/*.cpp",
+  "../llvm/llvm/lib/CGData/*.cpp",
+  "../llvm/llvm/lib/Linker/*.cpp",
+  "../llvm/llvm/lib/LTO/*.cpp",
+  "../llvm/llvm/lib/Bitcode/Writer/*.cpp",
+  "../llvm/llvm/lib/ProfileData/Coverage/*.cpp",
+  "../llvm/llvm/lib/ProfileData/InstrProfCorrelator.cpp",
+  "../llvm/llvm/lib/Frontend/Driver/*.cpp",
+  "../llvm/llvm/lib/Frontend/OpenMP/OMPIRBuilder.cpp",
+  # --- LLVM: the target-independent code generator ---
+  "../llvm/llvm/lib/CodeGen/*.cpp",
+  "../llvm/llvm/lib/CodeGen/AsmPrinter/*.cpp",
+  "../llvm/llvm/lib/CodeGen/GlobalISel/*.cpp",
+  "../llvm/llvm/lib/CodeGen/SelectionDAG/*.cpp",
+  "../llvm/llvm/lib/CodeGen/LiveDebugValues/*.cpp",
+  "../llvm/llvm/lib/CodeGen/MIRParser/*.cpp",
+  "../llvm/llvm/lib/MC/MCDisassembler/*.cpp",
+  "../llvm/llvm/lib/MC/MCSFrame.cpp",
+  "../llvm/llvm/lib/DebugInfo/DWARF/*.cpp",
+  "../llvm/llvm/lib/DebugInfo/DWARF/LowLevel/*.cpp",
+  "../llvm/llvm/lib/DebugInfo/CodeView/*.cpp",
+  "../llvm/llvm/lib/DebugInfo/MSF/*.cpp",
+  "../llvm/llvm/lib/DebugInfo/BTF/*.cpp",
+  "../llvm/llvm/lib/Target/*.cpp",
+  "../llvm/llvm/lib/CodeGenTypes/*.cpp",
+  "../llvm/llvm/lib/ABI/**/*.cpp",
+  # --- LLVM: the x86-64 and AArch64 back ends ---
+  "../llvm/llvm/lib/Target/X86/*.cpp",
+  "../llvm/llvm/lib/Target/X86/AsmParser/*.cpp",
+  "../llvm/llvm/lib/Target/X86/Disassembler/*.cpp",
+  "../llvm/llvm/lib/Target/X86/GISel/*.cpp",
+  "../llvm/llvm/lib/Target/X86/MCTargetDesc/*.cpp",
+  "../llvm/llvm/lib/Target/X86/TargetInfo/*.cpp",
+  "../llvm/llvm/lib/Target/AArch64/*.cpp",
+  "../llvm/llvm/lib/Target/AArch64/AsmParser/*.cpp",
+  "../llvm/llvm/lib/Target/AArch64/Disassembler/*.cpp",
+  "../llvm/llvm/lib/Target/AArch64/GISel/*.cpp",
+  "../llvm/llvm/lib/Target/AArch64/MCTargetDesc/*.cpp",
+  "../llvm/llvm/lib/Target/AArch64/TargetInfo/*.cpp",
+  "../llvm/llvm/lib/Target/AArch64/Utils/*.cpp",
+  # --- Clang: code generation ---
+  "../llvm/clang/lib/CodeGen/*.cpp",
+  "../llvm/clang/lib/CodeGen/Targets/*.cpp",
+  "../llvm/clang/lib/CodeGen/TargetBuiltins/*.cpp",
+]
+include_dirs = [
+  "../llvm-generated/include",
+  "../llvm/llvm/include",
+  "../llvm/clang/include",
+  "../llvm/llvm/lib/Target/X86",
+  "../llvm-generated/llvm-lib/Target/X86",
+  "../llvm/llvm/lib/Target/AArch64",
+  "../llvm-generated/llvm-lib/Target/AArch64",
+  "../llvm/clang/lib/CodeGen",
+]
+defines  = ["_GNU_SOURCE", "__STDC_CONSTANT_MACROS", "__STDC_FORMAT_MACROS", "__STDC_LIMIT_MACROS", "NDEBUG"]
+cxxflags = ["-O2", "-g0", "-w"]

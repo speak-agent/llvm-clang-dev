@@ -16,6 +16,9 @@
 // members. Those are defined here to report, in the error channel the caller already handles,
 // that the facility is not in this build -- never to pretend to have done the work.
 //
+// Every definition is weak: llvm.codegen-dev compiles the real sources, and a program that links it
+// gets those instead.
+//
 //===----------------------------------------------------------------------===//
 
 #include "llvm/MC/MCSFrame.h"
@@ -24,7 +27,7 @@
 
 using namespace llvm;
 
-Expected<std::unique_ptr<InstrProfCorrelator>>
+[[gnu::weak]] Expected<std::unique_ptr<InstrProfCorrelator>>
 InstrProfCorrelator::get(StringRef, ProfCorrelatorKind, const object::BuildIDFetcher *,
                          const ArrayRef<object::BuildID>) {
   return make_error<InstrProfError>(instrprof_error::unable_to_correlate_profile,
@@ -32,10 +35,10 @@ InstrProfCorrelator::get(StringRef, ProfCorrelatorKind, const object::BuildIDFet
 }
 
 // No correlator is ever created (get above always fails), so none is of either kind.
-template <> bool InstrProfCorrelatorImpl<uint32_t>::classof(const InstrProfCorrelator *) { return false; }
-template <> bool InstrProfCorrelatorImpl<uint64_t>::classof(const InstrProfCorrelator *) { return false; }
+template <> [[gnu::weak]] bool InstrProfCorrelatorImpl<uint32_t>::classof(const InstrProfCorrelator *) { return false; }
+template <> [[gnu::weak]] bool InstrProfCorrelatorImpl<uint64_t>::classof(const InstrProfCorrelator *) { return false; }
 
 // Reached only when an object file is written with .sframe requested; this package emits no
 // object files. Emitting nothing leaves the section out rather than writing a wrong one.
-void MCSFrameEmitter::emit(MCObjectStreamer &) {}
-void MCSFrameEmitter::encodeFuncOffset(MCContext &, uint64_t, SmallVectorImpl<char> &, MCFragment *) {}
+[[gnu::weak]] void MCSFrameEmitter::emit(MCObjectStreamer &) {}
+[[gnu::weak]] void MCSFrameEmitter::encodeFuncOffset(MCContext &, uint64_t, SmallVectorImpl<char> &, MCFragment *) {}
