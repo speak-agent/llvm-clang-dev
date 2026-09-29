@@ -29,6 +29,6 @@ sources = [
   "../../../llvm/llvm/utils/TableGen/Common/GlobalISel/MatchTable/*.cpp",
   "../../../llvm/llvm/lib/CodeGenTypes/*.cpp",
 ]
-include_dirs = ["../../../llvm/llvm/utils/TableGen", "../../../llvm-generated/include", "../../../llvm/llvm/include"]
+include_dirs = ["../../../llvm/llvm/utils/TableGen", "../../../llvm-generated/platform/linux", "../../../llvm-generated/include", "../../../llvm/llvm/include"]
 defines      = ["_GNU_SOURCE", "__STDC_CONSTANT_MACROS", "__STDC_FORMAT_MACROS", "__STDC_LIMIT_MACROS", "NDEBUG"]
 cxxflags     = ["-O2", "-g0", "-w"]

@@ -154,7 +154,8 @@ PLATFORMS = {
     "linux": {"LLVM_HOST_TRIPLE": TRIPLE, "LLVM_DEFAULT_TARGET_TRIPLE": DEFAULT_TARGET, "LLVM_NATIVE_ARCH": "X86",
               "LLVM_PLUGIN_EXT": ".so", "LTDL_SHLIB_EXT": ".so"},
     "windows": {"LLVM_HOST_TRIPLE": "x86_64-w64-windows-gnu", "LLVM_DEFAULT_TARGET_TRIPLE": "x86_64-w64-windows-gnu",
-                "LLVM_NATIVE_ARCH": "X86", "LLVM_PLUGIN_EXT": ".dll", "LTDL_SHLIB_EXT": ".dll"},
+                "LLVM_NATIVE_ARCH": "X86", "LLVM_PLUGIN_EXT": ".dll", "LTDL_SHLIB_EXT": ".dll",
+                "LLVM_WINDOWS_PREFER_FORWARD_SLASH": 1},
     "macos": {"LLVM_HOST_TRIPLE": "arm64-apple-darwin", "LLVM_DEFAULT_TARGET_TRIPLE": "arm64-apple-macosx",
               "LLVM_NATIVE_ARCH": "AArch64", "LLVM_PLUGIN_EXT": ".dylib", "LTDL_SHLIB_EXT": ".dylib"},
 }
@@ -184,6 +185,22 @@ values.clear()
 values.update(common)
 for stale in ["config.h", "llvm-config.h", "abi-breaking.h"]:
     (OUT / "llvm/Config" / stale).unlink(missing_ok=True)
+# A path on openkal's Windows target has a drive (`C:/Users/x`; no name there starts with `/`), which
+# LLVM's POSIX rules read as relative, and Clang then prefixes with its working directory. LLVM has
+# Windows' rules -- the native style its Path.h picks when _WIN32 is defined, which this target does not
+# define. Its Path.h is written here from upstream's with that one condition also true for the target
+# (__MCPP_TARGET_WINDOWS__, which every unit built for it has, so the libraries and every program that
+# includes the header agree), and '/' preferred (LLVM_WINDOWS_PREFER_FORWARD_SLASH above).
+path_h = (UP / "llvm/include/llvm/Support/Path.h").read_text()
+condition = "constexpr bool is_style_posix(Style S) {\n  if (S == Style::posix)\n    return true;\n  if (S != Style::native)\n    return false;\n#if defined(_WIN32)"
+assert path_h.count(condition) == 1, "upstream Path.h changed: update gen_config.py"
+out = PLATFORM_OUT / "windows/llvm/Support/Path.h"
+out.parent.mkdir(parents=True, exist_ok=True)
+out.write_text("// Written by tools/gen_config.py from upstream's llvm/Support/Path.h: on openkal's Windows target the\n"
+               "// native path style is Windows' (a path has a drive), as it is where _WIN32 is defined.\n"
+               + path_h.replace(condition, condition.replace("#if defined(_WIN32)", "#if defined(_WIN32) || defined(__MCPP_TARGET_WINDOWS__)")))
+print("wrote", out.relative_to(ROOT))
+
 # A header the C library has under another name on a non-Linux target: LLVM's bit.h asks for
 # <machine/endian.h> where neither __linux__ nor _WIN32 is defined.
 for os_name in ["windows", "macos"]:

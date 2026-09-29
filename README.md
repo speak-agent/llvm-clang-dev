@@ -19,7 +19,7 @@ The compiler runs on openkal (`LLVM_HOST_TRIPLE` x86_64-unknown-linux-musl) and 
 command names no target, for x86_64-unknown-linux-gnu (`LLVM_DEFAULT_TARGET_TRIPLE`), as xim's LLVM
 does: MC++'s compiler serves as the llvm toolchain of a glibc Linux, and a build tool that passes
 `--no-default-config` for a native build must get that target, not the compiler's own C library
-(packaging revision 23.1.0.3).
+(since packaging revision 23.1.0.3; 23.1.0.4 adds the Windows and macOS targets below).
 
 ## Platforms
 
@@ -28,7 +28,7 @@ One source, three openkal targets, all cross-built from Linux (`mcpp build --tar
 | Target | What the compiler sees | Configuration |
 |---|---|---|
 | linux-x64 (`x86_64-linux-gnu`) | `__linux__`, openkal-musl | `llvm-generated/platform/linux` |
-| win32-x64 (`x86_64-windows-gnu`) | a PE object compiled as `x86_64-pc-cygwin` with `__CYGWIN__` removed: `__unix__` and none of `__linux__`, `__CYGWIN__`, `_WIN32`; openkal-musl | `llvm-generated/platform/windows`, and `openkal-host.h` forced into this package's sources: LLVM's host code reads the platform as Linux's, which openkal-musl implements. `CLANG_BUILD_STATIC` (in its `llvm-config.h`, so every program that includes the headers agrees) and the ABI-breaking-checks guard off (a weak definition in every unit, which COFF does not merge) |
+| win32-x64 (`x86_64-windows-gnu`) | a PE object compiled as `x86_64-pc-cygwin` with `__CYGWIN__` removed: `__unix__` and none of `__linux__`, `__CYGWIN__`, `_WIN32`; openkal-musl | `llvm-generated/platform/windows`, and `openkal-host.h` forced into this package's sources: LLVM's host code reads the platform as Linux's, which openkal-musl implements. `CLANG_BUILD_STATIC` (in its `llvm-config.h`, so every program that includes the headers agrees) and the ABI-breaking-checks guard off (a weak definition in every unit, which COFF does not merge). Paths in Windows' style (a path there has a drive, `C:/Users/x`): a `llvm/Support/Path.h` written from upstream's, whose native style is Windows' where `__MCPP_TARGET_WINDOWS__` is defined as where `_WIN32` is, with `/` preferred; the platform directory comes before `llvm/llvm/include`, so every program that includes the headers reads the same one |
 | darwin-arm64 (`aarch64-macos`) | `__APPLE__`, Darwin's integer types, openkal-musl, the kernel's own calls | `llvm-generated/platform/macos`; `port/include/darwin/` declares the few Darwin functions LLVM's `__APPLE__` code names, `port/src/Darwin.cpp` defines them over the kernel's system calls; `port/include/darwin/openkal-host.h` gives the 64-bit limits the typedefs' type (openkal-musl's are `long`, its `int64_t` is `long long`) |
 
 `__APPLE__` stays defined on macOS, in the libraries and in their consumers alike: `RWMutex.h` and

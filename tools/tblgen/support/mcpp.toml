@@ -20,7 +20,9 @@ sources = [
   "../../../llvm/llvm/lib/Demangle/*.cpp",
   "../../../llvm/llvm/lib/TableGen/*.cpp",
 ]
+# The host programs run where llvm-generated/ is regenerated, a Linux host: its configuration headers.
 include_dirs = [
+  "../../../llvm-generated/platform/linux",
   "../../../llvm-generated/include",
   "../../../llvm/llvm/include",
   "../../../llvm/third-party/siphash/include",

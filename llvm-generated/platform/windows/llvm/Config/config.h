@@ -21,7 +21,7 @@
 
 /* Define to 1 to prefer forward slashes on Windows, and to 0 prefer
    backslashes. */
-#define LLVM_WINDOWS_PREFER_FORWARD_SLASH 0
+#define LLVM_WINDOWS_PREFER_FORWARD_SLASH 1
 
 /* Define to 1 if you have the `backtrace' function. */
 /* #undef HAVE_BACKTRACE */

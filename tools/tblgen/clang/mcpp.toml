@@ -14,6 +14,6 @@ tblgen-support = { path = "../support" }
 
 [build]
 sources      = ["../../../llvm/clang/utils/TableGen/*.cpp", "../../../llvm/clang/lib/Support/*.cpp"]
-include_dirs = ["../../../llvm/clang/utils/TableGen", "../../../llvm-generated/include", "../../../llvm/llvm/include", "../../../llvm/clang/include"]
+include_dirs = ["../../../llvm/clang/utils/TableGen", "../../../llvm-generated/platform/linux", "../../../llvm-generated/include", "../../../llvm/llvm/include", "../../../llvm/clang/include"]
 defines      = ["_GNU_SOURCE", "__STDC_CONSTANT_MACROS", "__STDC_FORMAT_MACROS", "__STDC_LIMIT_MACROS", "NDEBUG"]
 cxxflags     = ["-O2", "-g0", "-w"]

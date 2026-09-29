@@ -7,7 +7,7 @@
 [package]
 namespace   = "llvm"
 name        = "clang-driver"
-version     = "23.1.0.3"
+version     = "23.1.0.4"
 description = "The clang 23.1 driver, cc1 and cc1as in process (clang_main), built by mcpp on openkal"
 license     = "Apache-2.0 WITH LLVM-exception"
 authors     = ["speak-agent"]
@@ -35,7 +35,6 @@ sources = [
 ]
 include_dirs = [
   "../llvm-generated/include",
-  "../llvm/llvm/include",
   "../llvm/clang/include",
   "../llvm/clang/tools/driver",
 ]
@@ -43,16 +42,18 @@ defines  = ["_GNU_SOURCE", "__STDC_CONSTANT_MACROS", "__STDC_FORMAT_MACROS", "__
 cxxflags = ["-O2", "-g0", "-w"]
 
 # The platform's own LLVM configuration (tools/gen_config.py): host and default triples, native
-# architecture, a shared library's extension; the C library is openkal-musl everywhere.
+# architecture, a shared library's extension; the C library is openkal-musl everywhere. LLVM's own
+# include directory comes right after it, so a header written for the platform (Windows' Path.h) is
+# the one found -- by these libraries and by every program that includes their headers.
 [target.'cfg(os = "linux")'.build]
-include_dirs = ["../llvm-generated/platform/linux"]
+include_dirs = ["../llvm-generated/platform/linux", "../llvm/llvm/include"]
 
 [target.'cfg(windows)'.build]
-include_dirs = ["../llvm-generated/platform/windows"]
+include_dirs = ["../llvm-generated/platform/windows", "../llvm/llvm/include"]
 cxxflags     = ["-include", "openkal-host.h"]
 cflags       = ["-include", "openkal-host.h"]
 
 [target.'cfg(os = "macos")'.build]
-include_dirs = ["../llvm-generated/platform/macos", "../port/include/darwin"]
+include_dirs = ["../llvm-generated/platform/macos", "../llvm/llvm/include", "../port/include/darwin"]
 cxxflags     = ["-include", "openkal-host.h"]
 cflags       = ["-include", "openkal-host.h"]
