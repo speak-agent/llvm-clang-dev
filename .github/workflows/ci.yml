@@ -55,6 +55,76 @@ jobs:
           "$clang" --target=x86_64-unknown-linux-gnu -O2 --ld-path="$HOME/.mcpp/registry/data/xpkgs/xim-x-llvm/$LLVM_VERSION/bin/ld.lld" hello.cpp -o hello
           ./hello | grep -q 'hello from in-process clang'
 
+  # The other platforms, as mcppls builds them: one Linux host cross-builds for openkal's Windows target
+  # (x86_64-pc-cygwin without __CYGWIN__: a POSIX world over openkal, musl above it) and its macOS one,
+  # and the executables run on the platforms themselves (the Windows one also under wine here).
+  cross-build:
+    name: cross-build from Linux (${{ matrix.target }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { target: x86_64-windows-gnu, exe: '.exe', format: 'PE32+ executable' }
+          - { target: aarch64-macos,      exe: '',     format: 'Mach-O 64-bit arm64' }
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-mcpp
+      - name: Build the libraries for ${{ matrix.target }}
+        run: mcpp build -j auto --target ${{ matrix.target }}
+      - name: The smoke program for ${{ matrix.target }}
+        working-directory: tools/smoke
+        run: |
+          set -euo pipefail
+          mcpp build -j auto --target ${{ matrix.target }}
+          smoke=$(find target -type f -name "clang-dev-smoke${{ matrix.exe }}" -path '*/bin/*' | head -1)
+          file "$smoke" | tee /dev/stderr | grep -q '${{ matrix.format }}'
+          mkdir -p ../../cross && cp "$smoke" ../../cross/
+      - name: Under wine
+        if: matrix.target == 'x86_64-windows-gnu'
+        run: |
+          set -euo pipefail
+          sudo apt-get install -y wine64 > /dev/null || sudo apt-get install -y wine > /dev/null
+          WINEDEBUG=-all wine cross/clang-dev-smoke.exe | tee smoke.txt
+          grep -q 'module=m .* errors=0' smoke.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cross-${{ matrix.target }}
+          path: cross
+          retention-days: 7
+
+  run-cross:
+    name: run on ${{ matrix.os }} (${{ matrix.target }})
+    needs: cross-build
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-2022, target: x86_64-windows-gnu, exe: '.exe' }
+          - { os: macos-14,     target: aarch64-macos,      exe: '' }
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: cross-${{ matrix.target }}
+          path: cross
+      - name: The smoke program parses a module interface
+        run: |
+          set -euo pipefail
+          chmod +x "cross/clang-dev-smoke${{ matrix.exe }}" || true
+          # arm64 macOS runs only signed code: an ad hoc signature, as whoever ships the program adds.
+          if [ "${{ runner.os }}" = macOS ]; then codesign -s - "cross/clang-dev-smoke"; fi
+          "cross/clang-dev-smoke${{ matrix.exe }}" | tee smoke.txt
+          grep -q 'module=m .* errors=0' smoke.txt
+
   # llvm-generated/ is what upstream's CMake would produce from llvm/: regenerating it from the
   # sources here must change nothing.
   generated:
