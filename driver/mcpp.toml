@@ -7,7 +7,7 @@
 [package]
 namespace   = "llvm"
 name        = "clang-driver"
-version     = "23.1.0.5"
+version     = "23.1.0.6"
 description = "The clang 23.1 driver, cc1 and cc1as in process (clang_main), built by mcpp on openkal"
 license     = "Apache-2.0 WITH LLVM-exception"
 authors     = ["speak-agent"]

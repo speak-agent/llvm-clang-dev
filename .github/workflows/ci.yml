@@ -50,6 +50,14 @@ jobs:
           "$clang" --version
           printf 'export module m;\nexport int answer() { return 42; }\n' > m.cppm
           "$clang" -std=c++23 --precompile m.cppm -o m.pcm
+          # The backport of llvm/llvm-project#219151 (README, Backports): std::align_val_t declared in
+          # extern "C++" in a named module, as MSVC's std module has it, is not ambiguous.
+          printf 'export module fake_std;\nextern "C++" {\nnamespace std {\n  using size_t = decltype(sizeof 0);\n  export enum class align_val_t : size_t {};\n}\nexport void *operator new(std::size_t, std::align_val_t);\nnamespace std {\nvoid foo() { align_val_t x{}; }\n}\n}\n' > pr218152.cppm
+          "$clang" -std=c++20 -fsyntax-only -x c++-module pr218152.cppm
+          # The resource directory's generated intrinsics headers (llvm-generated/clang-lib/Headers).
+          printf '#include <arm_neon.h>\nfloat32x4_t twice(float32x4_t v) { return vaddq_f32(v, v); }\n' > neon.cpp
+          "$clang" --target=aarch64-unknown-linux-gnu -ffreestanding -fsyntax-only -nostdinc \
+              -isystem ../../llvm-generated/clang-lib/Headers -isystem ../../llvm/clang/lib/Headers neon.cpp
           printf 'extern "C" int puts(const char*);\nint main() { puts("hello from in-process clang"); }\n' > hello.cpp
           "$clang" --target=aarch64-unknown-linux-gnu -c hello.cpp -o hello-arm64.o
           "$clang" --target=x86_64-unknown-linux-gnu -O2 --ld-path="$HOME/.mcpp/registry/data/xpkgs/xim-x-llvm/$LLVM_VERSION/bin/ld.lld" hello.cpp -o hello

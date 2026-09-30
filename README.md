@@ -7,7 +7,7 @@ libraries link into them in process. No CMake: mcpp is the build system, after t
 
 | Directory | What |
 |---|---|
-| `llvm/` | upstream llvm-project at `UPSTREAM-REV`, the subset these libraries need (`llvm/`, `clang/`, `libc/` headers, `third-party/siphash`); byte for byte, no patches |
+| `llvm/` | upstream llvm-project at `UPSTREAM-REV`, the subset these libraries need (`llvm/`, `clang/`, `libc/` headers, `third-party/siphash`); byte for byte but for the upstream fixes listed under Backports |
 | `llvm-generated/` | what upstream's CMake would generate: configuration headers (`tools/gen_config.py`; per platform in `platform/<os>/`) and every TableGen output (`tools/gen_tablegen.py`), the resource directory's generated intrinsics headers among them (`clang-lib/Headers/`: `arm_neon.h` and the other ARM, AArch64 and RISC-V ones, which `clang/lib/Headers` does not hold; since 23.1.0.5) |
 | `tools/tblgen/` | mcpp workspace building llvm-min-tblgen, llvm-tblgen (option emitters only) and clang-tblgen, used to regenerate `llvm-generated/` |
 | `mcpp.toml` | the package `llvm.clang-dev`: the frontend libraries |
@@ -20,6 +20,14 @@ command names no target, for x86_64-unknown-linux-gnu (`LLVM_DEFAULT_TARGET_TRIP
 does: MC++'s compiler serves as the llvm toolchain of a glibc Linux, and a build tool that passes
 `--no-default-config` for a native build must get that target, not the compiler's own C library
 (since packaging revision 23.1.0.3; 23.1.0.4 adds the Windows and macOS targets below).
+
+## Backports
+
+Upstream commits after `UPSTREAM-REV` that `llvm/` carries, each unchanged:
+
+| Commit | Since | What it fixes |
+|---|---|---|
+| [`5277447`](https://github.com/llvm/llvm-project/commit/52774473867e49b5891ab9381accf4e5a3ce0024) (#219151, llvm/llvm-project#218152) | 23.1.0.6 | `std::align_val_t` declared inside `extern "C++"` in a named module (MSVC's STL builds its `std` module so) was not taken as the one Clang declares implicitly -- which 23.1 puts in `std`'s lookup table (#187347) -- and every use of it was ambiguous: MSVC's `std.ixx` did not compile. `clang/lib/Sema/SemaDecl.cpp`, one line. |
 
 ## Platforms
 
