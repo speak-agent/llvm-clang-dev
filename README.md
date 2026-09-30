@@ -8,7 +8,7 @@ libraries link into them in process. No CMake: mcpp is the build system, after t
 | Directory | What |
 |---|---|
 | `llvm/` | upstream llvm-project at `UPSTREAM-REV`, the subset these libraries need (`llvm/`, `clang/`, `libc/` headers, `third-party/siphash`); byte for byte, no patches |
-| `llvm-generated/` | what upstream's CMake would generate: configuration headers (`tools/gen_config.py`; per platform in `platform/<os>/`) and every TableGen output (`tools/gen_tablegen.py`) |
+| `llvm-generated/` | what upstream's CMake would generate: configuration headers (`tools/gen_config.py`; per platform in `platform/<os>/`) and every TableGen output (`tools/gen_tablegen.py`), the resource directory's generated intrinsics headers among them (`clang-lib/Headers/`: `arm_neon.h` and the other ARM, AArch64 and RISC-V ones, which `clang/lib/Headers` does not hold; since 23.1.0.5) |
 | `tools/tblgen/` | mcpp workspace building llvm-min-tblgen, llvm-tblgen (option emitters only) and clang-tblgen, used to regenerate `llvm-generated/` |
 | `mcpp.toml` | the package `llvm.clang-dev`: the frontend libraries |
 | `codegen/mcpp.toml` | the package `llvm.codegen-dev`: Clang CodeGen, the LLVM optimizer, code generator and object writers for x86-64 and AArch64. Separate because mcpp links every object of a library into its consumers: a program that only reads C++ stays its size |

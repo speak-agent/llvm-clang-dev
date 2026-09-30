@@ -13,7 +13,8 @@ functions), and runs the tools that tools/tblgen builds with mcpp:
 Outputs go where CMake's binary directory would put them, rooted at llvm-generated/ instead:
     llvm/llvm/include/<p>   -> llvm-generated/include/<p>
     llvm/clang/include/<p>  -> llvm-generated/include/<p>
-    llvm/clang/lib/<p>      -> llvm-generated/clang-lib/<p>     (included by that library's sources)
+    llvm/clang/lib/<p>      -> llvm-generated/clang-lib/<p>     (included by that library's sources;
+                                                                  Headers/: the resource directory's)
 
     tools/gen_tablegen.py              build the tools (mcpp) and regenerate everything
     tools/gen_tablegen.py --list       print the steps without running them
@@ -30,7 +31,26 @@ GEN = ROOT / "llvm-generated"
 TBLGEN = ROOT / "tools" / "tblgen"
 
 SCAN = [UP / "llvm/include", UP / "llvm/lib", UP / "clang/include", UP / "clang/lib"]
-SKIP = [UP / "clang/lib/Headers"]   # generates ARM/RISC-V intrinsic headers of the resource dir
+# clang/lib/Headers declares its steps through a function of its own and under target conditions
+# this reader does not follow: they are RESOURCE_HEADERS below.
+SKIP = [UP / "clang/lib/Headers"]
+
+# The builtin headers Clang's resource directory has only once they are generated (upstream's
+# clang/lib/Headers/CMakeLists.txt, clang_generate_header): the ARM, AArch64 and RISC-V intrinsics.
+# `#include <arm_neon.h>' finds nothing in clang/lib/Headers itself -- LLVM's own xxhash.cpp includes
+# it when compiled for AArch64. Into llvm-generated/clang-lib/Headers, beside which the resource
+# directory's other headers are copied from clang/lib/Headers.
+RESOURCE_HEADERS = [
+    ("-gen-arm-neon", "arm_neon.td", "arm_neon.h"),
+    ("-gen-arm-fp16", "arm_fp16.td", "arm_fp16.h"),
+    ("-gen-arm-sve-header", "arm_sve.td", "arm_sve.h"),
+    ("-gen-arm-sme-header", "arm_sme.td", "arm_sme.h"),
+    ("-gen-arm-bf16", "arm_bf16.td", "arm_bf16.h"),
+    ("-gen-arm-mve-header", "arm_mve.td", "arm_mve.h"),
+    ("-gen-arm-cde-header", "arm_cde.td", "arm_cde.h"),
+    ("-gen-arm-vector-type", "arm_neon.td", "arm_vector_types.h"),
+    ("-gen-riscv-vector-header", "riscv_vector.td", "riscv_vector.h"),
+]
 
 
 def tokenize(text):
@@ -162,6 +182,11 @@ def collect():
                     i += 1
 
             run(cmds, env)
+    headers = UP / "clang/lib/Headers"
+    basic = UP / "clang/include/clang/Basic"
+    for option, td, header in RESOURCE_HEADERS:
+        steps.append(dict(tool="clang-tblgen", td=str(basic / td), dir=headers, out=out_dir(headers) / header,
+                          flags=[option], extra=[str(basic)]))
     return steps
 
 
