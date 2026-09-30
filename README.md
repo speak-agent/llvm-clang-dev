@@ -19,7 +19,10 @@ The compiler runs on openkal (`LLVM_HOST_TRIPLE` x86_64-unknown-linux-musl) and 
 command names no target, for x86_64-unknown-linux-gnu (`LLVM_DEFAULT_TARGET_TRIPLE`), as xim's LLVM
 does: MC++'s compiler serves as the llvm toolchain of a glibc Linux, and a build tool that passes
 `--no-default-config` for a native build must get that target, not the compiler's own C library
-(since packaging revision 23.1.0.3; 23.1.0.4 adds the Windows and macOS targets below).
+(since packaging revision 23.1.0.3; 23.1.0.4 adds the Windows and macOS targets below). On Windows
+the default target is MSVC's, `x86_64-pc-windows-msvc`, as xim's LLVM there has (since 23.1.0.9): mcpp
+passes `--no-default-config` for a std module and gives the compiler MSVC's toolset and STL, which the
+MinGW triple the program itself runs as does not build for.
 
 ## Backports
 
@@ -57,6 +60,11 @@ driver then found neither its resource directory nor its configuration files); C
 macOS driver reports its own directory, and that on Windows, started by its absolute path with
 `-no-canonical-prefixes`, it places its resource directory beside itself (LLVM, built as for Linux
 there, has no `/proc/self/exe`).
+Since 23.1.0.9 the macOS port asks the kernel for the process's identifier (openkal-musl's `getpid`
+answers 1 by design, and the kernel's path for process 1 is `/sbin/launchd`), and LLVM's `uname`
+calls get Darwin's name and the kernel's release (`kern.osrelease`; openkal-musl names openkal and
+its own version, which made the host `arm64-apple-darwin0.19.8`); the Windows default target is
+MSVC's (above).
 
 Regenerating after an upstream bump:
 

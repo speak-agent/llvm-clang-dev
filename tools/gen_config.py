@@ -153,7 +153,10 @@ def emit(template: pathlib.Path, output: pathlib.Path):
 PLATFORMS = {
     "linux": {"LLVM_HOST_TRIPLE": TRIPLE, "LLVM_DEFAULT_TARGET_TRIPLE": DEFAULT_TARGET, "LLVM_NATIVE_ARCH": "X86",
               "LLVM_PLUGIN_EXT": ".so", "LTDL_SHLIB_EXT": ".so"},
-    "windows": {"LLVM_HOST_TRIPLE": "x86_64-w64-windows-gnu", "LLVM_DEFAULT_TARGET_TRIPLE": "x86_64-w64-windows-gnu",
+    # MSVC's triple as the default, as xim's LLVM for Windows has: a build tool passes
+    # --no-default-config for a std module there (mcpp), and the compiler must then build for MSVC,
+    # whose toolset and STL it is given -- not for the MinGW world the program itself runs in.
+    "windows": {"LLVM_HOST_TRIPLE": "x86_64-w64-windows-gnu", "LLVM_DEFAULT_TARGET_TRIPLE": "x86_64-pc-windows-msvc",
                 "LLVM_NATIVE_ARCH": "X86", "LLVM_PLUGIN_EXT": ".dll", "LTDL_SHLIB_EXT": ".dll",
                 "LLVM_WINDOWS_PREFER_FORWARD_SLASH": 1},
     "macos": {"LLVM_HOST_TRIPLE": "arm64-apple-darwin", "LLVM_DEFAULT_TARGET_TRIPLE": "arm64-apple-macosx",

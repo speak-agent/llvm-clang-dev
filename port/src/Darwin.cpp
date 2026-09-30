@@ -65,6 +65,7 @@ long darwin_call(long number, long a0, long a1, long a2, long a3, long a4, long 
 #endif
 }
 
+constexpr long SYS_getpid = 20;
 constexpr long SYS_gethostuuid = 142;
 constexpr long SYS_sysctl = 202;
 constexpr long SYS_sysctlbyname = 274;
@@ -103,10 +104,17 @@ int sysctlbyname(const char *name, void *oldp, size_t *oldlenp, void *newp, size
 // length: libproc's proc_pidpath takes anything but -1 as success and measures the string). Taking 0
 // for a failure left every program without its own path -- clang's driver then had no directory to
 // find its resource directory and configuration files in (mcxx on macOS: "'stdarg.h' file not found").
+//
+// The kernel's process identifier, not openkal-musl's getpid: that one answers 1 by design (openkal has
+// no process identifiers to give), and the kernel's path for process 1 is /sbin/launchd -- where clang
+// then looked for its resource directory, and which it re-invoked for cc1.
 int _NSGetExecutablePath(char *buf, uint32_t *bufsize) {
   char path[PROC_PIDPATHINFO_MAXSIZE];
   path[0] = 0;
-  const long n = darwin_call(SYS_proc_info, PROC_INFO_CALL_PIDINFO, getpid(), PROC_PIDPATHINFO, 0,
+  const long self = darwin_call(SYS_getpid, 0, 0, 0, 0, 0, 0);
+  if (self <= 0)
+    return -1;
+  const long n = darwin_call(SYS_proc_info, PROC_INFO_CALL_PIDINFO, self, PROC_PIDPATHINFO, 0,
                              reinterpret_cast<long>(path), static_cast<long>(sizeof path));
   if (n < 0 || path[0] == 0)
     return -1;
@@ -120,6 +128,22 @@ int _NSGetExecutablePath(char *buf, uint32_t *bufsize) {
 }
 
 char ***_NSGetEnviron(void) { return &environ; }
+
+// openkal-musl's uname, with Darwin's name and the kernel's release (openkal-host.h sends LLVM's calls
+// here; `(uname)` is the C library's).
+int openkal_darwin_uname(struct utsname *u) {
+  if ((uname)(u) != 0)
+    return -1;
+  char release[sizeof u->release];
+  size_t n = sizeof release;
+  if (sysctlbyname("kern.osrelease", release, &n, nullptr, 0) == 0 && n > 0) {
+    release[sizeof release - 1] = 0;
+    memcpy(u->release, release, strnlen(release, sizeof release) + 1);
+  }
+  static const char sysname[] = "Darwin";
+  memcpy(u->sysname, sysname, sizeof sysname);
+  return 0;
+}
 
 int clonefile(const char *, const char *, unsigned int) {
   errno = ENOTSUP;

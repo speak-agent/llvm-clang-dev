@@ -20,6 +20,17 @@
 #define INT64_C(c) c##LL
 #define UINT64_C(c) c##ULL
 
+// Darwin's release where LLVM reads the host's: the default triple becomes darwin<release>, and a
+// target's default deployment version follows from it. openkal-musl's uname names openkal and its own
+// version (arm64-apple-darwin0.19.8, and so -triple arm64-apple-macosx10.4.0); the port's asks the
+// kernel (kern.osrelease). Calls only: the declaration <sys/utsname.h> makes comes before the name.
+#include <sys/utsname.h>
+#ifdef __cplusplus
+extern "C"
+#endif
+int openkal_darwin_uname(struct utsname *);
+#define uname(u) openkal_darwin_uname(u)
+
 // Darwin's <sys/resource.h> constants LLVM names for a background thread (CrashRecoveryContext); musl's
 // setpriority does not know them and fails, which LLVM ignores.
 #ifndef PRIO_DARWIN_THREAD
