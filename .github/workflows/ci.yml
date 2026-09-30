@@ -92,6 +92,17 @@ jobs:
           smoke=$(find target -type f -name "clang-dev-smoke${{ matrix.exe }}" -path '*/bin/*' | head -1)
           file "$smoke" | tee /dev/stderr | grep -q '${{ matrix.format }}'
           mkdir -p ../../cross && cp "$smoke" ../../cross/
+      # The code generator and clang itself for the target (llvm.codegen-dev, llvm.clang-driver): what
+      # MC++'s compiler is built from there (E-XIM-3). Built only for Linux here before, so a macOS-only
+      # break (INT64_C's type, 23.1.0.7) was first seen building mcxx.
+      - name: clang in process (llvm.clang-driver) for ${{ matrix.target }}
+        working-directory: tools/driver-smoke
+        run: |
+          set -euo pipefail
+          mcpp build -j auto --target ${{ matrix.target }}
+          clang=$(find target -type f -name "driver-smoke${{ matrix.exe }}" -path '*/bin/*' | head -1)
+          file "$clang" | tee /dev/stderr | grep -q '${{ matrix.format }}'
+          cp "$clang" ../../cross/
       - name: Under wine
         if: matrix.target == 'x86_64-windows-gnu'
         run: |
@@ -133,6 +144,18 @@ jobs:
           if [ "${{ runner.os }}" = macOS ]; then codesign -s - "cross/clang-dev-smoke"; fi
           "cross/clang-dev-smoke${{ matrix.exe }}" | tee smoke.txt
           grep -q 'module=m .* errors=0' smoke.txt
+      - name: clang in process compiles for this platform
+        run: |
+          set -euo pipefail
+          clang="cross/driver-smoke${{ matrix.exe }}"
+          chmod +x "$clang" || true
+          if [ "${{ runner.os }}" = macOS ]; then codesign -s - "$clang"; fi
+          "$clang" --version | tee version.txt
+          grep -q 'clang version 23.1' version.txt
+          printf 'int answer(int x) { return x * 2 + 42; }\n' > answer.c
+          target=x86_64-pc-windows-msvc; [ "${{ runner.os }}" = macOS ] && target=arm64-apple-macos14
+          "$clang" --target=$target -ffreestanding -nostdinc -O2 -c answer.c -o answer.o
+          ls -la answer.o
 
   # llvm-generated/ is what upstream's CMake would produce from llvm/: regenerating it from the
   # sources here must change nothing.

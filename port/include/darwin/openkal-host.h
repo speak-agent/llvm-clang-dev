@@ -12,6 +12,13 @@
 #define INT64_MIN (-1 - 0x7fffffffffffffffLL)
 #define INT64_MAX (0x7fffffffffffffffLL)
 #define UINT64_MAX (0xffffffffffffffffULL)
+// And the constant macros, for the same reason: musl's INT64_C(0) is `0L`, which converts to int64_t
+// and uint64_t alike, so MachineIRBuilder's `SrcOp(INT64_C(0))` (SrcOp(int64_t), SrcOp(uint64_t)) is
+// ambiguous where the code generator is built (llvm.codegen-dev, llvm.clang-driver).
+#undef INT64_C
+#undef UINT64_C
+#define INT64_C(c) c##LL
+#define UINT64_C(c) c##ULL
 
 // Darwin's <sys/resource.h> constants LLVM names for a background thread (CrashRecoveryContext); musl's
 // setpriority does not know them and fails, which LLVM ignores.

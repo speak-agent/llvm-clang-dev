@@ -37,7 +37,7 @@ One source, three openkal targets, all cross-built from Linux (`mcpp build --tar
 |---|---|---|
 | linux-x64 (`x86_64-linux-gnu`) | `__linux__`, openkal-musl | `llvm-generated/platform/linux` |
 | win32-x64 (`x86_64-windows-gnu`) | a PE object compiled as `x86_64-pc-cygwin` with `__CYGWIN__` removed: `__unix__` and none of `__linux__`, `__CYGWIN__`, `_WIN32`; openkal-musl | `llvm-generated/platform/windows`, and `openkal-host.h` forced into this package's sources: LLVM's host code reads the platform as Linux's, which openkal-musl implements. `CLANG_BUILD_STATIC` (in its `llvm-config.h`, so every program that includes the headers agrees) and the ABI-breaking-checks guard off (a weak definition in every unit, which COFF does not merge). Paths in Windows' style (a path there has a drive, `C:/Users/x`): a `llvm/Support/Path.h` written from upstream's, whose native style is Windows' where `__MCPP_TARGET_WINDOWS__` is defined as where `_WIN32` is, with `/` preferred; the platform directory comes before `llvm/llvm/include`, so every program that includes the headers reads the same one |
-| darwin-arm64 (`aarch64-macos`) | `__APPLE__`, Darwin's integer types, openkal-musl, the kernel's own calls | `llvm-generated/platform/macos`; `port/include/darwin/` declares the few Darwin functions LLVM's `__APPLE__` code names, `port/src/Darwin.cpp` defines them over the kernel's system calls; `port/include/darwin/openkal-host.h` gives the 64-bit limits the typedefs' type (openkal-musl's are `long`, its `int64_t` is `long long`) |
+| darwin-arm64 (`aarch64-macos`) | `__APPLE__`, Darwin's integer types, openkal-musl, the kernel's own calls | `llvm-generated/platform/macos`; `port/include/darwin/` declares the few Darwin functions LLVM's `__APPLE__` code names, `port/src/Darwin.cpp` defines them over the kernel's system calls; `port/include/darwin/openkal-host.h` gives the 64-bit limits and the `INT64_C`/`UINT64_C` constants the typedefs' type (openkal-musl's are `long`, its `int64_t` is `long long`; the constants since 23.1.0.7, where the code generator's `SrcOp(INT64_C(0))` was ambiguous) |
 
 `__APPLE__` stays defined on macOS, in the libraries and in their consumers alike: `RWMutex.h` and
 libc++ lay out types by it. On Windows, where the difference is only which host functions get compiled,
@@ -47,7 +47,10 @@ anything by `__linux__`).
 A COFF link reports undefined references in objects it later discards, which an ELF link does not:
 `port/src/Unsupported.cpp` defines, weakly, the three TransformUtils functions `lib/Frontend/Offloading`
 names. The smoke program parses a module interface on each platform (`module=m ... errors=0`); CI
-cross-builds it, runs the Windows one under wine, and runs both on their own runners.
+cross-builds it, runs the Windows one under wine, and runs both on their own runners. Since 23.1.0.7
+CI also cross-builds `tools/driver-smoke` (clang in process over the code generator, what MC++'s
+compiler is built from) for both targets, and on each runner it reports Clang 23.1 and compiles an
+object for that platform.
 
 Regenerating after an upstream bump:
 
