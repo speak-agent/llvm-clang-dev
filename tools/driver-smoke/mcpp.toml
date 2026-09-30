@@ -13,6 +13,10 @@ ldflags = ["-Wl,--error-limit=0"]
 
 [dependencies]
 openkal-llvm-runtime = "0.15.2"
+# The C library MC++'s compiler is built with (mcpp-safe's root names it): speak-agent's fork, whose
+# macOS start records the arguments and the environment before any constructor runs (0.19.5) --
+# openkal-llvm-runtime asks for ^0.19.2 by version, and a root's git declaration wins.
+openkal-musl = { git = "https://github.com/speak-agent/openkal-musl.git", tag = "0.19.8" }
 
 [dependencies.llvm]
 clang-driver = { path = "../../driver" }
