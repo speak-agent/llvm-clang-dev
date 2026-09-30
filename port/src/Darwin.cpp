@@ -99,11 +99,16 @@ int sysctlbyname(const char *name, void *oldp, size_t *oldlenp, void *newp, size
                                       reinterpret_cast<long>(newp), static_cast<long>(newlen)));
 }
 
+// The kernel answers PROC_PIDPATHINFO with 0 and the path in the buffer (its return value is not the
+// length: libproc's proc_pidpath takes anything but -1 as success and measures the string). Taking 0
+// for a failure left every program without its own path -- clang's driver then had no directory to
+// find its resource directory and configuration files in (mcxx on macOS: "'stdarg.h' file not found").
 int _NSGetExecutablePath(char *buf, uint32_t *bufsize) {
   char path[PROC_PIDPATHINFO_MAXSIZE];
+  path[0] = 0;
   const long n = darwin_call(SYS_proc_info, PROC_INFO_CALL_PIDINFO, getpid(), PROC_PIDPATHINFO, 0,
                              reinterpret_cast<long>(path), static_cast<long>(sizeof path));
-  if (n <= 0)
+  if (n < 0 || path[0] == 0)
     return -1;
   const size_t len = strnlen(path, sizeof path);
   if (len + 1 > *bufsize) {

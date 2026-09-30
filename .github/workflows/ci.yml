@@ -156,6 +156,25 @@ jobs:
           target=x86_64-pc-windows-msvc; [ "${{ runner.os }}" = macOS ] && target=arm64-apple-macos14
           "$clang" --target=$target -ffreestanding -nostdinc -O2 -c answer.c -o answer.o
           ls -la answer.o
+          # The program knows where it is (its resource directory and configuration files are found from
+          # there): on macOS through _NSGetExecutablePath, which took the kernel's 0 for a failure before
+          # 23.1.0.8 and left it with no directory.
+          if [ "${{ runner.os }}" = macOS ]; then
+            grep "^InstalledDir: $(cd cross && pwd -P)\$" version.txt
+          fi
+      # On Windows LLVM, built as for Linux there, has no /proc/self/exe and cannot resolve a drive path
+      # itself: started by its absolute path with -no-canonical-prefixes (what mcxx does for such a path)
+      # it takes that path, and its resource directory is beside it.
+      - name: Its own path, given absolute, on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $exe = Join-Path $PWD 'cross\driver-smoke.exe'
+          $dir = & $exe -no-canonical-prefixes -print-resource-dir
+          Write-Output $dir
+          # Either separator (LLVM prefers '/' there).
+          $want = (Join-Path $PWD 'cross').Replace('\', '/').ToLower()
+          if (-not "$dir".Replace('\', '/').ToLower().StartsWith($want)) { throw "resource directory not beside the program: $dir" }
 
   # llvm-generated/ is what upstream's CMake would produce from llvm/: regenerating it from the
   # sources here must change nothing.

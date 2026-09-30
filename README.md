@@ -51,6 +51,12 @@ cross-builds it, runs the Windows one under wine, and runs both on their own run
 CI also cross-builds `tools/driver-smoke` (clang in process over the code generator, what MC++'s
 compiler is built from) for both targets, and on each runner it reports Clang 23.1 and compiles an
 object for that platform.
+Since 23.1.0.8 `_NSGetExecutablePath` (macOS) takes the kernel's 0 for PROC_PIDPATHINFO as the
+success it is (it took it for a failure, and every program was left without its own path: clang's
+driver then found neither its resource directory nor its configuration files); CI checks that the
+macOS driver reports its own directory, and that on Windows, started by its absolute path with
+`-no-canonical-prefixes`, it places its resource directory beside itself (LLVM, built as for Linux
+there, has no `/proc/self/exe`).
 
 Regenerating after an upstream bump:
 
