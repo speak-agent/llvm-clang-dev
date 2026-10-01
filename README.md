@@ -65,6 +65,13 @@ answers 1 by design, and the kernel's path for process 1 is `/sbin/launchd`), an
 calls get Darwin's name and the kernel's release (`kern.osrelease`; openkal-musl names openkal and
 its own version, which made the host `arm64-apple-darwin0.19.8`); the Windows default target is
 MSVC's (above).
+Since 23.1.0.10 LLVM knows the Mach-O subarchitecture `arm64e.x1` that Xcode 27's SDK lists in its
+`.tbd` stubs (`targets: [ ..., arm64e.x1-macos, ... ]`): the libraries' part of LLVM's
+`[ld64.lld, llvm-otool] Minimal arm64e.x1 support` (llvm/llvm-project#222721), as release/23.x
+backported it (532fa5afbe2b and its "Avoid abi break", ee66426152f9; no release has it yet) --
+`BinaryFormat/MachO`, `TargetParser/Triple`, `TextAPI/Architecture`, `Object/MachOObjectFile`.
+LLVM 22.x and 23.1.2 reject such a stub ("could not load TAPI file ... unknown target"); validated
+by speak-agent/llvm-macos27-lab on the `xcode-27` runner image.
 
 Regenerating after an upstream bump:
 
