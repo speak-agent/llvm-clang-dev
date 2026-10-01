@@ -1129,6 +1129,9 @@ enum PredefinedTypeIDs {
   /// \brief The '__ibm128' type
   PREDEF_TYPE_IBM128_ID = 74,
 
+  /// \brief The 'std::meta::info' type
+  PREDEF_TYPE_META_INFO_ID = 75,
+
 /// OpenCL image types with auto numeration
 #define IMAGE_TYPE(ImgType, Id, SingletonId, Access, Suffix)                   \
   PREDEF_TYPE_##Id##_ID,
@@ -1166,7 +1169,7 @@ enum PredefinedTypeIDs {
 ///
 /// Type IDs for non-predefined types will start at
 /// NUM_PREDEF_TYPE_IDs.
-const unsigned NUM_PREDEF_TYPE_IDS = 529;
+const unsigned NUM_PREDEF_TYPE_IDS = 530;
 
 // Ensure we do not overrun the predefined types we reserved
 // in the enum PredefinedTypeIDs above.
@@ -1466,9 +1469,11 @@ enum DeclCode {
   /// \brief A StaticAssertDecl record.
   DECL_STATIC_ASSERT,
 
+  /// \brief A ConstevalBlockDecl record.
+  DECL_CONSTEVAL_BLOCK,
+
   /// A C++ expansion statement.
   DECL_EXPANSION_STMT,
-
   /// A record containing CXXBaseSpecifiers.
   DECL_CXX_BASE_SPECIFIERS,
 
@@ -1950,9 +1955,6 @@ enum StmtCode {
   EXPR_REQUIRES,                          // RequiresExpr
   EXPR_CXX_EXPANSION_SELECT,              // CXXExpansionSelectExpr
 
-  // Reflection
-  EXPR_REFLECT,
-
   // CUDA
   EXPR_CUDA_KERNEL_CALL, // CUDAKernelCallExpr
 
@@ -2063,6 +2065,15 @@ enum StmtCode {
   EXPR_COAWAIT,
   EXPR_COYIELD,
   EXPR_DEPENDENT_COAWAIT,
+
+  // C++2c reflection (P2996)
+  EXPR_REFLECT,
+  EXPR_METAFUNCTION,
+  EXPR_SPLICE,
+  EXPR_DEPENDENT_MEMBER_SPLICE,
+  EXPR_STACK_LOCATION,
+  EXPR_EXTRACT_LVALUE,
+  EXPR_EXPL_DEPENDENT_CALL,
 
   // FixedPointLiteral
   EXPR_FIXEDPOINT_LITERAL,

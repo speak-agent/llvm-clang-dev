@@ -212,6 +212,10 @@ public:
   /// Whether this nested name specifier starts with a '::'.
   bool isFullyQualified() const;
 
+  /// Whether the leading component of this nested name specifier is a
+  /// reflection splice ('[: R :]::', C++26 reflection).
+  bool hasLeadingSplice() const;
+
   NestedNameSpecifierDependence getDependence() const;
 
   /// Whether this nested name specifier refers to a dependent

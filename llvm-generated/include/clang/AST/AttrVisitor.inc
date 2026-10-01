@@ -365,6 +365,10 @@
   bool VisitCXX11NoReturnAttr(CXX11NoReturnAttr *A) {
     return true; 
   }
+  bool TraverseCXX26AnnotationAttr(CXX26AnnotationAttr *A);
+  bool VisitCXX26AnnotationAttr(CXX26AnnotationAttr *A) {
+    return true; 
+  }
   bool TraverseCXXAssumeAttr(CXXAssumeAttr *A);
   bool VisitCXXAssumeAttr(CXXAssumeAttr *A) {
     return true; 
@@ -783,6 +787,10 @@
   }
   bool TraverseInitSegAttr(InitSegAttr *A);
   bool VisitInitSegAttr(InitSegAttr *A) {
+    return true; 
+  }
+  bool TraverseInstantiationDependentAttr(InstantiationDependentAttr *A);
+  bool VisitInstantiationDependentAttr(InstantiationDependentAttr *A) {
     return true; 
   }
   bool TraverseIntelOclBiccAttr(IntelOclBiccAttr *A);
@@ -2813,6 +2821,17 @@ bool VISITORCLASS<Derived>::TraverseCXX11NoReturnAttr(CXX11NoReturnAttr *A) {
 }
 
 template <typename Derived>
+bool VISITORCLASS<Derived>::TraverseCXX26AnnotationAttr(CXX26AnnotationAttr *A) {
+  if (!getDerived().VisitAttr(A))
+    return false;
+  if (!getDerived().VisitCXX26AnnotationAttr(A))
+    return false;
+  if (!getDerived().TraverseStmt(A->getArg()))
+    return false;
+  return true;
+}
+
+template <typename Derived>
 bool VISITORCLASS<Derived>::TraverseCXXAssumeAttr(CXXAssumeAttr *A) {
   if (!getDerived().VisitAttr(A))
     return false;
@@ -3787,6 +3806,15 @@ bool VISITORCLASS<Derived>::TraverseInitSegAttr(InitSegAttr *A) {
   if (!getDerived().VisitAttr(A))
     return false;
   if (!getDerived().VisitInitSegAttr(A))
+    return false;
+  return true;
+}
+
+template <typename Derived>
+bool VISITORCLASS<Derived>::TraverseInstantiationDependentAttr(InstantiationDependentAttr *A) {
+  if (!getDerived().VisitAttr(A))
+    return false;
+  if (!getDerived().VisitInstantiationDependentAttr(A))
     return false;
   return true;
 }
@@ -6620,6 +6648,8 @@ bool VISITORCLASS<Derived>::TraverseAttr(Attr *A) {
       return getDerived().TraverseCUDASharedAttr(cast<CUDASharedAttr>(A));
     case attr::CXX11NoReturn:
       return getDerived().TraverseCXX11NoReturnAttr(cast<CXX11NoReturnAttr>(A));
+    case attr::CXX26Annotation:
+      return getDerived().TraverseCXX26AnnotationAttr(cast<CXX26AnnotationAttr>(A));
     case attr::CXXAssume:
       return getDerived().TraverseCXXAssumeAttr(cast<CXXAssumeAttr>(A));
     case attr::CallableWhen:
@@ -6830,6 +6860,8 @@ bool VISITORCLASS<Derived>::TraverseAttr(Attr *A) {
       return getDerived().TraverseInitPriorityAttr(cast<InitPriorityAttr>(A));
     case attr::InitSeg:
       return getDerived().TraverseInitSegAttr(cast<InitSegAttr>(A));
+    case attr::InstantiationDependent:
+      return getDerived().TraverseInstantiationDependentAttr(cast<InstantiationDependentAttr>(A));
     case attr::IntelOclBicc:
       return getDerived().TraverseIntelOclBiccAttr(cast<IntelOclBiccAttr>(A));
     case attr::InternalLinkage:

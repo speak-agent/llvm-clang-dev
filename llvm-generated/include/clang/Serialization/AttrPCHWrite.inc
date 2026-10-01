@@ -727,6 +727,14 @@ Record.push_back(static_cast<uint64_t>(SA->getGuard()));
     Record.push_back(A->isPackExpansion());
     break;
   }
+  case attr::CXX26Annotation: {
+    const auto *SA = cast<CXX26AnnotationAttr>(A);
+    Record.push_back(SA->isInherited());
+    Record.push_back(A->isImplicit());
+    Record.push_back(A->isPackExpansion());
+    Record.AddStmt(SA->getArg());
+    break;
+  }
   case attr::CXXAssume: {
     const auto *SA = cast<CXXAssumeAttr>(A);
     Record.push_back(A->isImplicit());
@@ -1515,6 +1523,11 @@ Record.push_back(static_cast<uint64_t>(SA->getType()));
     Record.push_back(A->isImplicit());
     Record.push_back(A->isPackExpansion());
     Record.AddString(SA->getSection());
+    break;
+  }
+  case attr::InstantiationDependent: {
+    Record.push_back(A->isImplicit());
+    Record.push_back(A->isPackExpansion());
     break;
   }
   case attr::IntelOclBicc: {

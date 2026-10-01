@@ -1,5 +1,7 @@
 //==--- TypeProperties.td - Type property definitions ---------------------===//
 //
+// Copyright 2024 Bloomberg Finance L.P.
+//
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
@@ -811,6 +813,23 @@ let Class = SubstPackType in {
   def : Property<"replacementPack", TemplateArgument> {
     let Read = [{ node->getArgumentPack() }];
   }
+}
+
+let Class = ReflectionSpliceType in {
+  def : Property<"typenameLoc", SourceLocation> {
+    let Read = [{ node->getTypenameKWLoc() }];
+  }
+  def : Property<"spliceSpecifier", SpliceSpecifierRef> {
+    let Read = [{ node->getSplice() }];
+  }
+  def : Property<"underlyingType", QualType> {
+    let Read = [{ node->getUnderlyingType() }];
+  }
+
+  def : Creator<[{
+    return ctx.getReflectionSpliceType(typenameLoc, spliceSpecifier,
+                                       underlyingType);
+  }]>;
 }
 
 let Class = SubstTemplateTypeParmPackType in {

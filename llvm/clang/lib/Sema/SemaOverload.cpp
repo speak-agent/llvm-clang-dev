@@ -1,5 +1,7 @@
 //===--- SemaOverload.cpp - C++ Overloading -------------------------------===//
 //
+// Copyright 2024 Bloomberg Finance L.P.
+//
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
@@ -9108,6 +9110,10 @@ class BuiltinCandidateTypeSet  {
   /// candidate set.
   bool HasNullPtrType;
 
+  /// A flag indicating whether the reflection type was present in the
+  /// candidate set.
+  bool HasReflectionType;
+
   /// Sema - The semantic analysis instance where we are building the
   /// candidate type set.
   Sema &SemaRef;
@@ -9127,6 +9133,7 @@ public:
     : HasNonRecordTypes(false),
       HasArithmeticOrEnumeralTypes(false),
       HasNullPtrType(false),
+      HasReflectionType(false),
       SemaRef(SemaRef),
       Context(SemaRef.Context) { }
 
@@ -9151,6 +9158,7 @@ public:
   bool hasNonRecordTypes() { return HasNonRecordTypes; }
   bool hasArithmeticOrEnumeralTypes() { return HasArithmeticOrEnumeralTypes; }
   bool hasNullPtrType() const { return HasNullPtrType; }
+  bool hasReflectionType() const { return HasReflectionType; }
 };
 
 } // end anonymous namespace
@@ -9332,6 +9340,8 @@ BuiltinCandidateTypeSet::AddTypesConvertedFrom(QualType Ty,
     MatrixTypes.insert(Ty);
   } else if (Ty->isNullPtrType()) {
     HasNullPtrType = true;
+  } else if (Ty->isReflectionType()) {
+    HasReflectionType = true;
   } else if (AllowUserConversions && TyIsRec) {
     // No conversion functions in incomplete types.
     if (!SemaRef.isCompleteType(Loc, Ty))
@@ -9808,6 +9818,14 @@ public:
         CanQualType NullPtrTy = S.Context.getCanonicalType(S.Context.NullPtrTy);
         if (AddedTypes.insert(NullPtrTy).second) {
           QualType ParamTypes[2] = { NullPtrTy, NullPtrTy };
+          S.AddBuiltinCandidate(ParamTypes, Args, CandidateSet);
+        }
+      }
+
+      if (CandidateTypes[ArgIdx].hasReflectionType()) {
+        CanQualType InfoTy = S.Context.getCanonicalType(S.Context.MetaInfoTy);
+        if (AddedTypes.insert(InfoTy).second) {
+          QualType ParamTypes[2] = { InfoTy, InfoTy };
           S.AddBuiltinCandidate(ParamTypes, Args, CandidateSet);
         }
       }
@@ -14096,7 +14114,8 @@ public:
 
   bool IsInvalidFormOfPointerToMemberFunction() const {
     return TargetTypeIsNonStaticMemberFunction &&
-      !OvlExprInfo.HasFormOfMemberPointer;
+      !OvlExprInfo.HasFormOfMemberPointer &&
+      !S.isReflectionContext();
   }
 
   void ComplainIsInvalidFormOfPointerToMemberFunction() const {
@@ -14184,6 +14203,99 @@ Sema::ResolveAddressOfOverloadedFunction(Expr *AddressOfExpr,
   if (pHadMultipleCandidates)
     *pHadMultipleCandidates = Resolver.hadMultipleCandidates();
   return Fn;
+}
+
+FunctionDecl *Sema::ResolveAddressOfOverloadedFunctionWithoutTarget(
+    Expr *AddressOfExpr, DeclAccessPair &FoundResult) {
+  assert(AddressOfExpr->getType() == Context.OverloadTy);
+
+  OverloadExpr *Ovl = OverloadExpr::find(AddressOfExpr).Expression;
+  TemplateArgumentListInfo ExplicitTemplateArgs;
+  TemplateArgumentListInfo *ExplicitTemplateArgsPtr = nullptr;
+  if (Ovl->hasExplicitTemplateArgs()) {
+    Ovl->copyTemplateArgumentsInto(ExplicitTemplateArgs);
+    ExplicitTemplateArgsPtr = &ExplicitTemplateArgs;
+  }
+
+  SmallVector<std::pair<DeclAccessPair, FunctionDecl *>, 4> Matches;
+  bool FoundNonTemplate = false;
+  for (UnresolvedSetIterator I = Ovl->decls_begin(), E = Ovl->decls_end();
+       I != E; ++I) {
+    NamedDecl *D = (*I)->getUnderlyingDecl();
+    FunctionDecl *FD = nullptr;
+    if (auto *FTD = dyn_cast<FunctionTemplateDecl>(D)) {
+      TemplateDeductionInfo Info(Ovl->getNameLoc());
+      if (DeduceTemplateArguments(FTD, ExplicitTemplateArgsPtr, FD, Info,
+                                  /*IsAddressOfFunction=*/true) !=
+          TemplateDeductionResult::Success)
+        continue;
+    } else if (!ExplicitTemplateArgsPtr) {
+      FD = dyn_cast<FunctionDecl>(D);
+    }
+
+    if (!FD ||
+        completeFunctionType(*this, FD, Ovl->getNameLoc(),
+                             /*Complain=*/false) ||
+        !checkAddressOfFunctionIsAvailable(FD))
+      continue;
+    FoundNonTemplate |= FD->getPrimaryTemplate() == nullptr;
+    if (llvm::none_of(Matches, [&](const auto &Match) {
+          return declaresSameEntity(Match.second, FD);
+        }))
+      Matches.emplace_back(I.getPair(), FD);
+  }
+
+  if (Matches.empty())
+    return nullptr;
+
+  // [over.over] eliminates every function template specialization if the set
+  // contains a non-template function.
+  if (FoundNonTemplate) {
+    llvm::erase_if(Matches, [](const auto &Match) {
+      return Match.second->getPrimaryTemplate() != nullptr;
+    });
+
+    SmallVector<std::pair<DeclAccessPair, FunctionDecl *>, 4> Results;
+    for (const auto &Candidate : Matches) {
+      bool IsEliminated = llvm::any_of(Matches, [&](const auto &Other) {
+        if (Candidate.second == Other.second)
+          return false;
+        return getMorePartialOrderingConstrained(
+                   *this, Candidate.second, Other.second,
+                   /*IsFn1Reversed=*/false,
+                   /*IsFn2Reversed=*/false) == Other.second;
+      });
+      if (!IsEliminated)
+        Results.push_back(Candidate);
+    }
+    Matches.swap(Results);
+  } else if (Matches.size() > 1) {
+    UnresolvedSet<4> TemplateMatches;
+    for (const auto &Match : Matches)
+      TemplateMatches.addDecl(Match.second, Match.first.getAccess());
+
+    TemplateSpecCandidateSet FailedCandidates(Ovl->getNameLoc(),
+                                              /*ForTakingAddress=*/true);
+    UnresolvedSetIterator Best = getMostSpecialized(
+        TemplateMatches.begin(), TemplateMatches.end(), FailedCandidates,
+        Ovl->getNameLoc(), PDiag(), PDiag(), PDiag(), /*Complain=*/false);
+    if (Best == TemplateMatches.end())
+      return nullptr;
+
+    unsigned Index = Best - TemplateMatches.begin();
+    Matches.front() = Matches[Index];
+    Matches.resize(1);
+  }
+
+  if (getLangOpts().CUDA && Matches.size() > 1)
+    CUDA().EraseUnwantedMatches(getCurFunctionDecl(/*AllowLambda=*/true),
+                                Matches);
+
+  if (Matches.size() != 1)
+    return nullptr;
+
+  FoundResult = Matches.front().first;
+  return Matches.front().second;
 }
 
 FunctionDecl *
@@ -17148,6 +17260,7 @@ Sema::BuildForRangeBeginEndCall(SourceLocation Loc,
 
 ExprResult Sema::FixOverloadedFunctionReference(Expr *E, DeclAccessPair Found,
                                                 FunctionDecl *Fn) {
+  E = E->IgnoreSplices();
   if (ParenExpr *PE = dyn_cast<ParenExpr>(E)) {
     ExprResult SubExpr =
         FixOverloadedFunctionReference(PE->getSubExpr(), Found, Fn);

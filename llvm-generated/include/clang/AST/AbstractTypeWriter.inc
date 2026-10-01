@@ -104,6 +104,8 @@ public:
       return writeLValueReferenceType(static_cast<const LValueReferenceType *>(node));
     case Type::RValueReference:
       return writeRValueReferenceType(static_cast<const RValueReferenceType *>(node));
+    case Type::ReflectionSplice:
+      return writeReflectionSpliceType(static_cast<const ReflectionSpliceType *>(node));
     case Type::SubstBuiltinTemplatePack:
       return writeSubstBuiltinTemplatePackType(static_cast<const SubstBuiltinTemplatePackType *>(node));
     case Type::SubstTemplateTypeParmPack:
@@ -563,6 +565,15 @@ public:
   void writeRValueReferenceType(const RValueReferenceType *node) {
     QualType pointeeTypeAsWritten = ( node->getPointeeTypeAsWritten() );
     W.find("pointeeTypeAsWritten").writeQualType(pointeeTypeAsWritten);
+  }
+
+  void writeReflectionSpliceType(const ReflectionSpliceType *node) {
+    SourceLocation typenameLoc = ( node->getTypenameKWLoc() );
+    W.find("typenameLoc").writeSourceLocation(typenameLoc);
+    SpliceSpecifier* spliceSpecifier = ( node->getSplice() );
+    W.find("spliceSpecifier").writeSpliceSpecifierRef(spliceSpecifier);
+    QualType underlyingType = ( node->getUnderlyingType() );
+    W.find("underlyingType").writeQualType(underlyingType);
   }
 
   void writeSubstBuiltinTemplatePackType(const SubstBuiltinTemplatePackType *node) {

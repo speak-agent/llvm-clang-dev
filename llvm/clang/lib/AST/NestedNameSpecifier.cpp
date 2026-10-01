@@ -67,6 +67,30 @@ bool NestedNameSpecifier::isFullyQualified() const {
   llvm_unreachable("Invalid NNS Kind!");
 }
 
+bool NestedNameSpecifier::hasLeadingSplice() const {
+  NestedNameSpecifier NNS = *this;
+  while (NNS) {
+    switch (NNS.getKind()) {
+    case Kind::Namespace:
+      NNS = NNS.getAsNamespaceAndPrefix().Prefix;
+      continue;
+    case Kind::Type: {
+      const Type *T = NNS.getAsType();
+      if (NestedNameSpecifier Prefix = T->getPrefix()) {
+        NNS = Prefix;
+        continue;
+      }
+      return isa<ReflectionSpliceType>(T);
+    }
+    case Kind::Null:
+    case Kind::Global:
+    case Kind::MicrosoftSuper:
+      return false;
+    }
+  }
+  return false;
+}
+
 NestedNameSpecifierDependence NestedNameSpecifier::getDependence() const {
   switch (getKind()) {
   case Kind::Null:

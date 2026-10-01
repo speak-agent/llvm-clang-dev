@@ -1,5 +1,7 @@
 //===------- TreeTransform.h - Semantic Tree Transformation -----*- C++ -*-===//
 //
+// Copyright 2024 Bloomberg Finance L.P.
+//
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
@@ -23,6 +25,7 @@
 #include "clang/AST/ExprConcepts.h"
 #include "clang/AST/ExprObjC.h"
 #include "clang/AST/ExprOpenMP.h"
+#include "clang/AST/LocInfoType.h"
 #include "clang/AST/OpenMPClause.h"
 #include "clang/AST/Stmt.h"
 #include "clang/AST/StmtCXX.h"
@@ -49,6 +52,7 @@
 #include "clang/Sema/Template.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Support/ErrorHandling.h"
+#include "llvm/Support/SaveAndRestore.h"
 #include <algorithm>
 #include <optional>
 
@@ -765,6 +769,8 @@ public:
 
   QualType TransformTagType(TypeLocBuilder &TLB, TagTypeLoc TL);
 
+  SpliceResult TransformSpliceSpecifier(SpliceSpecifier *SS);
+
   /// Transforms the parameters of a function type into the
   /// given vectors.
   ///
@@ -1131,6 +1137,11 @@ public:
   /// By default, performs semantic analysis when building the decltype type.
   /// Subclasses may override this routine to provide different behavior.
   QualType RebuildDecltypeType(Expr *Underlying, SourceLocation Loc);
+
+  /// Build a new type loc from a C++2c reflection splice (P2996).
+  QualType RebuildReflectionSpliceTypeLoc(TypeLocBuilder &TLB,
+                                          SourceLocation TypenameKWLoc,
+                                          SpliceSpecifier *Splice);
 
   QualType RebuildPackIndexingType(QualType Pattern, Expr *IndexExpr,
                                    SourceLocation Loc,
@@ -4683,7 +4694,15 @@ Sema::ConditionResult TreeTransform<Derived>::TransformCondition(
   }
 
   if (Expr) {
-    ExprResult CondExpr = getDerived().TransformExpr(Expr);
+    ExprResult CondExpr;
+    if (Kind == Sema::ConditionKind::ConstexprIf) {
+      EnterExpressionEvaluationContext Context(
+            getSema(),
+            Sema::ExpressionEvaluationContext::ImmediateFunctionContext);
+      CondExpr = getDerived().TransformExpr(Expr);
+    } else {
+      CondExpr = getDerived().TransformExpr(Expr);
+    }
 
     if (CondExpr.isInvalid())
       return Sema::ConditionError();
@@ -4742,6 +4761,22 @@ NestedNameSpecifierLoc TreeTransform<Derived>::TransformNestedNameSpecifierLoc(
     case NestedNameSpecifier::Kind::Type: {
       assert(SS.isEmpty());
       TypeLoc TL = Q.castAsTypeLoc();
+
+      if (auto RTL = TL.getAs<ReflectionSpliceTypeLoc>()) {
+        // A splice leading a nested-name-specifier names a namespace or a
+        // type, which is decided once its operand is evaluated.
+        EnterExpressionEvaluationContext EvalCtx(
+            getSema(), Sema::ExpressionEvaluationContext::ConstantEvaluated);
+        SpliceResult SR =
+            getDerived().TransformSpliceSpecifier(RTL.getTypePtr()->getSplice());
+        if (SR.isInvalid())
+          return NestedNameSpecifierLoc();
+        if (SemaRef.ActOnCXXSpliceScopeSpecifier(
+                SS, RTL.getTypePtr()->getTypenameKWLoc(), SR.get(),
+                Q.getLocalEndLoc()))
+          return NestedNameSpecifierLoc();
+        break;
+      }
 
       if (auto DNT = TL.getAs<DependentNameTypeLoc>()) {
         NestedNameSpecifierLoc QualifierLoc = DNT.getQualifierLoc();
@@ -4932,8 +4967,9 @@ TemplateName TreeTransform<Derived>::TransformTemplateName(
 
     if (!getDerived().AlwaysRebuild() &&
         QualifierLoc.getNestedNameSpecifier() == DTN->getQualifier() &&
-        ObjectType.isNull())
+        ObjectType.isNull()) {
       return Name;
+    }
 
     CXXScopeSpec SS;
     SS.Adopt(QualifierLoc);
@@ -7202,6 +7238,27 @@ TreeTransform<Derived>::TransformPackIndexingType(TypeLocBuilder &TLB,
 }
 
 template<typename Derived>
+QualType TreeTransform<Derived>::TransformReflectionSpliceType(
+                                                 TypeLocBuilder &TLB,
+                                                 ReflectionSpliceTypeLoc TL) {
+  const ReflectionSpliceType *T = TL.getTypePtr();
+
+  SpliceSpecifier *NewSplice;
+  {
+    EnterExpressionEvaluationContext Context(
+        getSema(), Sema::ExpressionEvaluationContext::ConstantEvaluated);
+    SpliceResult SR = getDerived().TransformSpliceSpecifier(T->getSplice());
+    if (SR.isInvalid())
+      return QualType();
+    NewSplice = SR.get();
+  }
+
+  return getDerived().RebuildReflectionSpliceTypeLoc(TLB,
+                                                     TL.getTypenameKWLoc(),
+                                                     NewSplice);
+}
+
+template<typename Derived>
 QualType TreeTransform<Derived>::TransformUnaryTransformType(
                                                             TypeLocBuilder &TLB,
                                                      UnaryTransformTypeLoc TL) {
@@ -9018,7 +9075,7 @@ TreeTransform<Derived>::TransformDependentCoawaitExpr(DependentCoawaitExpr *E) {
       cast<UnresolvedLookupExpr>(LookupResult.get()));
 }
 
-template<typename Derived>
+template <typename Derived>
 ExprResult
 TreeTransform<Derived>::TransformCoyieldExpr(CoyieldExpr *E) {
   ExprResult Result = getDerived().TransformInitializer(E->getOperand(),
@@ -9030,6 +9087,217 @@ TreeTransform<Derived>::TransformCoyieldExpr(CoyieldExpr *E) {
   // context or if the promise type has changed.
   return getDerived().RebuildCoyieldExpr(E->getKeywordLoc(), Result.get());
 }
+
+template<typename Derived>
+ExprResult
+TreeTransform<Derived>::TransformCXXReflectExpr(CXXReflectExpr *E) {
+  Sema::ConstevalOnlyRecorder RecordConstevalOnly(getSema());
+  EnterExpressionEvaluationContext Context(
+      getSema(), Sema::ExpressionEvaluationContext::ReflectionContext);
+
+  if (E->hasDependentSubExpr()) {
+    ExprResult Result = getDerived().TransformExpr(E->getDependentSubExpr());
+    if (Result.isInvalid())
+      return ExprError();
+
+    return RecordConstevalOnly.RecordAndReturn(
+            getSema().BuildCXXReflectExpr(E->getOperatorLoc(),
+                                          Result.get()));
+  }
+
+  APValue RV = E->getReflection();
+  switch (RV.getReflectionKind()) {
+  case ReflectionKind::Type: {
+    QualType Old = RV.getReflectedType();
+
+    // Adjust the type in case we get parsed type information.
+    if (const LocInfoType *LIT = dyn_cast<LocInfoType>(Old)) {
+      Old = LIT->getType();
+    }
+
+    QualType New = getDerived().TransformType(Old);
+    if (New.isNull()) {
+      return ExprError();
+    }
+    return RecordConstevalOnly.RecordAndReturn(
+            getSema().BuildCXXReflectExpr(E->getOperatorLoc(),
+                                          E->getOperandRange().getBegin(),
+                                          New));
+  }
+  case ReflectionKind::Declaration: {
+    Decl *Transformed = getDerived().TransformDecl(E->getExprLoc(),
+                                                   RV.getReflectedDecl());
+    return RecordConstevalOnly.RecordAndReturn(
+            getSema().BuildCXXReflectExpr(E->getOperatorLoc(),
+                                          E->getOperandRange().getBegin(),
+                                          Transformed));
+  }
+  case ReflectionKind::Template: {
+    TemplateName TName = RV.getReflectedTemplate();
+
+    // Qualified and dependent template names carry (and transform) their own
+    // qualifiers.
+    NestedNameSpecifierLoc QualifierLoc;
+    TemplateName Template = getDerived().TransformTemplateName(
+            QualifierLoc, SourceLocation(), TName,
+            E->getOperandRange().getBegin());
+    if (Template.isNull())
+      return true;
+
+    return RecordConstevalOnly.RecordAndReturn(
+            getSema().BuildCXXReflectExpr(E->getOperatorLoc(),
+                                          E->getOperandRange().getBegin(),
+                                          Template));
+  }
+  case ReflectionKind::EntityProxy: {
+    Decl *Transformed =
+        getDerived().TransformDecl(E->getExprLoc(),
+                                   RV.getReflectedEntityProxy());
+    return RecordConstevalOnly.RecordAndReturn(
+            getSema().BuildCXXReflectExpr(E->getOperatorLoc(),
+                                          E->getOperandRange().getBegin(),
+                                          cast<UsingShadowDecl>(Transformed)));
+  }
+  case ReflectionKind::Parameter: {
+    Decl *Transformed = getDerived().TransformDecl(E->getExprLoc(),
+                                                   RV.getReflectedParameter());
+    return RecordConstevalOnly.RecordAndReturn(
+            getSema().BuildCXXReflectExpr(E->getOperatorLoc(),
+                                          E->getOperandRange().getBegin(),
+                                          Transformed));
+  }
+  case ReflectionKind::Namespace: {
+    Decl *Transformed =
+          getDerived().TransformDecl(E->getExprLoc(),
+                                     RV.getReflectedNamespace());
+    return RecordConstevalOnly.RecordAndReturn(
+            getSema().BuildCXXReflectExpr(E->getOperatorLoc(),
+                                          E->getOperandRange().getBegin(),
+                                          Transformed));
+  }
+  case ReflectionKind::Object:
+  case ReflectionKind::Value:
+  case ReflectionKind::Attribute:
+    return E;
+  case ReflectionKind::Null:
+  case ReflectionKind::BaseSpecifier:
+  case ReflectionKind::DataMemberSpec:
+  case ReflectionKind::Annotation:
+    llvm_unreachable("reflect expression should not have this reflection kind");
+  }
+  llvm_unreachable("invalid reflection");
+}
+
+template <typename Derived>
+ExprResult
+TreeTransform<Derived>::TransformCXXMetafunctionExpr(CXXMetafunctionExpr *E) {
+  // Deserializing a malformed AST file can leave an expression with no
+  // callback to carry over; the reader has already diagnosed the file.
+  if (!E->hasImpl())
+    return ExprError();
+
+  SmallVector<Expr *, 2> Args(E->getNumArgs());
+  for (unsigned I = 0; I < E->getNumArgs(); ++I) {
+    ExprResult Arg = getDerived().TransformExpr(E->getArg(I));
+    if (Arg.isInvalid())
+      return ExprError();
+    Args[I] = Arg.get();
+  }
+
+  return getSema().BuildCXXMetafunctionExpr(E->getKwLoc(),
+                                            E->getLParenLoc(),
+                                            E->getRParenLoc(),
+                                            E->getMetaFnID(), E->getImpl(),
+                                            Args);
+}
+
+template <typename Derived>
+SpliceResult
+TreeTransform<Derived>::TransformSpliceSpecifier(SpliceSpecifier *Splice) {
+  ExprResult OpResult;
+  {
+    EnterExpressionEvaluationContext EvalCtx(
+        getSema(), Sema::ExpressionEvaluationContext::ConstantEvaluated);
+    OpResult = getDerived().TransformExpr(Splice->getOperand());
+  }
+  if (OpResult.isInvalid())
+    return SpliceError();
+
+  ASTTemplateArgumentListInfo *NewTArgs = nullptr;
+  if (Splice->isSpecialization()) {
+    ArrayRef<TemplateArgumentLoc> ArgsIn =
+        Splice->getTemplateArgs()->arguments();
+
+    TemplateArgumentListInfo TransArgs;
+    TransArgs.setLAngleLoc(Splice->getLAngleLoc());
+    TransArgs.setRAngleLoc(Splice->getRAngleLoc());
+    if (getDerived().TransformTemplateArguments(ArgsIn.begin(), ArgsIn.end(),
+                                                TransArgs))
+      return SpliceError();
+
+    NewTArgs =
+        const_cast<ASTTemplateArgumentListInfo *>(
+            ASTTemplateArgumentListInfo::Create(getSema().Context,
+                                                TransArgs));
+  }
+  return getSema().BuildSpliceSpecifier(Splice->getLSpliceLoc(),
+                                        OpResult.get(),
+                                        Splice->getRSpliceLoc(), NewTArgs);
+}
+
+template <typename Derived>
+ExprResult
+TreeTransform<Derived>::TransformCXXSpliceExpr(CXXSpliceExpr *E) {
+  SpliceResult SR = TransformSpliceSpecifier(E->getSplice());
+  if (SR.isInvalid())
+    return ExprError();
+
+  return getSema().BuildReflectionSpliceExpr(E->getTemplateKeywordLoc(),
+                                             SR.get(),
+                                             E->allowMemberReference());
+}
+
+template <typename Derived>
+ExprResult
+TreeTransform<Derived>::TransformCXXDependentMemberSpliceExpr(
+                                              CXXDependentMemberSpliceExpr *E) {
+  ExprResult Base = getDerived().TransformExpr(E->getBase());
+  ExprResult RHS = getDerived().TransformExpr(E->getRHS());
+  if (Base.isInvalid() || RHS.isInvalid())
+    return ExprError();
+
+  return getSema().BuildMemberReferenceExpr(
+          nullptr, Base.get(), E->getOpLoc(),
+          E->isArrow()? tok::arrow : tok::period,
+          cast<CXXSpliceExpr>(RHS.get()));
+}
+
+template <typename Derived>
+ExprResult
+TreeTransform<Derived>::TransformStackLocationExpr(StackLocationExpr *E) {
+  return E;
+}
+
+template <typename Derived>
+ExprResult
+TreeTransform<Derived>::TransformExtractLValueExpr(ExtractLValueExpr *E) {
+  return E;
+}
+
+template <typename Derived>
+ExprResult
+TreeTransform<Derived>::TransformExplDependentCallExpr(
+                                                     ExplDependentCallExpr *E) {
+  ExprResult Call = getDerived().TransformExpr(E->getSubExpr());
+  if (Call.isInvalid())
+    return ExprError();
+
+  unsigned OldDepth = E->getTemplateDepth();
+  unsigned NewDepth = getDerived().TransformTemplateDepth(OldDepth);
+
+  return getSema().BuildExplDependentCallExpr(Call.get(), NewDepth);
+}
+
 
 // Objective-C Statements.
 
@@ -13347,7 +13615,9 @@ ExprResult TreeTransform<Derived>::TransformOpenACCAsteriskSizeExpr(
 template<typename Derived>
 ExprResult
 TreeTransform<Derived>::TransformConstantExpr(ConstantExpr *E) {
-  return TransformExpr(E->getSubExpr());
+  if (auto *SE = E->getSubExpr())
+    return TransformExpr(SE);
+  return E;
 }
 
 template <typename Derived>
@@ -13391,13 +13661,6 @@ StmtResult TreeTransform<Derived>::TransformUnresolvedSYCLKernelCallStmt(
     return StmtError();
 
   return SR;
-}
-
-template <typename Derived>
-ExprResult TreeTransform<Derived>::TransformCXXReflectExpr(CXXReflectExpr *E) {
-  // TODO(reflection): Implement its transform
-  assert(false && "not implemented yet");
-  return ExprError();
 }
 
 template<typename Derived>
@@ -14002,6 +14265,7 @@ TreeTransform<Derived>::TransformCallExpr(CallExpr *E) {
 template<typename Derived>
 ExprResult
 TreeTransform<Derived>::TransformMemberExpr(MemberExpr *E) {
+
   ExprResult Base = getDerived().TransformExpr(E->getBase());
   if (Base.isInvalid())
     return ExprError();
@@ -15818,6 +16082,9 @@ ExprResult TreeTransform<Derived>::TransformDependentScopeDeclRefExpr(
   if (!NameInfo.getName())
     return ExprError();
 
+  bool ScopeHadLeadingSplice = E->getQualifier().hasLeadingSplice();
+
+  ExprResult Result;
   if (!E->hasExplicitTemplateArgs()) {
     if (!getDerived().AlwaysRebuild() && QualifierLoc == E->getQualifierLoc() &&
         // Note: it is sufficient to compare the Name component of NameInfo:
@@ -15825,19 +16092,30 @@ ExprResult TreeTransform<Derived>::TransformDependentScopeDeclRefExpr(
         NameInfo.getName() == E->getDeclName())
       return E;
 
-    return getDerived().RebuildDependentScopeDeclRefExpr(
+    Result = getDerived().RebuildDependentScopeDeclRefExpr(
         QualifierLoc, TemplateKWLoc, NameInfo, /*TemplateArgs=*/nullptr,
         IsAddressOfOperand, RecoveryTSI);
+  } else {
+    TemplateArgumentListInfo TransArgs(E->getLAngleLoc(), E->getRAngleLoc());
+    if (getDerived().TransformTemplateArguments(
+            E->getTemplateArgs(), E->getNumTemplateArgs(), TransArgs))
+      return ExprError();
+
+    Result = getDerived().RebuildDependentScopeDeclRefExpr(
+        QualifierLoc, TemplateKWLoc, NameInfo, &TransArgs, IsAddressOfOperand,
+        RecoveryTSI);
   }
 
-  TemplateArgumentListInfo TransArgs(E->getLAngleLoc(), E->getRAngleLoc());
-  if (getDerived().TransformTemplateArguments(
-          E->getTemplateArgs(), E->getNumTemplateArgs(), TransArgs))
+  if (auto *MRE = dyn_cast_or_null<MemberExpr>(Result.get());
+      ScopeHadLeadingSplice && MRE && MRE->isImplicitAccess()) {
+    SemaRef.Diag(E->getExprLoc(),
+                 diag::err_dependent_splice_implicit_member_reference)
+        << E->getSourceRange();
+    SemaRef.Diag(E->getExprLoc(),
+                 diag::note_dependent_splice_explicit_this_may_fix);
     return ExprError();
-
-  return getDerived().RebuildDependentScopeDeclRefExpr(
-      QualifierLoc, TemplateKWLoc, NameInfo, &TransArgs, IsAddressOfOperand,
-      RecoveryTSI);
+  }
+  return Result;
 }
 
 template<typename Derived>
@@ -16673,8 +16951,9 @@ TreeTransform<Derived>::TransformPackExpansionExpr(PackExpansionExpr *E) {
   if (!getDerived().AlwaysRebuild() && Pattern.get() == E->getPattern())
     return E;
 
-  return getDerived().RebuildPackExpansion(Pattern.get(), E->getEllipsisLoc(),
+  auto Result = getDerived().RebuildPackExpansion(Pattern.get(), E->getEllipsisLoc(),
                                            E->getNumExpansions());
+  return Result;
 }
 
 template <typename Derived>
@@ -18033,6 +18312,14 @@ QualType TreeTransform<Derived>::RebuildTypeOfType(QualType Underlying,
 template <typename Derived>
 QualType TreeTransform<Derived>::RebuildDecltypeType(Expr *E, SourceLocation) {
   return SemaRef.BuildDecltypeType(E);
+}
+
+template <typename Derived>
+QualType TreeTransform<Derived>::RebuildReflectionSpliceTypeLoc(
+    TypeLocBuilder &TLB, SourceLocation TypenameKWLoc,
+    SpliceSpecifier *Splice) {
+  return SemaRef.BuildReflectionSpliceTypeLoc(TLB, TypenameKWLoc, Splice,
+                                              /*Complain=*/true);
 }
 
 template <typename Derived>

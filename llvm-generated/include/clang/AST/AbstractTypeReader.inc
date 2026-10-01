@@ -104,6 +104,8 @@ public:
       return readLValueReferenceType();
     case Type::RValueReference:
       return readRValueReferenceType();
+    case Type::ReflectionSplice:
+      return readReflectionSpliceType();
     case Type::SubstBuiltinTemplatePack:
       return readSubstBuiltinTemplatePackType();
     case Type::SubstTemplateTypeParmPack:
@@ -667,6 +669,17 @@ public:
     QualType pointeeTypeAsWritten = R.find("pointeeTypeAsWritten").readQualType();
     
     return ctx.getRValueReferenceType(pointeeTypeAsWritten);
+  
+  }
+
+  QualType readReflectionSpliceType() {
+    auto &ctx = R.getASTContext();
+    SourceLocation typenameLoc = R.find("typenameLoc").readSourceLocation();
+    SpliceSpecifier* spliceSpecifier = R.find("spliceSpecifier").readSpliceSpecifierRef();
+    QualType underlyingType = R.find("underlyingType").readQualType();
+    
+    return ctx.getReflectionSpliceType(typenameLoc, spliceSpecifier,
+                                       underlyingType);
   
   }
 

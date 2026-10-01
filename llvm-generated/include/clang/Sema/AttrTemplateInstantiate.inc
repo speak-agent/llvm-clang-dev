@@ -79,7 +79,8 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
         tempInstArgs = new (C, 16) Expr *[numTempInstArgs];
         std::copy(InstArgs.begin(), InstArgs.end(), tempInstArgs);
       }
-      return new (C) AcquireCapabilityAttr(C, *A, tempInstArgs, numTempInstArgs);
+      AcquireCapabilityAttr *Result = new (C) AcquireCapabilityAttr(C, *A, tempInstArgs, numTempInstArgs);
+      return Result;
     }
     case attr::AcquireHandle: {
       const auto *A = cast<AcquireHandleAttr>(At);
@@ -99,7 +100,8 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
         tempInstArgs = new (C, 16) Expr *[numTempInstArgs];
         std::copy(InstArgs.begin(), InstArgs.end(), tempInstArgs);
       }
-      return new (C) AcquiredAfterAttr(C, *A, tempInstArgs, numTempInstArgs);
+      AcquiredAfterAttr *Result = new (C) AcquiredAfterAttr(C, *A, tempInstArgs, numTempInstArgs);
+      return Result;
     }
     case attr::AcquiredBefore: {
       const auto *A = cast<AcquiredBeforeAttr>(At);
@@ -115,7 +117,8 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
         tempInstArgs = new (C, 16) Expr *[numTempInstArgs];
         std::copy(InstArgs.begin(), InstArgs.end(), tempInstArgs);
       }
-      return new (C) AcquiredBeforeAttr(C, *A, tempInstArgs, numTempInstArgs);
+      AcquiredBeforeAttr *Result = new (C) AcquiredBeforeAttr(C, *A, tempInstArgs, numTempInstArgs);
+      return Result;
     }
     case attr::AddressSpace: {
       const auto *A = cast<AddressSpaceAttr>(At);
@@ -147,7 +150,8 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
     }
     case attr::AllocSize: {
       const auto *A = cast<AllocSizeAttr>(At);
-      return new (C) AllocSizeAttr(C, *A, A->getElemSizeParam(), A->getNumElemsParam());
+      AllocSizeAttr *Result = new (C) AllocSizeAttr(C, *A, A->getElemSizeParam(), A->getNumElemsParam());
+      return Result;
     }
     case attr::Allocating: {
       const auto *A = cast<AllocatingAttr>(At);
@@ -259,7 +263,8 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
         tempInstArgs = new (C, 16) Expr *[numTempInstArgs];
         std::copy(InstArgs.begin(), InstArgs.end(), tempInstArgs);
       }
-      return new (C) AssertCapabilityAttr(C, *A, tempInstArgs, numTempInstArgs);
+      AssertCapabilityAttr *Result = new (C) AssertCapabilityAttr(C, *A, tempInstArgs, numTempInstArgs);
+      return Result;
     }
     case attr::AssumeAligned: {
       const auto *A = cast<AssumeAlignedAttr>(At);
@@ -417,6 +422,27 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
       const auto *A = cast<CXX11NoReturnAttr>(At);
       return A->clone(C);
     }
+    case attr::CXX26Annotation: {
+      const auto *A = cast<CXX26AnnotationAttr>(At);
+      Expr * tempInstArg;
+      {
+        EnterExpressionEvaluationContext Unevaluated(S, Sema::ExpressionEvaluationContext::Unevaluated);
+        ExprResult Result = S.SubstExpr(A->getArg(), TemplateArgs);
+        if (Result.isInvalid())
+          return nullptr;
+        tempInstArg = Result.get();
+      }
+      CXX26AnnotationAttr *Result = new (C) CXX26AnnotationAttr(C, *A, tempInstArg);
+
+    Expr::EvalResult V;
+    if (!Result->getArg()->isValueDependent() &&
+        !Result->getArg()->EvaluateAsRValue(V, C, true))
+      llvm_unreachable("failed to evaluate annotation expression");
+
+    Result->setValue(V.Val);
+    Result->setEqLoc(A->getEqLoc());
+        return Result;
+    }
     case attr::CXXAssume: {
       const auto *A = cast<CXXAssumeAttr>(At);
       return A->clone(C);
@@ -499,7 +525,8 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
           return nullptr;
         tempInstPriority = Result.get();
       }
-      return new (C) ConstructorAttr(C, *A, tempInstPriority);
+      ConstructorAttr *Result = new (C) ConstructorAttr(C, *A, tempInstPriority);
+      return Result;
     }
     case attr::Consumable: {
       const auto *A = cast<ConsumableAttr>(At);
@@ -587,7 +614,8 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
           return nullptr;
         tempInstPriority = Result.get();
       }
-      return new (C) DestructorAttr(C, *A, tempInstPriority);
+      DestructorAttr *Result = new (C) DestructorAttr(C, *A, tempInstPriority);
+      return Result;
     }
     case attr::DeviceKernel: {
       const auto *A = cast<DeviceKernelAttr>(At);
@@ -607,7 +635,8 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
           return nullptr;
         tempInstCond = Result.get();
       }
-      return new (C) DiagnoseIfAttr(C, *A, tempInstCond, A->getMessage(), A->getDefaultSeverity(), A->getWarningGroup(), A->getArgDependent(), A->getParent());
+      DiagnoseIfAttr *Result = new (C) DiagnoseIfAttr(C, *A, tempInstCond, A->getMessage(), A->getDefaultSeverity(), A->getWarningGroup(), A->getArgDependent(), A->getParent());
+      return Result;
     }
     case attr::DisableSanitizerInstrumentation: {
       const auto *A = cast<DisableSanitizerInstrumentationAttr>(At);
@@ -631,7 +660,8 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
           return nullptr;
         tempInstCond = Result.get();
       }
-      return new (C) EnableIfAttr(C, *A, tempInstCond, A->getMessage());
+      EnableIfAttr *Result = new (C) EnableIfAttr(C, *A, tempInstCond, A->getMessage());
+      return Result;
     }
     case attr::EnforceTCB: {
       const auto *A = cast<EnforceTCBAttr>(At);
@@ -723,7 +753,8 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
         tempInstArgs = new (C, 16) Expr *[numTempInstArgs];
         std::copy(InstArgs.begin(), InstArgs.end(), tempInstArgs);
       }
-      return new (C) GuardedByAttr(C, *A, tempInstArgs, numTempInstArgs);
+      GuardedByAttr *Result = new (C) GuardedByAttr(C, *A, tempInstArgs, numTempInstArgs);
+      return Result;
     }
     case attr::GuardedVar: {
       const auto *A = cast<GuardedVarAttr>(At);
@@ -881,6 +912,11 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
       const auto *A = cast<InitSegAttr>(At);
       return A->clone(C);
     }
+    case attr::InstantiationDependent: {
+      const auto *A = cast<InstantiationDependentAttr>(At);
+      InstantiationDependentAttr *Result = new (C) InstantiationDependentAttr(C, *A);
+      return Result;
+    }
     case attr::IntelOclBicc: {
       const auto *A = cast<IntelOclBiccAttr>(At);
       return A->clone(C);
@@ -927,7 +963,8 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
           return nullptr;
         tempInstArg = Result.get();
       }
-      return new (C) LockReturnedAttr(C, *A, tempInstArg);
+      LockReturnedAttr *Result = new (C) LockReturnedAttr(C, *A, tempInstArg);
+      return Result;
     }
     case attr::LocksExcluded: {
       const auto *A = cast<LocksExcludedAttr>(At);
@@ -943,7 +980,8 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
         tempInstArgs = new (C, 16) Expr *[numTempInstArgs];
         std::copy(InstArgs.begin(), InstArgs.end(), tempInstArgs);
       }
-      return new (C) LocksExcludedAttr(C, *A, tempInstArgs, numTempInstArgs);
+      LocksExcludedAttr *Result = new (C) LocksExcludedAttr(C, *A, tempInstArgs, numTempInstArgs);
+      return Result;
     }
     case attr::LoopHint: {
       const auto *A = cast<LoopHintAttr>(At);
@@ -1159,7 +1197,8 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
     }
     case attr::NoSpecializations: {
       const auto *A = cast<NoSpecializationsAttr>(At);
-      return new (C) NoSpecializationsAttr(C, *A, A->getMessage());
+      NoSpecializationsAttr *Result = new (C) NoSpecializationsAttr(C, *A, A->getMessage());
+      return Result;
     }
     case attr::NoSpeculativeLoadHardening: {
       const auto *A = cast<NoSpeculativeLoadHardeningAttr>(At);
@@ -1531,7 +1570,8 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
         S.SubstType(A->getTypedefTypeLoc(), TemplateArgs, A->getLoc(), A->getAttrName());
       if (!tempInstTypedefType)
         return nullptr;
-      return new (C) PreferredNameAttr(C, *A, tempInstTypedefType);
+      PreferredNameAttr *Result = new (C) PreferredNameAttr(C, *A, tempInstTypedefType);
+      return Result;
     }
     case attr::PreferredType: {
       const auto *A = cast<PreferredTypeAttr>(At);
@@ -1563,7 +1603,8 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
         tempInstArgs = new (C, 16) Expr *[numTempInstArgs];
         std::copy(InstArgs.begin(), InstArgs.end(), tempInstArgs);
       }
-      return new (C) PtGuardedByAttr(C, *A, tempInstArgs, numTempInstArgs);
+      PtGuardedByAttr *Result = new (C) PtGuardedByAttr(C, *A, tempInstArgs, numTempInstArgs);
+      return Result;
     }
     case attr::PtGuardedVar: {
       const auto *A = cast<PtGuardedVarAttr>(At);
@@ -1627,7 +1668,8 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
         tempInstArgs = new (C, 16) Expr *[numTempInstArgs];
         std::copy(InstArgs.begin(), InstArgs.end(), tempInstArgs);
       }
-      return new (C) ReleaseCapabilityAttr(C, *A, tempInstArgs, numTempInstArgs);
+      ReleaseCapabilityAttr *Result = new (C) ReleaseCapabilityAttr(C, *A, tempInstArgs, numTempInstArgs);
+      return Result;
     }
     case attr::ReleaseHandle: {
       const auto *A = cast<ReleaseHandleAttr>(At);
@@ -1651,7 +1693,8 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
         tempInstArgs = new (C, 16) Expr *[numTempInstArgs];
         std::copy(InstArgs.begin(), InstArgs.end(), tempInstArgs);
       }
-      return new (C) RequiresCapabilityAttr(C, *A, tempInstArgs, numTempInstArgs);
+      RequiresCapabilityAttr *Result = new (C) RequiresCapabilityAttr(C, *A, tempInstArgs, numTempInstArgs);
+      return Result;
     }
     case attr::Restrict: {
       const auto *A = cast<RestrictAttr>(At);
@@ -1695,7 +1738,8 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
         S.SubstType(A->getKernelNameLoc(), TemplateArgs, A->getLoc(), A->getAttrName());
       if (!tempInstKernelName)
         return nullptr;
-      return new (C) SYCLKernelEntryPointAttr(C, *A, tempInstKernelName, A->getInvalid());
+      SYCLKernelEntryPointAttr *Result = new (C) SYCLKernelEntryPointAttr(C, *A, tempInstKernelName, A->getInvalid());
+      return Result;
     }
     case attr::SYCLSpecialClass: {
       const auto *A = cast<SYCLSpecialClassAttr>(At);
@@ -1911,7 +1955,8 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
         tempInstArgs = new (C, 16) Expr *[numTempInstArgs];
         std::copy(InstArgs.begin(), InstArgs.end(), tempInstArgs);
       }
-      return new (C) TryAcquireCapabilityAttr(C, *A, tempInstSuccessValue, tempInstArgs, numTempInstArgs);
+      TryAcquireCapabilityAttr *Result = new (C) TryAcquireCapabilityAttr(C, *A, tempInstSuccessValue, tempInstArgs, numTempInstArgs);
+      return Result;
     }
     case attr::TypeNonNull: {
       const auto *A = cast<TypeNonNullAttr>(At);
@@ -2330,6 +2375,27 @@ Attr *instantiateTemplateAttributeForDecl(const Attr *At,
     case attr::CXX11NoReturn: {
       return nullptr;
     }
+    case attr::CXX26Annotation: {
+      const auto *A = cast<CXX26AnnotationAttr>(At);
+      Expr * tempInstArg;
+      {
+        EnterExpressionEvaluationContext Unevaluated(S, Sema::ExpressionEvaluationContext::Unevaluated);
+        ExprResult Result = S.SubstExpr(A->getArg(), TemplateArgs);
+        if (Result.isInvalid())
+          return nullptr;
+        tempInstArg = Result.get();
+      }
+      CXX26AnnotationAttr *Result = new (C) CXX26AnnotationAttr(C, *A, tempInstArg);
+
+    Expr::EvalResult V;
+    if (!Result->getArg()->isValueDependent() &&
+        !Result->getArg()->EvaluateAsRValue(V, C, true))
+      llvm_unreachable("failed to evaluate annotation expression");
+
+    Result->setValue(V.Val);
+    Result->setEqLoc(A->getEqLoc());
+        return Result;
+    }
     case attr::CXXAssume: {
       return nullptr;
     }
@@ -2647,6 +2713,9 @@ Attr *instantiateTemplateAttributeForDecl(const Attr *At,
     case attr::InitSeg: {
       return nullptr;
     }
+    case attr::InstantiationDependent: {
+      return nullptr;
+    }
     case attr::IntelOclBicc: {
       return nullptr;
     }
@@ -2841,7 +2910,8 @@ Attr *instantiateTemplateAttributeForDecl(const Attr *At,
     }
     case attr::NoSpecializations: {
       const auto *A = cast<NoSpecializationsAttr>(At);
-      return new (C) NoSpecializationsAttr(C, *A, A->getMessage());
+      NoSpecializationsAttr *Result = new (C) NoSpecializationsAttr(C, *A, A->getMessage());
+      return Result;
     }
     case attr::NoSpeculativeLoadHardening: {
       return nullptr;
@@ -3122,7 +3192,8 @@ Attr *instantiateTemplateAttributeForDecl(const Attr *At,
         S.SubstType(A->getTypedefTypeLoc(), TemplateArgs, A->getLoc(), A->getAttrName());
       if (!tempInstTypedefType)
         return nullptr;
-      return new (C) PreferredNameAttr(C, *A, tempInstTypedefType);
+      PreferredNameAttr *Result = new (C) PreferredNameAttr(C, *A, tempInstTypedefType);
+      return Result;
     }
     case attr::PreferredType: {
       return nullptr;

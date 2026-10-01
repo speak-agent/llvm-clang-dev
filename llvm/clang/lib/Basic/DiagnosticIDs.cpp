@@ -179,6 +179,7 @@ VALIDATE_DIAG_SIZE(PARSE)
 VALIDATE_DIAG_SIZE(AST)
 VALIDATE_DIAG_SIZE(COMMENT)
 VALIDATE_DIAG_SIZE(CROSSTU)
+VALIDATE_DIAG_SIZE(METAFN)
 VALIDATE_DIAG_SIZE(SEMA)
 VALIDATE_DIAG_SIZE(ANALYSIS)
 VALIDATE_DIAG_SIZE(REFACTORING)
@@ -213,6 +214,7 @@ const StaticDiagInfoRec StaticDiagInfo[] = {
 #include "clang/Basic/DiagnosticASTKinds.inc"
 #include "clang/Basic/DiagnosticCommentKinds.inc"
 #include "clang/Basic/DiagnosticCrossTUKinds.inc"
+#include "clang/Basic/DiagnosticMetafnKinds.inc"
 #include "clang/Basic/DiagnosticSemaKinds.inc"
 #include "clang/Basic/DiagnosticAnalysisKinds.inc"
 #include "clang/Basic/DiagnosticRefactoringKinds.inc"
@@ -257,7 +259,8 @@ CATEGORY(PARSE, LEX)
 CATEGORY(AST, PARSE)
 CATEGORY(COMMENT, AST)
 CATEGORY(CROSSTU, COMMENT)
-CATEGORY(SEMA, CROSSTU)
+CATEGORY(METAFN, CROSSTU)
+CATEGORY(SEMA, METAFN)
 CATEGORY(ANALYSIS, SEMA)
 CATEGORY(REFACTORING, ANALYSIS)
 CATEGORY(INSTALLAPI, REFACTORING)
@@ -276,6 +279,7 @@ CATEGORY(TRAP, INSTALLAPI)
   // the diagID space.
   if (Found->DiagID != DiagID)
     return nullptr;
+
   return Found;
 }
 

@@ -4231,6 +4231,30 @@ bool isParamExpr(size_t N) const override {
 static const ParsedAttrInfoCXX11NoReturn Instance;
 };
 const ParsedAttrInfoCXX11NoReturn ParsedAttrInfoCXX11NoReturn::Instance;
+static constexpr const char *CXX26AnnotationArgNames[] = {
+"Arg",};
+struct ParsedAttrInfoCXX26Annotation final : public ParsedAttrInfo {
+  constexpr ParsedAttrInfoCXX26Annotation() : ParsedAttrInfo(
+    /*AttrKind=*/ParsedAttr::AT_CXX26Annotation,
+    /*NumArgs=*/1,
+    /*OptArgs=*/0,
+    /*NumArgMembers=*/1,
+    /*HasCustomParsing=*/1,
+    /*AcceptsExprPack=*/0,
+    /*IsTargetSpecific=*/0,
+    /*IsType=*/0,
+    /*IsStmt=*/0,
+    /*IsKnownToGCC=*/0,
+    /*IsSupportedByPragmaAttribute=*/0,
+    /*Spellings=*/{},
+    /*ArgNames=*/CXX26AnnotationArgNames) {}
+bool isParamExpr(size_t N) const override {
+  return (N == 0) || false;
+}
+
+static const ParsedAttrInfoCXX26Annotation Instance;
+};
+const ParsedAttrInfoCXX26Annotation ParsedAttrInfoCXX26Annotation::Instance;
 static constexpr ParsedAttrInfo::Spelling CXXAssumeSpellings[] = {
   {AttributeCommonInfo::AS_CXX11, "assume"},
   {AttributeCommonInfo::AS_GNU, "assume"},
@@ -9034,6 +9058,50 @@ bool isParamExpr(size_t N) const override {
 static const ParsedAttrInfoInitPriority Instance;
 };
 const ParsedAttrInfoInitPriority ParsedAttrInfoInitPriority::Instance;
+static constexpr ParsedAttrInfo::Spelling InstantiationDependentSpellings[] = {
+  {AttributeCommonInfo::AS_CXX11, "clang::instantiation_dependent"},
+};
+struct ParsedAttrInfoInstantiationDependent final : public ParsedAttrInfo {
+  constexpr ParsedAttrInfoInstantiationDependent() : ParsedAttrInfo(
+    /*AttrKind=*/ParsedAttr::AT_InstantiationDependent,
+    /*NumArgs=*/0,
+    /*OptArgs=*/0,
+    /*NumArgMembers=*/0,
+    /*HasCustomParsing=*/0,
+    /*AcceptsExprPack=*/0,
+    /*IsTargetSpecific=*/0,
+    /*IsType=*/0,
+    /*IsStmt=*/0,
+    /*IsKnownToGCC=*/0,
+    /*IsSupportedByPragmaAttribute=*/1,
+    /*Spellings=*/InstantiationDependentSpellings,
+    /*ArgNames=*/{}) {}
+bool diagAppertainsToDecl(Sema &S, const ParsedAttr &Attr, const Decl *D) const override {
+  if (!isa<FunctionDecl>(D)) {
+    S.Diag(Attr.getLoc(), diag::warn_attribute_wrong_decl_type_str)
+      << Attr << Attr.isRegularKeywordAttribute() << "functions";
+    return false;
+  }
+  return true;
+}
+
+bool diagAppertainsToStmt(Sema &S, const ParsedAttr &AL, const Stmt *St) const override {
+  S.Diag(AL.getLoc(), diag::err_decl_attribute_invalid_on_stmt)
+    << AL << AL.isRegularKeywordAttribute() << St->getBeginLoc();
+  return false;
+}
+
+void getPragmaAttributeMatchRules(llvm::SmallVectorImpl<std::pair<attr::SubjectMatchRule, bool>> &MatchRules, const LangOptions &LangOpts) const override {
+  MatchRules.push_back(std::make_pair(attr::SubjectMatchRule_function, /*IsSupported=*/true));
+}
+
+bool isParamExpr(size_t N) const override {
+  return false;
+}
+
+static const ParsedAttrInfoInstantiationDependent Instance;
+};
+const ParsedAttrInfoInstantiationDependent ParsedAttrInfoInstantiationDependent::Instance;
 static constexpr ParsedAttrInfo::Spelling IntelOclBiccSpellings[] = {
   {AttributeCommonInfo::AS_GNU, "intel_ocl_bicc"},
   {AttributeCommonInfo::AS_CXX11, "clang::intel_ocl_bicc"},
@@ -21092,6 +21160,7 @@ static const ParsedAttrInfo *AttrInfoMap[] = {
 &ParsedAttrInfoCUDANoCluster::Instance,
 &ParsedAttrInfoCUDAShared::Instance,
 &ParsedAttrInfoCXX11NoReturn::Instance,
+&ParsedAttrInfoCXX26Annotation::Instance,
 &ParsedAttrInfoCXXAssume::Instance,
 &ParsedAttrInfoCallableWhen::Instance,
 &ParsedAttrInfoCallback::Instance,
@@ -21193,6 +21262,7 @@ static const ParsedAttrInfo *AttrInfoMap[] = {
 &ParsedAttrInfoIBOutletCollection::Instance,
 &ParsedAttrInfoIFunc::Instance,
 &ParsedAttrInfoInitPriority::Instance,
+&ParsedAttrInfoInstantiationDependent::Instance,
 &ParsedAttrInfoIntelOclBicc::Instance,
 &ParsedAttrInfoInternalLinkage::Instance,
 &ParsedAttrInfoLTOVisibilityPublic::Instance,

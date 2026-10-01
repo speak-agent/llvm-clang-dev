@@ -8043,6 +8043,7 @@ void CodeGenModule::EmitTopLevelDecl(Decl *D) {
 
   case Decl::StaticAssert:
   case Decl::ExplicitInstantiation:
+  case Decl::ConstevalBlock:
     // Nothing to do.
     break;
 

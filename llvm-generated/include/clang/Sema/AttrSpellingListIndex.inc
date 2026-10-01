@@ -678,6 +678,10 @@
       return 2;
     break;
   }
+  case AT_CXX26Annotation: {
+    return 0;
+    break;
+  }
   case AT_CXXAssume: {
     if (getSyntax() == AttributeCommonInfo::AS_CXX11 && ComputedScope == AttributeCommonInfo::Scope::NONE)
       return 0;
@@ -1444,6 +1448,10 @@
       return 0;
     if (getSyntax() == AttributeCommonInfo::AS_CXX11 && ComputedScope == AttributeCommonInfo::Scope::GNU)
       return 1;
+    break;
+  }
+  case AT_InstantiationDependent: {
+    return 0;
     break;
   }
   case AT_IntelOclBicc: {

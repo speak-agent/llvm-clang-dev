@@ -126,6 +126,15 @@ const char *AArch64SVEPcsAttr::getSpelling() const {
   }
 }
 
+bool AArch64SVEPcsAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // AArch64VectorPcsAttr implementation
 
@@ -238,6 +247,15 @@ const char *AArch64VectorPcsAttr::getSpelling() const {
   }
 }
 
+bool AArch64VectorPcsAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // AMDGPUFlatWorkGroupSizeAttr implementation
 
@@ -373,6 +391,17 @@ const char *AMDGPUFlatWorkGroupSizeAttr::getSpelling() const {
   }
 }
 
+bool AMDGPUFlatWorkGroupSizeAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  args.push_back(getMin());
+  args.push_back(getMax());
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // AMDGPUMaxNumWorkGroupsAttr implementation
 
@@ -549,6 +578,18 @@ const char *AMDGPUMaxNumWorkGroupsAttr::getSpelling() const {
   }
 }
 
+bool AMDGPUMaxNumWorkGroupsAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  args.push_back(getMaxNumWorkGroupsX());
+  args.push_back(getMaxNumWorkGroupsY());
+  args.push_back(getMaxNumWorkGroupsZ());
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // AMDGPUNumSGPRAttr implementation
 
@@ -933,6 +974,17 @@ const char *AMDGPUWavesPerEUAttr::getSpelling() const {
   }
 }
 
+bool AMDGPUWavesPerEUAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  args.push_back(getMin());
+  args.push_back(getMax());
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ARMInterruptAttr implementation
 
@@ -1098,6 +1150,22 @@ const char *ARMInterruptAttr::getSpelling() const {
   }
 }
 
+bool ARMInterruptAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!StringRef(ConvertInterruptTypeToStr(getInterrupt())).empty()) {    args.push_back(StringLiteral::Create(C,
+                                         StringRef(ConvertInterruptTypeToStr(getInterrupt())),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, StringRef(ConvertInterruptTypeToStr(getInterrupt())).size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ARMInterruptSaveFPAttr implementation
 
@@ -1385,6 +1453,15 @@ const char *AVRInterruptAttr::getSpelling() const {
   }
 }
 
+bool AVRInterruptAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // AVRSignalAttr implementation
 
@@ -1497,6 +1574,15 @@ const char *AVRSignalAttr::getSpelling() const {
   }
 }
 
+bool AVRSignalAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // AbiTagAttr implementation
 
@@ -1637,6 +1723,23 @@ const char *AbiTagAttr::getSpelling() const {
   }
 }
 
+bool AbiTagAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+    for (auto it : tags()) {      args.push_back(StringLiteral::Create(
+        C,
+        it,
+        StringLiteralKind::Unevaluated,
+        false,
+        C.getConstantArrayType(C.CharTy, llvm::APInt(32, it.size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+        srcLocation));
+    }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // AcquireCapabilityAttr implementation
 
@@ -2053,6 +2156,22 @@ const char *AcquireHandleAttr::getSpelling() const {
   }
 }
 
+bool AcquireHandleAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getHandleType().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getHandleType(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getHandleType().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // AcquiredAfterAttr implementation
 
@@ -2571,6 +2690,22 @@ const char *AliasAttr::getSpelling() const {
   }
 }
 
+bool AliasAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getAliasee().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getAliasee(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getAliasee().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // AlignMac68kAttr implementation
 
@@ -3526,6 +3661,15 @@ const char *AlwaysDestroyAttr::getSpelling() const {
   }
 }
 
+bool AlwaysDestroyAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // AlwaysInlineAttr implementation
 
@@ -3730,6 +3874,15 @@ const char *AlwaysInlineAttr::getSpelling() const {
   }
 }
 
+bool AlwaysInlineAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // AnalyzerNoReturnAttr implementation
 
@@ -4357,6 +4510,15 @@ const char *AnyX86InterruptAttr::getSpelling() const {
   }
 }
 
+bool AnyX86InterruptAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // AnyX86NoCallerSavedRegistersAttr implementation
 
@@ -4469,6 +4631,15 @@ const char *AnyX86NoCallerSavedRegistersAttr::getSpelling() const {
   }
 }
 
+bool AnyX86NoCallerSavedRegistersAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // AnyX86NoCfCheckAttr implementation
 
@@ -4581,6 +4752,15 @@ const char *AnyX86NoCfCheckAttr::getSpelling() const {
   }
 }
 
+bool AnyX86NoCfCheckAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ArcWeakrefUnavailableAttr implementation
 
@@ -4693,6 +4873,15 @@ const char *ArcWeakrefUnavailableAttr::getSpelling() const {
   }
 }
 
+bool ArcWeakrefUnavailableAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ArgumentWithTypeTagAttr implementation
 
@@ -6204,6 +6393,15 @@ const char *ArtificialAttr::getSpelling() const {
   }
 }
 
+bool ArtificialAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // AsmLabelAttr implementation
 
@@ -6789,6 +6987,17 @@ const char *AssumeAlignedAttr::getSpelling() const {
   }
 }
 
+bool AssumeAlignedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  args.push_back(getAlignment());
+  args.push_back(getOffset());
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // AtomicAttr implementation
 
@@ -7366,6 +7575,15 @@ const char *AvailableOnlyInDefaultEvalMethodAttr::getSpelling() const {
   }
 }
 
+bool AvailableOnlyInDefaultEvalMethodAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // BPFFastCallAttr implementation
 
@@ -7478,6 +7696,15 @@ const char *BPFFastCallAttr::getSpelling() const {
   }
 }
 
+bool BPFFastCallAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // BPFPreserveAccessIndexAttr implementation
 
@@ -7590,6 +7817,15 @@ const char *BPFPreserveAccessIndexAttr::getSpelling() const {
   }
 }
 
+bool BPFPreserveAccessIndexAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // BPFPreserveStaticOffsetAttr implementation
 
@@ -7702,6 +7938,15 @@ const char *BPFPreserveStaticOffsetAttr::getSpelling() const {
   }
 }
 
+bool BPFPreserveStaticOffsetAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // BTFDeclTagAttr implementation
 
@@ -7835,6 +8080,22 @@ const char *BTFDeclTagAttr::getSpelling() const {
   }
 }
 
+bool BTFDeclTagAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getBTFDeclTag().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getBTFDeclTag(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getBTFDeclTag().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // BTFTypeTagAttr implementation
 
@@ -8228,6 +8489,22 @@ const char *BlocksAttr::getSpelling() const {
   }
 }
 
+bool BlocksAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!StringRef(ConvertBlockTypeToStr(getType())).empty()) {    args.push_back(StringLiteral::Create(C,
+                                         StringRef(ConvertBlockTypeToStr(getType())),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, StringRef(ConvertBlockTypeToStr(getType())).size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // BuiltinAttr implementation
 
@@ -8634,6 +8911,15 @@ const char *CDeclAttr::getSpelling() const {
   }
 }
 
+bool CDeclAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CFAuditedTransferAttr implementation
 
@@ -8746,6 +9032,15 @@ const char *CFAuditedTransferAttr::getSpelling() const {
   }
 }
 
+bool CFAuditedTransferAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CFConsumedAttr implementation
 
@@ -8858,6 +9153,15 @@ const char *CFConsumedAttr::getSpelling() const {
   }
 }
 
+bool CFConsumedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CFGuardAttr implementation
 
@@ -9133,6 +9437,15 @@ const char *CFICanonicalJumpTableAttr::getSpelling() const {
   }
 }
 
+bool CFICanonicalJumpTableAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CFISaltAttr implementation
 
@@ -9490,6 +9803,15 @@ const char *CFReturnsNotRetainedAttr::getSpelling() const {
   }
 }
 
+bool CFReturnsNotRetainedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CFReturnsRetainedAttr implementation
 
@@ -9602,6 +9924,15 @@ const char *CFReturnsRetainedAttr::getSpelling() const {
   }
 }
 
+bool CFReturnsRetainedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CFUnknownTransferAttr implementation
 
@@ -9714,6 +10045,15 @@ const char *CFUnknownTransferAttr::getSpelling() const {
   }
 }
 
+bool CFUnknownTransferAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CPUDispatchAttr implementation
 
@@ -11415,6 +11755,78 @@ const char *CXX11NoReturnAttr::getSpelling() const {
   }
 }
 
+bool CXX11NoReturnAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
+
+// CXX26AnnotationAttr implementation
+
+CXX26AnnotationAttr *CXX26AnnotationAttr::CreateImplicit(ASTContext &Ctx, Expr * Arg, const AttributeCommonInfo &CommonInfo) {
+  auto *A = new (Ctx) CXX26AnnotationAttr(Ctx, CommonInfo, Arg);
+  A->setImplicit(true);
+  if (!A->isAttributeSpellingListCalculated() && !A->getAttrName())
+    A->setAttributeSpellingListIndex(0);
+  return A;
+}
+
+CXX26AnnotationAttr *CXX26AnnotationAttr::Create(ASTContext &Ctx, Expr * Arg, const AttributeCommonInfo &CommonInfo) {
+  auto *A = new (Ctx) CXX26AnnotationAttr(Ctx, CommonInfo, Arg);
+  if (!A->isAttributeSpellingListCalculated() && !A->getAttrName())
+    A->setAttributeSpellingListIndex(0);
+  return A;
+}
+
+CXX26AnnotationAttr *CXX26AnnotationAttr::CreateImplicit(ASTContext &Ctx, Expr * Arg, SourceRange Range) {
+  AttributeCommonInfo I(Range, NoSemaHandlerAttribute, AttributeCommonInfo::Form::Implicit());
+  return CreateImplicit(Ctx, Arg, I);
+}
+
+CXX26AnnotationAttr *CXX26AnnotationAttr::Create(ASTContext &Ctx, Expr * Arg, SourceRange Range) {
+  AttributeCommonInfo I(Range, NoSemaHandlerAttribute, AttributeCommonInfo::Form::Implicit());
+  return Create(Ctx, Arg, I);
+}
+
+CXX26AnnotationAttr::CXX26AnnotationAttr(ASTContext &Ctx, const AttributeCommonInfo &CommonInfo
+              , Expr * Arg
+             )
+  : InheritableParamAttr(Ctx, CommonInfo, attr::CXX26Annotation, /*IsLateParsed=*/false, false)
+              , arg(Arg)
+  {
+}
+
+
+
+bool CXX26AnnotationAttr::isEquivalent(const CXX26AnnotationAttr &Other, StructuralEquivalenceContext &Context) const {
+  if (!equalAttrArgs(getArg(), Other.getArg(), Context))
+    return false;
+  return true;
+}
+
+void CXX26AnnotationAttr::Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const {
+  profileAttrArg(ID, Ctx, getArg());
+}
+
+CXX26AnnotationAttr *CXX26AnnotationAttr::clone(ASTContext &C) const {
+  auto *A = new (C) CXX26AnnotationAttr(C, *this, arg);
+  A->Inherited = Inherited;
+  A->IsPackExpansion = IsPackExpansion;
+  A->setImplicit(Implicit);
+  return A;
+}
+
+void CXX26AnnotationAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
+}
+
+const char *CXX26AnnotationAttr::getSpelling() const {
+  return "(No spelling)";
+}
+
 
 // CXXAssumeAttr implementation
 
@@ -11569,6 +11981,16 @@ const char *CXXAssumeAttr::getSpelling() const {
   }
 }
 
+bool CXXAssumeAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  args.push_back(getAssumption());
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CallableWhenAttr implementation
 
@@ -11722,6 +12144,23 @@ const char *CallableWhenAttr::getSpelling() const {
   }
 }
 
+bool CallableWhenAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+    for (auto it : callableStates()) {      args.push_back(StringLiteral::Create(
+        C,
+        StringRef(ConvertConsumedStateToStr(it)),
+        StringLiteralKind::Unevaluated,
+        false,
+        C.getConstantArrayType(C.CharTy, llvm::APInt(32, StringRef(ConvertConsumedStateToStr(it)).size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+        srcLocation));
+    }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CallbackAttr implementation
 
@@ -11985,6 +12424,15 @@ const char *CalledOnceAttr::getSpelling() const {
   }
 }
 
+bool CalledOnceAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CapabilityAttr implementation
 
@@ -12142,6 +12590,22 @@ const char *CapabilityAttr::getSpelling() const {
   }
 }
 
+bool CapabilityAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getName().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getName(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getName().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CapturedRecordAttr implementation
 
@@ -12299,6 +12763,15 @@ const char *CarriesDependencyAttr::getSpelling() const {
   }
 }
 
+bool CarriesDependencyAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CleanupAttr implementation
 
@@ -12542,6 +13015,15 @@ const char *ClspvLibclcBuiltinAttr::getSpelling() const {
   }
 }
 
+bool ClspvLibclcBuiltinAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CmseNSCallAttr implementation
 
@@ -12827,6 +13309,16 @@ const char *CodeAlignAttr::getSpelling() const {
   }
 }
 
+bool CodeAlignAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  args.push_back(getAlignment());
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CodeModelAttr implementation
 
@@ -12982,6 +13474,22 @@ const char *CodeModelAttr::getSpelling() const {
   }
 }
 
+bool CodeModelAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!StringRef(ConvertModelToStr(getModel())).empty()) {    args.push_back(StringLiteral::Create(C,
+                                         StringRef(ConvertModelToStr(getModel())),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, StringRef(ConvertModelToStr(getModel())).size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CodeSegAttr implementation
 
@@ -13181,6 +13689,15 @@ const char *ColdAttr::getSpelling() const {
   }
 }
 
+bool ColdAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CommonAttr implementation
 
@@ -13293,6 +13810,15 @@ const char *CommonAttr::getSpelling() const {
   }
 }
 
+bool CommonAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ConstAttr implementation
 
@@ -13426,6 +13952,15 @@ const char *ConstAttr::getSpelling() const {
   }
 }
 
+bool ConstAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ConstInitAttr implementation
 
@@ -13546,6 +14081,15 @@ const char *ConstInitAttr::getSpelling() const {
   }
 }
 
+bool ConstInitAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ConstructorAttr implementation
 
@@ -13702,6 +14246,16 @@ const char *ConstructorAttr::getSpelling() const {
   }
 }
 
+bool ConstructorAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  args.push_back(getPriority());
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ConsumableAttr implementation
 
@@ -13940,6 +14494,15 @@ const char *ConsumableAutoCastAttr::getSpelling() const {
   }
 }
 
+bool ConsumableAutoCastAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ConsumableSetOnReadAttr implementation
 
@@ -14041,6 +14604,15 @@ const char *ConsumableSetOnReadAttr::getSpelling() const {
   }
 }
 
+bool ConsumableSetOnReadAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ConvergentAttr implementation
 
@@ -14153,6 +14725,15 @@ const char *ConvergentAttr::getSpelling() const {
   }
 }
 
+bool ConvergentAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CoroAwaitElidableAttr implementation
 
@@ -14265,6 +14846,15 @@ const char *CoroAwaitElidableAttr::getSpelling() const {
   }
 }
 
+bool CoroAwaitElidableAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CoroAwaitElidableArgumentAttr implementation
 
@@ -14377,6 +14967,15 @@ const char *CoroAwaitElidableArgumentAttr::getSpelling() const {
   }
 }
 
+bool CoroAwaitElidableArgumentAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CoroDisableLifetimeBoundAttr implementation
 
@@ -14489,6 +15088,15 @@ const char *CoroDisableLifetimeBoundAttr::getSpelling() const {
   }
 }
 
+bool CoroDisableLifetimeBoundAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CoroLifetimeBoundAttr implementation
 
@@ -14601,6 +15209,15 @@ const char *CoroLifetimeBoundAttr::getSpelling() const {
   }
 }
 
+bool CoroLifetimeBoundAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CoroOnlyDestroyWhenCompleteAttr implementation
 
@@ -14713,6 +15330,15 @@ const char *CoroOnlyDestroyWhenCompleteAttr::getSpelling() const {
   }
 }
 
+bool CoroOnlyDestroyWhenCompleteAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CoroReturnTypeAttr implementation
 
@@ -14825,6 +15451,15 @@ const char *CoroReturnTypeAttr::getSpelling() const {
   }
 }
 
+bool CoroReturnTypeAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CoroWrapperAttr implementation
 
@@ -14937,6 +15572,15 @@ const char *CoroWrapperAttr::getSpelling() const {
   }
 }
 
+bool CoroWrapperAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CountedByAttr implementation
 
@@ -15096,6 +15740,17 @@ const char *CountedByAttr::getSpelling() const {
   }
 }
 
+bool CountedByAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  args.push_back(getCount());
+    args.push_back(IntegerLiteral::Create(C, llvm::APInt(32, getNestedLevel()), C.IntTy, srcLocation));
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // CountedByOrNullAttr implementation
 
@@ -15255,6 +15910,17 @@ const char *CountedByOrNullAttr::getSpelling() const {
   }
 }
 
+bool CountedByOrNullAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  args.push_back(getCount());
+    args.push_back(IntegerLiteral::Create(C, llvm::APInt(32, getNestedLevel()), C.IntTy, srcLocation));
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // DLLExportAttr implementation
 
@@ -15378,6 +16044,15 @@ const char *DLLExportAttr::getSpelling() const {
   }
 }
 
+bool DLLExportAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // DLLExportOnDeclAttr implementation
 
@@ -15613,6 +16288,15 @@ const char *DLLImportAttr::getSpelling() const {
   }
 }
 
+bool DLLImportAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // DLLImportStaticLocalAttr implementation
 
@@ -15853,6 +16537,29 @@ const char *DeprecatedAttr::getSpelling() const {
   }
 }
 
+bool DeprecatedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getMessage().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getMessage(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getMessage().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+  if (!getReplacement().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getReplacement(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getReplacement().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // DestructorAttr implementation
 
@@ -16009,6 +16716,16 @@ const char *DestructorAttr::getSpelling() const {
   }
 }
 
+bool DestructorAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  args.push_back(getPriority());
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // DeviceKernelAttr implementation
 
@@ -16221,6 +16938,15 @@ const char *DeviceKernelAttr::getSpelling() const {
   }
 }
 
+bool DeviceKernelAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // DiagnoseAsBuiltinAttr implementation
 
@@ -16712,6 +17438,15 @@ const char *DisableSanitizerInstrumentationAttr::getSpelling() const {
   }
 }
 
+bool DisableSanitizerInstrumentationAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // DisableTailCallsAttr implementation
 
@@ -16824,6 +17559,15 @@ const char *DisableTailCallsAttr::getSpelling() const {
   }
 }
 
+bool DisableTailCallsAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // EmptyBasesAttr implementation
 
@@ -17129,6 +17873,22 @@ const char *EnforceTCBAttr::getSpelling() const {
   }
 }
 
+bool EnforceTCBAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getTCBName().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getTCBName(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getTCBName().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // EnforceTCBLeafAttr implementation
 
@@ -17262,6 +18022,22 @@ const char *EnforceTCBLeafAttr::getSpelling() const {
   }
 }
 
+bool EnforceTCBLeafAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getTCBName().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getTCBName(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getTCBName().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // EnumExtensibilityAttr implementation
 
@@ -17601,6 +18377,22 @@ const char *ErrorAttr::getSpelling() const {
   }
 }
 
+bool ErrorAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getUserDiagnostic().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getUserDiagnostic(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getUserDiagnostic().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ExcludeFromExplicitInstantiationAttr implementation
 
@@ -17713,6 +18505,15 @@ const char *ExcludeFromExplicitInstantiationAttr::getSpelling() const {
   }
 }
 
+bool ExcludeFromExplicitInstantiationAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ExplicitInitAttr implementation
 
@@ -17825,6 +18626,15 @@ const char *ExplicitInitAttr::getSpelling() const {
   }
 }
 
+bool ExplicitInitAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ExtVectorTypeAttr implementation
 
@@ -18148,6 +18958,37 @@ const char *ExternalSourceSymbolAttr::getSpelling() const {
   }
 }
 
+bool ExternalSourceSymbolAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getLanguage().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getLanguage(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getLanguage().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+  if (!getDefinedIn().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getDefinedIn(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getDefinedIn().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+    args.push_back(CXXBoolLiteralExpr::Create(C, getGeneratedDeclaration(), C.BoolTy, srcLocation));
+  if (!getUSR().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getUSR(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getUSR().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // FallThroughAttr implementation
 
@@ -18293,6 +19134,15 @@ const char *FallThroughAttr::getSpelling() const {
   }
 }
 
+bool FallThroughAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // FastCallAttr implementation
 
@@ -18423,6 +19273,15 @@ const char *FastCallAttr::getSpelling() const {
   }
 }
 
+bool FastCallAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // FinalAttr implementation
 
@@ -18643,6 +19502,15 @@ const char *FlagEnumAttr::getSpelling() const {
   }
 }
 
+bool FlagEnumAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // FlattenAttr implementation
 
@@ -18755,6 +19623,15 @@ const char *FlattenAttr::getSpelling() const {
   }
 }
 
+bool FlattenAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // FormatAttr implementation
 
@@ -19356,6 +20233,22 @@ const char *FunctionReturnThunksAttr::getSpelling() const {
   }
 }
 
+bool FunctionReturnThunksAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!StringRef(ConvertKindToStr(getThunkType())).empty()) {    args.push_back(StringLiteral::Create(C,
+                                         StringRef(ConvertKindToStr(getThunkType())),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, StringRef(ConvertKindToStr(getThunkType())).size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // GCCStructAttr implementation
 
@@ -19468,6 +20361,15 @@ const char *GCCStructAttr::getSpelling() const {
   }
 }
 
+bool GCCStructAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // GNUInlineAttr implementation
 
@@ -19580,6 +20482,15 @@ const char *GNUInlineAttr::getSpelling() const {
   }
 }
 
+bool GNUInlineAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // GuardedByAttr implementation
 
@@ -19778,6 +20689,15 @@ const char *GuardedVarAttr::getSpelling() const {
   }
 }
 
+bool GuardedVarAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // HIPManagedAttr implementation
 
@@ -21942,6 +22862,17 @@ const char *HLSLVkBindingAttr::getSpelling() const {
   }
 }
 
+bool HLSLVkBindingAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+    args.push_back(IntegerLiteral::Create(C, llvm::APInt(32, getBinding()), C.IntTy, srcLocation));
+    args.push_back(IntegerLiteral::Create(C, llvm::APInt(32, getSet()), C.IntTy, srcLocation));
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // HLSLVkConstantIdAttr implementation
 
@@ -22027,6 +22958,16 @@ const char *HLSLVkConstantIdAttr::getSpelling() const {
   }
 }
 
+bool HLSLVkConstantIdAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+    args.push_back(IntegerLiteral::Create(C, llvm::APInt(32, getId()), C.IntTy, srcLocation));
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // HLSLVkExtBuiltinInputAttr implementation
 
@@ -22282,6 +23223,16 @@ const char *HLSLVkLocationAttr::getSpelling() const {
   }
 }
 
+bool HLSLVkLocationAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+    args.push_back(IntegerLiteral::Create(C, llvm::APInt(32, getLocation()), C.IntTy, srcLocation));
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // HLSLVkPushConstantAttr implementation
 
@@ -22356,6 +23307,15 @@ const char *HLSLVkPushConstantAttr::getSpelling() const {
   }
 }
 
+bool HLSLVkPushConstantAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // HLSLWaveSizeAttr implementation
 
@@ -22581,6 +23541,15 @@ const char *HotAttr::getSpelling() const {
   }
 }
 
+bool HotAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // HybridPatchableAttr implementation
 
@@ -22704,6 +23673,15 @@ const char *HybridPatchableAttr::getSpelling() const {
   }
 }
 
+bool HybridPatchableAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // IBActionAttr implementation
 
@@ -22816,6 +23794,15 @@ const char *IBActionAttr::getSpelling() const {
   }
 }
 
+bool IBActionAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // IBOutletAttr implementation
 
@@ -22928,6 +23915,15 @@ const char *IBOutletAttr::getSpelling() const {
   }
 }
 
+bool IBOutletAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // IBOutletCollectionAttr implementation
 
@@ -23078,6 +24074,17 @@ const char *IBOutletCollectionAttr::getSpelling() const {
   }
 }
 
+bool IBOutletCollectionAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+    args.push_back(nullptr);
+    typeArgs.push_back(getInterface().getAsOpaquePtr());
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // IFuncAttr implementation
 
@@ -23211,6 +24218,22 @@ const char *IFuncAttr::getSpelling() const {
   }
 }
 
+bool IFuncAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getResolver().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getResolver(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getResolver().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // InferredNoReturnAttr implementation
 
@@ -23467,6 +24490,89 @@ const char *InitSegAttr::getSpelling() const {
 }
 
 
+// InstantiationDependentAttr implementation
+
+InstantiationDependentAttr *InstantiationDependentAttr::CreateImplicit(ASTContext &Ctx, const AttributeCommonInfo &CommonInfo) {
+  auto *A = new (Ctx) InstantiationDependentAttr(Ctx, CommonInfo);
+  A->setImplicit(true);
+  if (!A->isAttributeSpellingListCalculated() && !A->getAttrName())
+    A->setAttributeSpellingListIndex(0);
+  return A;
+}
+
+InstantiationDependentAttr *InstantiationDependentAttr::Create(ASTContext &Ctx, const AttributeCommonInfo &CommonInfo) {
+  auto *A = new (Ctx) InstantiationDependentAttr(Ctx, CommonInfo);
+  if (!A->isAttributeSpellingListCalculated() && !A->getAttrName())
+    A->setAttributeSpellingListIndex(0);
+  return A;
+}
+
+InstantiationDependentAttr *InstantiationDependentAttr::CreateImplicit(ASTContext &Ctx, SourceRange Range) {
+  AttributeCommonInfo I(Range, NoSemaHandlerAttribute, {AttributeCommonInfo::AS_CXX11, 0, false /*IsAlignas*/, false /*IsRegularKeywordAttribute*/});
+  return CreateImplicit(Ctx, I);
+}
+
+InstantiationDependentAttr *InstantiationDependentAttr::Create(ASTContext &Ctx, SourceRange Range) {
+  AttributeCommonInfo I(Range, NoSemaHandlerAttribute, {AttributeCommonInfo::AS_CXX11, 0, false /*IsAlignas*/, false /*IsRegularKeywordAttribute*/});
+  return Create(Ctx, I);
+}
+
+InstantiationDependentAttr::InstantiationDependentAttr(ASTContext &Ctx, const AttributeCommonInfo &CommonInfo
+             )
+  : Attr(Ctx, CommonInfo, attr::InstantiationDependent, /*IsLateParsed=*/false)
+  {
+}
+
+bool InstantiationDependentAttr::isEquivalent(const InstantiationDependentAttr &Other, StructuralEquivalenceContext &Context) const {
+  return true;
+}
+
+void InstantiationDependentAttr::Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const {
+}
+
+InstantiationDependentAttr *InstantiationDependentAttr::clone(ASTContext &C) const {
+  auto *A = new (C) InstantiationDependentAttr(C, *this);
+  A->Inherited = Inherited;
+  A->IsPackExpansion = IsPackExpansion;
+  A->setImplicit(Implicit);
+  return A;
+}
+
+void InstantiationDependentAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
+  bool IsFirstArgument = true; (void)IsFirstArgument;
+  unsigned TrailingOmittedArgs = 0; (void)TrailingOmittedArgs;
+  switch (getAttributeSpellingListIndex()) {
+  default:
+    llvm_unreachable("Unknown attribute spelling!");
+    break;
+  case 0 : {
+    OS << "[[clang::instantiation_dependent";
+    OS << "]]";
+    break;
+  }
+}
+}
+
+const char *InstantiationDependentAttr::getSpelling() const {
+  switch (getAttributeSpellingListIndex()) {
+  default:
+    llvm_unreachable("Unknown attribute spelling!");
+    return "(No spelling)";
+  case 0:
+    return "instantiation_dependent";
+  }
+}
+
+bool InstantiationDependentAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
+
 // IntelOclBiccAttr implementation
 
 IntelOclBiccAttr *IntelOclBiccAttr::CreateImplicit(ASTContext &Ctx, const AttributeCommonInfo &CommonInfo) {
@@ -23567,6 +24673,15 @@ const char *IntelOclBiccAttr::getSpelling() const {
   }
 }
 
+bool IntelOclBiccAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // InternalLinkageAttr implementation
 
@@ -23679,6 +24794,15 @@ const char *InternalLinkageAttr::getSpelling() const {
   }
 }
 
+bool InternalLinkageAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // LTOVisibilityPublicAttr implementation
 
@@ -23791,6 +24915,15 @@ const char *LTOVisibilityPublicAttr::getSpelling() const {
   }
 }
 
+bool LTOVisibilityPublicAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // LayoutVersionAttr implementation
 
@@ -23988,6 +25121,15 @@ const char *LeafAttr::getSpelling() const {
   }
 }
 
+bool LeafAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // LifetimeBoundAttr implementation
 
@@ -24100,6 +25242,15 @@ const char *LifetimeBoundAttr::getSpelling() const {
   }
 }
 
+bool LifetimeBoundAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // LifetimeCaptureByAttr implementation
 
@@ -24540,6 +25691,15 @@ const char *LikelyAttr::getSpelling() const {
   }
 }
 
+bool LikelyAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // LoaderUninitializedAttr implementation
 
@@ -24652,6 +25812,15 @@ const char *LoaderUninitializedAttr::getSpelling() const {
   }
 }
 
+bool LoaderUninitializedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // LockReturnedAttr implementation
 
@@ -25298,6 +26467,15 @@ const char *M68kRTDAttr::getSpelling() const {
   }
 }
 
+bool M68kRTDAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // MIGServerRoutineAttr implementation
 
@@ -25410,6 +26588,15 @@ const char *MIGServerRoutineAttr::getSpelling() const {
   }
 }
 
+bool MIGServerRoutineAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // MSABIAttr implementation
 
@@ -25522,6 +26709,15 @@ const char *MSABIAttr::getSpelling() const {
   }
 }
 
+bool MSABIAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // MSAllocatorAttr implementation
 
@@ -25670,6 +26866,15 @@ const char *MSConstexprAttr::getSpelling() const {
   }
 }
 
+bool MSConstexprAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // MSInheritanceAttr implementation
 
@@ -26184,6 +27389,15 @@ const char *MSStructAttr::getSpelling() const {
   }
 }
 
+bool MSStructAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // MSVtorDispAttr implementation
 
@@ -26359,6 +27573,15 @@ const char *MallocSpanAttr::getSpelling() const {
   }
 }
 
+bool MallocSpanAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // MaxFieldAlignmentAttr implementation
 
@@ -26534,6 +27757,15 @@ const char *MayAliasAttr::getSpelling() const {
   }
 }
 
+bool MayAliasAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // MaybeUndefAttr implementation
 
@@ -26646,6 +27878,15 @@ const char *MaybeUndefAttr::getSpelling() const {
   }
 }
 
+bool MaybeUndefAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // MicroMipsAttr implementation
 
@@ -26758,6 +27999,15 @@ const char *MicroMipsAttr::getSpelling() const {
   }
 }
 
+bool MicroMipsAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // MinSizeAttr implementation
 
@@ -26870,6 +28120,15 @@ const char *MinSizeAttr::getSpelling() const {
   }
 }
 
+bool MinSizeAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // MinVectorWidthAttr implementation
 
@@ -27113,6 +28372,15 @@ const char *Mips16Attr::getSpelling() const {
   }
 }
 
+bool Mips16Attr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // MipsInterruptAttr implementation
 
@@ -27278,6 +28546,22 @@ const char *MipsInterruptAttr::getSpelling() const {
   }
 }
 
+bool MipsInterruptAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!StringRef(ConvertInterruptTypeToStr(getInterrupt())).empty()) {    args.push_back(StringLiteral::Create(C,
+                                         StringRef(ConvertInterruptTypeToStr(getInterrupt())),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, StringRef(ConvertInterruptTypeToStr(getInterrupt())).size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // MipsLongCallAttr implementation
 
@@ -27434,6 +28718,15 @@ const char *MipsLongCallAttr::getSpelling() const {
   }
 }
 
+bool MipsLongCallAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // MipsShortCallAttr implementation
 
@@ -27590,6 +28883,15 @@ const char *MipsShortCallAttr::getSpelling() const {
   }
 }
 
+bool MipsShortCallAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ModeAttr implementation
 
@@ -28026,6 +29328,15 @@ const char *MustTailAttr::getSpelling() const {
   }
 }
 
+bool MustTailAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NSConsumedAttr implementation
 
@@ -28138,6 +29449,15 @@ const char *NSConsumedAttr::getSpelling() const {
   }
 }
 
+bool NSConsumedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NSConsumesSelfAttr implementation
 
@@ -28250,6 +29570,15 @@ const char *NSConsumesSelfAttr::getSpelling() const {
   }
 }
 
+bool NSConsumesSelfAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NSErrorDomainAttr implementation
 
@@ -28447,6 +29776,15 @@ const char *NSReturnsAutoreleasedAttr::getSpelling() const {
   }
 }
 
+bool NSReturnsAutoreleasedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NSReturnsNotRetainedAttr implementation
 
@@ -28559,6 +29897,15 @@ const char *NSReturnsNotRetainedAttr::getSpelling() const {
   }
 }
 
+bool NSReturnsNotRetainedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NSReturnsRetainedAttr implementation
 
@@ -28671,6 +30018,15 @@ const char *NSReturnsRetainedAttr::getSpelling() const {
   }
 }
 
+bool NSReturnsRetainedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NakedAttr implementation
 
@@ -28794,6 +30150,15 @@ const char *NakedAttr::getSpelling() const {
   }
 }
 
+bool NakedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoAliasAttr implementation
 
@@ -29027,6 +30392,23 @@ const char *NoBuiltinAttr::getSpelling() const {
   }
 }
 
+bool NoBuiltinAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+    for (auto it : builtinNames()) {      args.push_back(StringLiteral::Create(
+        C,
+        it,
+        StringLiteralKind::Unevaluated,
+        false,
+        C.getConstantArrayType(C.CharTy, llvm::APInt(32, it.size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+        srcLocation));
+    }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoCommonAttr implementation
 
@@ -29139,6 +30521,15 @@ const char *NoCommonAttr::getSpelling() const {
   }
 }
 
+bool NoCommonAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoConvergentAttr implementation
 
@@ -29262,6 +30653,15 @@ const char *NoConvergentAttr::getSpelling() const {
   }
 }
 
+bool NoConvergentAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoDebugAttr implementation
 
@@ -29374,6 +30774,15 @@ const char *NoDebugAttr::getSpelling() const {
   }
 }
 
+bool NoDebugAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoDerefAttr implementation
 
@@ -29587,6 +30996,15 @@ const char *NoDestroyAttr::getSpelling() const {
   }
 }
 
+bool NoDestroyAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoDuplicateAttr implementation
 
@@ -29699,6 +31117,15 @@ const char *NoDuplicateAttr::getSpelling() const {
   }
 }
 
+bool NoDuplicateAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoEscapeAttr implementation
 
@@ -29811,6 +31238,15 @@ const char *NoEscapeAttr::getSpelling() const {
   }
 }
 
+bool NoEscapeAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoFieldProtectionAttr implementation
 
@@ -29923,6 +31359,15 @@ const char *NoFieldProtectionAttr::getSpelling() const {
   }
 }
 
+bool NoFieldProtectionAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoInlineAttr implementation
 
@@ -30101,6 +31546,15 @@ const char *NoInlineAttr::getSpelling() const {
   }
 }
 
+bool NoInlineAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoInstrumentFunctionAttr implementation
 
@@ -30213,6 +31667,15 @@ const char *NoInstrumentFunctionAttr::getSpelling() const {
   }
 }
 
+bool NoInstrumentFunctionAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoMergeAttr implementation
 
@@ -30325,6 +31788,15 @@ const char *NoMergeAttr::getSpelling() const {
   }
 }
 
+bool NoMergeAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoMicroMipsAttr implementation
 
@@ -30437,6 +31909,15 @@ const char *NoMicroMipsAttr::getSpelling() const {
   }
 }
 
+bool NoMicroMipsAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoMips16Attr implementation
 
@@ -30549,6 +32030,15 @@ const char *NoMips16Attr::getSpelling() const {
   }
 }
 
+bool NoMips16Attr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoOutlineAttr implementation
 
@@ -30661,6 +32151,15 @@ const char *NoOutlineAttr::getSpelling() const {
   }
 }
 
+bool NoOutlineAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoProfileFunctionAttr implementation
 
@@ -30773,6 +32272,15 @@ const char *NoProfileFunctionAttr::getSpelling() const {
   }
 }
 
+bool NoProfileFunctionAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoRandomizeLayoutAttr implementation
 
@@ -30885,6 +32393,15 @@ const char *NoRandomizeLayoutAttr::getSpelling() const {
   }
 }
 
+bool NoRandomizeLayoutAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoReturnAttr implementation
 
@@ -31008,6 +32525,15 @@ const char *NoReturnAttr::getSpelling() const {
   }
 }
 
+bool NoReturnAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoSanitizeAttr implementation
 
@@ -31205,6 +32731,23 @@ const char *NoSanitizeAttr::getSpelling() const {
   }
 }
 
+bool NoSanitizeAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+    for (auto it : sanitizers()) {      args.push_back(StringLiteral::Create(
+        C,
+        it,
+        StringLiteralKind::Unevaluated,
+        false,
+        C.getConstantArrayType(C.CharTy, llvm::APInt(32, it.size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+        srcLocation));
+    }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoSpecializationsAttr implementation
 
@@ -31330,6 +32873,22 @@ const char *NoSpecializationsAttr::getSpelling() const {
   }
 }
 
+bool NoSpecializationsAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getMessage().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getMessage(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getMessage().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoSpeculativeLoadHardeningAttr implementation
 
@@ -31442,6 +33001,15 @@ const char *NoSpeculativeLoadHardeningAttr::getSpelling() const {
   }
 }
 
+bool NoSpeculativeLoadHardeningAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoSplitStackAttr implementation
 
@@ -31554,6 +33122,15 @@ const char *NoSplitStackAttr::getSpelling() const {
   }
 }
 
+bool NoSplitStackAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoStackProtectorAttr implementation
 
@@ -31710,6 +33287,15 @@ const char *NoStackProtectorAttr::getSpelling() const {
   }
 }
 
+bool NoStackProtectorAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoThreadSafetyAnalysisAttr implementation
 
@@ -31822,6 +33408,15 @@ const char *NoThreadSafetyAnalysisAttr::getSpelling() const {
   }
 }
 
+bool NoThreadSafetyAnalysisAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoThrowAttr implementation
 
@@ -31945,6 +33540,15 @@ const char *NoThrowAttr::getSpelling() const {
   }
 }
 
+bool NoThrowAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoTrivialAutoVarInitAttr implementation
 
@@ -32120,6 +33724,15 @@ const char *NoUniqueAddressAttr::getSpelling() const {
   }
 }
 
+bool NoUniqueAddressAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NoUwtableAttr implementation
 
@@ -32232,6 +33845,15 @@ const char *NoUwtableAttr::getSpelling() const {
   }
 }
 
+bool NoUwtableAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NonAllocatingAttr implementation
 
@@ -32807,6 +34429,15 @@ const char *NonStringAttr::getSpelling() const {
   }
 }
 
+bool NonStringAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // NotTailCalledAttr implementation
 
@@ -32919,6 +34550,15 @@ const char *NotTailCalledAttr::getSpelling() const {
   }
 }
 
+bool NotTailCalledAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // OMPAllocateDeclAttr implementation
 
@@ -33118,6 +34758,22 @@ const char *OMPAssumeAttr::getSpelling() const {
   }
 }
 
+bool OMPAssumeAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getAssumption().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getAssumption(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getAssumption().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // OMPCaptureKindAttr implementation
 
@@ -34042,6 +35698,15 @@ const char *OSConsumedAttr::getSpelling() const {
   }
 }
 
+bool OSConsumedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // OSConsumesThisAttr implementation
 
@@ -34154,6 +35819,15 @@ const char *OSConsumesThisAttr::getSpelling() const {
   }
 }
 
+bool OSConsumesThisAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // OSReturnsNotRetainedAttr implementation
 
@@ -34266,6 +35940,15 @@ const char *OSReturnsNotRetainedAttr::getSpelling() const {
   }
 }
 
+bool OSReturnsNotRetainedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // OSReturnsRetainedAttr implementation
 
@@ -34378,6 +36061,15 @@ const char *OSReturnsRetainedAttr::getSpelling() const {
   }
 }
 
+bool OSReturnsRetainedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // OSReturnsRetainedOnNonZeroAttr implementation
 
@@ -34490,6 +36182,15 @@ const char *OSReturnsRetainedOnNonZeroAttr::getSpelling() const {
   }
 }
 
+bool OSReturnsRetainedOnNonZeroAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // OSReturnsRetainedOnZeroAttr implementation
 
@@ -34602,6 +36303,15 @@ const char *OSReturnsRetainedOnZeroAttr::getSpelling() const {
   }
 }
 
+bool OSReturnsRetainedOnZeroAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCBoxableAttr implementation
 
@@ -34714,6 +36424,15 @@ const char *ObjCBoxableAttr::getSpelling() const {
   }
 }
 
+bool ObjCBoxableAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCBridgeAttr implementation
 
@@ -35245,6 +36964,15 @@ const char *ObjCClassStubAttr::getSpelling() const {
   }
 }
 
+bool ObjCClassStubAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCDesignatedInitializerAttr implementation
 
@@ -35357,6 +37085,15 @@ const char *ObjCDesignatedInitializerAttr::getSpelling() const {
   }
 }
 
+bool ObjCDesignatedInitializerAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCDirectAttr implementation
 
@@ -35469,6 +37206,15 @@ const char *ObjCDirectAttr::getSpelling() const {
   }
 }
 
+bool ObjCDirectAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCDirectMembersAttr implementation
 
@@ -35581,6 +37327,15 @@ const char *ObjCDirectMembersAttr::getSpelling() const {
   }
 }
 
+bool ObjCDirectMembersAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCExceptionAttr implementation
 
@@ -35693,6 +37448,15 @@ const char *ObjCExceptionAttr::getSpelling() const {
   }
 }
 
+bool ObjCExceptionAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCExplicitProtocolImplAttr implementation
 
@@ -35805,6 +37569,15 @@ const char *ObjCExplicitProtocolImplAttr::getSpelling() const {
   }
 }
 
+bool ObjCExplicitProtocolImplAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCExternallyRetainedAttr implementation
 
@@ -35917,6 +37690,15 @@ const char *ObjCExternallyRetainedAttr::getSpelling() const {
   }
 }
 
+bool ObjCExternallyRetainedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCGCAttr implementation
 
@@ -36160,6 +37942,15 @@ const char *ObjCIndependentClassAttr::getSpelling() const {
   }
 }
 
+bool ObjCIndependentClassAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCInertUnsafeUnretainedAttr implementation
 
@@ -36578,6 +38369,15 @@ const char *ObjCNSObjectAttr::getSpelling() const {
   }
 }
 
+bool ObjCNSObjectAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCNonLazyClassAttr implementation
 
@@ -36690,6 +38490,15 @@ const char *ObjCNonLazyClassAttr::getSpelling() const {
   }
 }
 
+bool ObjCNonLazyClassAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCNonRuntimeProtocolAttr implementation
 
@@ -36802,6 +38611,15 @@ const char *ObjCNonRuntimeProtocolAttr::getSpelling() const {
   }
 }
 
+bool ObjCNonRuntimeProtocolAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCOwnershipAttr implementation
 
@@ -37045,6 +38863,15 @@ const char *ObjCPreciseLifetimeAttr::getSpelling() const {
   }
 }
 
+bool ObjCPreciseLifetimeAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCRequiresPropertyDefsAttr implementation
 
@@ -37157,6 +38984,15 @@ const char *ObjCRequiresPropertyDefsAttr::getSpelling() const {
   }
 }
 
+bool ObjCRequiresPropertyDefsAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCRequiresSuperAttr implementation
 
@@ -37269,6 +39105,15 @@ const char *ObjCRequiresSuperAttr::getSpelling() const {
   }
 }
 
+bool ObjCRequiresSuperAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCReturnsInnerPointerAttr implementation
 
@@ -37381,6 +39226,15 @@ const char *ObjCReturnsInnerPointerAttr::getSpelling() const {
   }
 }
 
+bool ObjCReturnsInnerPointerAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCRootClassAttr implementation
 
@@ -37493,6 +39347,15 @@ const char *ObjCRootClassAttr::getSpelling() const {
   }
 }
 
+bool ObjCRootClassAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCRuntimeNameAttr implementation
 
@@ -37626,6 +39489,22 @@ const char *ObjCRuntimeNameAttr::getSpelling() const {
   }
 }
 
+bool ObjCRuntimeNameAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getMetadataName().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getMetadataName(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getMetadataName().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCRuntimeVisibleAttr implementation
 
@@ -37738,6 +39617,15 @@ const char *ObjCRuntimeVisibleAttr::getSpelling() const {
   }
 }
 
+bool ObjCRuntimeVisibleAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ObjCSubclassingRestrictedAttr implementation
 
@@ -37850,6 +39738,15 @@ const char *ObjCSubclassingRestrictedAttr::getSpelling() const {
   }
 }
 
+bool ObjCSubclassingRestrictedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // OpenACCRoutineAnnotAttr implementation
 
@@ -39337,6 +41234,15 @@ const char *OptimizeNoneAttr::getSpelling() const {
   }
 }
 
+bool OptimizeNoneAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // OverflowBehaviorAttr implementation
 
@@ -39580,6 +41486,15 @@ const char *OverloadableAttr::getSpelling() const {
   }
 }
 
+bool OverloadableAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // OverrideAttr implementation
 
@@ -39750,6 +41665,17 @@ const char *OwnerAttr::getSpelling() const {
   }
 }
 
+bool OwnerAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+    args.push_back(nullptr);
+    typeArgs.push_back(getDerefType().getAsOpaquePtr());
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // OwnershipAttr implementation
 
@@ -40168,6 +42094,15 @@ const char *PackedAttr::getSpelling() const {
   }
 }
 
+bool PackedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ParamTypestateAttr implementation
 
@@ -40435,6 +42370,15 @@ const char *PascalAttr::getSpelling() const {
   }
 }
 
+bool PascalAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // PassObjectSizeAttr implementation
 
@@ -40622,6 +42566,16 @@ const char *PassObjectSizeAttr::getSpelling() const {
   }
 }
 
+bool PassObjectSizeAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+    args.push_back(IntegerLiteral::Create(C, llvm::APInt(32, getType()), C.IntTy, srcLocation));
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // PatchableFunctionEntryAttr implementation
 
@@ -40941,6 +42895,22 @@ const char *PcsAttr::getSpelling() const {
   }
 }
 
+bool PcsAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!StringRef(ConvertPCSTypeToStr(getPCS())).empty()) {    args.push_back(StringLiteral::Create(C,
+                                         StringRef(ConvertPCSTypeToStr(getPCS())),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, StringRef(ConvertPCSTypeToStr(getPCS())).size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // PersonalityAttr implementation
 
@@ -41168,6 +43138,17 @@ const char *PointerAttr::getSpelling() const {
   }
 }
 
+bool PointerAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+    args.push_back(nullptr);
+    typeArgs.push_back(getDerefType().getAsOpaquePtr());
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // PointerAuthAttr implementation
 
@@ -41393,6 +43374,15 @@ const char *PointerFieldProtectionAttr::getSpelling() const {
   }
 }
 
+bool PointerFieldProtectionAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // PragmaClangBSSSectionAttr implementation
 
@@ -41834,6 +43824,17 @@ const char *PreferredNameAttr::getSpelling() const {
   }
 }
 
+bool PreferredNameAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+    args.push_back(nullptr);
+    typeArgs.push_back(getTypedefType().getAsOpaquePtr());
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // PreferredTypeAttr implementation
 
@@ -41984,6 +43985,17 @@ const char *PreferredTypeAttr::getSpelling() const {
   }
 }
 
+bool PreferredTypeAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+    args.push_back(nullptr);
+    typeArgs.push_back(getType().getAsOpaquePtr());
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // PreserveAllAttr implementation
 
@@ -42096,6 +44108,15 @@ const char *PreserveAllAttr::getSpelling() const {
   }
 }
 
+bool PreserveAllAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // PreserveMostAttr implementation
 
@@ -42208,6 +44229,15 @@ const char *PreserveMostAttr::getSpelling() const {
   }
 }
 
+bool PreserveMostAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // PreserveNoneAttr implementation
 
@@ -42320,6 +44350,15 @@ const char *PreserveNoneAttr::getSpelling() const {
   }
 }
 
+bool PreserveNoneAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // PtGuardedByAttr implementation
 
@@ -42518,6 +44557,15 @@ const char *PtGuardedVarAttr::getSpelling() const {
   }
 }
 
+bool PtGuardedVarAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // Ptr32Attr implementation
 
@@ -42778,6 +44826,15 @@ const char *PureAttr::getSpelling() const {
   }
 }
 
+bool PureAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // RISCVInterruptAttr implementation
 
@@ -42958,6 +45015,23 @@ const char *RISCVInterruptAttr::getSpelling() const {
   }
 }
 
+bool RISCVInterruptAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+    for (auto it : interrupt()) {      args.push_back(StringLiteral::Create(
+        C,
+        StringRef(ConvertInterruptTypeToStr(it)),
+        StringLiteralKind::Unevaluated,
+        false,
+        C.getConstantArrayType(C.CharTy, llvm::APInt(32, StringRef(ConvertInterruptTypeToStr(it)).size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+        srcLocation));
+    }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // RISCVVLSCCAttr implementation
 
@@ -43280,6 +45354,15 @@ const char *RISCVVectorCCAttr::getSpelling() const {
   }
 }
 
+bool RISCVVectorCCAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // RandomizeLayoutAttr implementation
 
@@ -43392,6 +45475,15 @@ const char *RandomizeLayoutAttr::getSpelling() const {
   }
 }
 
+bool RandomizeLayoutAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ReadOnlyPlacementAttr implementation
 
@@ -43504,6 +45596,15 @@ const char *ReadOnlyPlacementAttr::getSpelling() const {
   }
 }
 
+bool ReadOnlyPlacementAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ReentrantCapabilityAttr implementation
 
@@ -43616,6 +45717,15 @@ const char *ReentrantCapabilityAttr::getSpelling() const {
   }
 }
 
+bool ReentrantCapabilityAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // RegCallAttr implementation
 
@@ -43739,6 +45849,15 @@ const char *RegCallAttr::getSpelling() const {
   }
 }
 
+bool RegCallAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ReinitializesAttr implementation
 
@@ -43840,6 +45959,15 @@ const char *ReinitializesAttr::getSpelling() const {
   }
 }
 
+bool ReinitializesAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ReleaseCapabilityAttr implementation
 
@@ -44304,6 +46432,22 @@ const char *ReleaseHandleAttr::getSpelling() const {
   }
 }
 
+bool ReleaseHandleAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getHandleType().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getHandleType(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getHandleType().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ReqdWorkGroupSizeAttr implementation
 
@@ -45074,6 +47218,15 @@ const char *RetainAttr::getSpelling() const {
   }
 }
 
+bool RetainAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ReturnTypestateAttr implementation
 
@@ -45323,6 +47476,15 @@ const char *ReturnsNonNullAttr::getSpelling() const {
   }
 }
 
+bool ReturnsNonNullAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ReturnsTwiceAttr implementation
 
@@ -45435,6 +47597,15 @@ const char *ReturnsTwiceAttr::getSpelling() const {
   }
 }
 
+bool ReturnsTwiceAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // RootSignatureAttr implementation
 
@@ -45709,6 +47880,15 @@ const char *SYCLExternalAttr::getSpelling() const {
   }
 }
 
+bool SYCLExternalAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // SYCLKernelAttr implementation
 
@@ -45821,6 +48001,15 @@ const char *SYCLKernelAttr::getSpelling() const {
   }
 }
 
+bool SYCLKernelAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // SYCLKernelEntryPointAttr implementation
 
@@ -46059,6 +48248,15 @@ const char *SYCLSpecialClassAttr::getSpelling() const {
   }
 }
 
+bool SYCLSpecialClassAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ScopedLockableAttr implementation
 
@@ -46160,6 +48358,15 @@ const char *ScopedLockableAttr::getSpelling() const {
   }
 }
 
+bool ScopedLockableAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // SectionAttr implementation
 
@@ -46317,6 +48524,22 @@ const char *SectionAttr::getSpelling() const {
   }
 }
 
+bool SectionAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getName().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getName(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getName().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // SelectAnyAttr implementation
 
@@ -46440,6 +48663,15 @@ const char *SelectAnyAttr::getSpelling() const {
   }
 }
 
+bool SelectAnyAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // SentinelAttr implementation
 
@@ -46592,6 +48824,17 @@ const char *SentinelAttr::getSpelling() const {
   }
 }
 
+bool SentinelAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+    args.push_back(IntegerLiteral::Create(C, llvm::APInt(32, getSentinel()), C.IntTy, srcLocation));
+    args.push_back(IntegerLiteral::Create(C, llvm::APInt(32, getNullPos()), C.IntTy, srcLocation));
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // SetTypestateAttr implementation
 
@@ -46888,6 +49131,17 @@ const char *SizedByAttr::getSpelling() const {
   }
 }
 
+bool SizedByAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  args.push_back(getSize());
+    args.push_back(IntegerLiteral::Create(C, llvm::APInt(32, getNestedLevel()), C.IntTy, srcLocation));
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // SizedByOrNullAttr implementation
 
@@ -47047,6 +49301,17 @@ const char *SizedByOrNullAttr::getSpelling() const {
   }
 }
 
+bool SizedByOrNullAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  args.push_back(getSize());
+    args.push_back(IntegerLiteral::Create(C, llvm::APInt(32, getNestedLevel()), C.IntTy, srcLocation));
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // SpeculativeLoadHardeningAttr implementation
 
@@ -47159,6 +49424,15 @@ const char *SpeculativeLoadHardeningAttr::getSpelling() const {
   }
 }
 
+bool SpeculativeLoadHardeningAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // StackProtectorIgnoreAttr implementation
 
@@ -47271,6 +49545,15 @@ const char *StackProtectorIgnoreAttr::getSpelling() const {
   }
 }
 
+bool StackProtectorIgnoreAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // StandaloneDebugAttr implementation
 
@@ -47372,6 +49655,15 @@ const char *StandaloneDebugAttr::getSpelling() const {
   }
 }
 
+bool StandaloneDebugAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // StdCallAttr implementation
 
@@ -47502,6 +49794,15 @@ const char *StdCallAttr::getSpelling() const {
   }
 }
 
+bool StdCallAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // StrictFPAttr implementation
 
@@ -47810,6 +50111,23 @@ const char *SuppressAttr::getSpelling() const {
   }
 }
 
+bool SuppressAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+    for (auto it : diagnosticIdentifiers()) {      args.push_back(StringLiteral::Create(
+        C,
+        it,
+        StringLiteralKind::Unevaluated,
+        false,
+        C.getConstantArrayType(C.CharTy, llvm::APInt(32, it.size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+        srcLocation));
+    }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // SwiftAsyncAttr implementation
 
@@ -48108,6 +50426,15 @@ const char *SwiftAsyncCallAttr::getSpelling() const {
   }
 }
 
+bool SwiftAsyncCallAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // SwiftAsyncContextAttr implementation
 
@@ -48220,6 +50547,15 @@ const char *SwiftAsyncContextAttr::getSpelling() const {
   }
 }
 
+bool SwiftAsyncContextAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // SwiftAsyncErrorAttr implementation
 
@@ -48843,6 +51179,15 @@ const char *SwiftCallAttr::getSpelling() const {
   }
 }
 
+bool SwiftCallAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // SwiftContextAttr implementation
 
@@ -48955,6 +51300,15 @@ const char *SwiftContextAttr::getSpelling() const {
   }
 }
 
+bool SwiftContextAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // SwiftErrorAttr implementation
 
@@ -49177,6 +51531,15 @@ const char *SwiftErrorResultAttr::getSpelling() const {
   }
 }
 
+bool SwiftErrorResultAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // SwiftImportAsNonGenericAttr implementation
 
@@ -49401,6 +51764,15 @@ const char *SwiftIndirectResultAttr::getSpelling() const {
   }
 }
 
+bool SwiftIndirectResultAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // SwiftNameAttr implementation
 
@@ -50195,6 +52567,15 @@ const char *SysVABIAttr::getSpelling() const {
   }
 }
 
+bool SysVABIAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // TLSModelAttr implementation
 
@@ -50328,6 +52709,22 @@ const char *TLSModelAttr::getSpelling() const {
   }
 }
 
+bool TLSModelAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getModel().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getModel(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getModel().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // TargetAttr implementation
 
@@ -50461,6 +52858,22 @@ const char *TargetAttr::getSpelling() const {
   }
 }
 
+bool TargetAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getFeaturesStr().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getFeaturesStr(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getFeaturesStr().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // TargetClonesAttr implementation
 
@@ -50620,6 +53033,23 @@ const char *TargetClonesAttr::getSpelling() const {
   }
 }
 
+bool TargetClonesAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+    for (auto it : featuresStrs()) {      args.push_back(StringLiteral::Create(
+        C,
+        it,
+        StringLiteralKind::Unevaluated,
+        false,
+        C.getConstantArrayType(C.CharTy, llvm::APInt(32, it.size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+        srcLocation));
+    }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // TargetVersionAttr implementation
 
@@ -50753,6 +53183,22 @@ const char *TargetVersionAttr::getSpelling() const {
   }
 }
 
+bool TargetVersionAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getNamesStr().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getNamesStr(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getNamesStr().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // TestTypestateAttr implementation
 
@@ -51018,6 +53464,15 @@ const char *ThisCallAttr::getSpelling() const {
   }
 }
 
+bool ThisCallAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // ThreadAttr implementation
 
@@ -51204,6 +53659,15 @@ const char *TransparentUnionAttr::getSpelling() const {
   }
 }
 
+bool TransparentUnionAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // TrivialABIAttr implementation
 
@@ -51305,6 +53769,15 @@ const char *TrivialABIAttr::getSpelling() const {
   }
 }
 
+bool TrivialABIAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // TryAcquireCapabilityAttr implementation
 
@@ -52249,6 +54722,22 @@ const char *TypeVisibilityAttr::getSpelling() const {
   }
 }
 
+bool TypeVisibilityAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!StringRef(ConvertVisibilityTypeToStr(getVisibility())).empty()) {    args.push_back(StringLiteral::Create(C,
+                                         StringRef(ConvertVisibilityTypeToStr(getVisibility())),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, StringRef(ConvertVisibilityTypeToStr(getVisibility())).size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // UPtrAttr implementation
 
@@ -52632,6 +55121,15 @@ const char *UninitializedAttr::getSpelling() const {
   }
 }
 
+bool UninitializedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // UnlikelyAttr implementation
 
@@ -52733,6 +55231,15 @@ const char *UnlikelyAttr::getSpelling() const {
   }
 }
 
+bool UnlikelyAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // UnsafeBufferUsageAttr implementation
 
@@ -52845,6 +55352,15 @@ const char *UnsafeBufferUsageAttr::getSpelling() const {
   }
 }
 
+bool UnsafeBufferUsageAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // UnusedAttr implementation
 
@@ -52989,6 +55505,15 @@ const char *UnusedAttr::getSpelling() const {
   }
 }
 
+bool UnusedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // UseHandleAttr implementation
 
@@ -53122,6 +55647,22 @@ const char *UseHandleAttr::getSpelling() const {
   }
 }
 
+bool UseHandleAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getHandleType().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getHandleType(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getHandleType().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // UsedAttr implementation
 
@@ -53234,6 +55775,15 @@ const char *UsedAttr::getSpelling() const {
   }
 }
 
+bool UsedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // UsingIfExistsAttr implementation
 
@@ -53335,6 +55885,15 @@ const char *UsingIfExistsAttr::getSpelling() const {
   }
 }
 
+bool UsingIfExistsAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // UuidAttr implementation
 
@@ -53766,6 +56325,37 @@ const char *VTablePointerAuthenticationAttr::getSpelling() const {
   }
 }
 
+bool VTablePointerAuthenticationAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!StringRef(ConvertVPtrAuthKeyTypeToStr(getKey())).empty()) {    args.push_back(StringLiteral::Create(C,
+                                         StringRef(ConvertVPtrAuthKeyTypeToStr(getKey())),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, StringRef(ConvertVPtrAuthKeyTypeToStr(getKey())).size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+  if (!StringRef(ConvertAddressDiscriminationModeToStr(getAddressDiscrimination())).empty()) {    args.push_back(StringLiteral::Create(C,
+                                         StringRef(ConvertAddressDiscriminationModeToStr(getAddressDiscrimination())),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, StringRef(ConvertAddressDiscriminationModeToStr(getAddressDiscrimination())).size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+  if (!StringRef(ConvertExtraDiscriminationToStr(getExtraDiscrimination())).empty()) {    args.push_back(StringLiteral::Create(C,
+                                         StringRef(ConvertExtraDiscriminationToStr(getExtraDiscrimination())),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, StringRef(ConvertExtraDiscriminationToStr(getExtraDiscrimination())).size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+    args.push_back(IntegerLiteral::Create(C, llvm::APInt(32, getCustomDiscriminationValue()), C.IntTy, srcLocation));
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // VecReturnAttr implementation
 
@@ -53867,6 +56457,15 @@ const char *VecReturnAttr::getSpelling() const {
   }
 }
 
+bool VecReturnAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // VecTypeHintAttr implementation
 
@@ -54082,6 +56681,15 @@ const char *VectorCallAttr::getSpelling() const {
   }
 }
 
+bool VectorCallAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // VisibilityAttr implementation
 
@@ -54235,6 +56843,22 @@ const char *VisibilityAttr::getSpelling() const {
   }
 }
 
+bool VisibilityAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!StringRef(ConvertVisibilityTypeToStr(getVisibility())).empty()) {    args.push_back(StringLiteral::Create(C,
+                                         StringRef(ConvertVisibilityTypeToStr(getVisibility())),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, StringRef(ConvertVisibilityTypeToStr(getVisibility())).size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // WarnUnusedAttr implementation
 
@@ -54347,6 +56971,15 @@ const char *WarnUnusedAttr::getSpelling() const {
   }
 }
 
+bool WarnUnusedAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // WarnUnusedResultAttr implementation
 
@@ -54543,6 +57176,22 @@ const char *WarnUnusedResultAttr::getSpelling() const {
   }
 }
 
+bool WarnUnusedResultAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getMessage().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getMessage(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getMessage().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // WeakAttr implementation
 
@@ -54655,6 +57304,15 @@ const char *WeakAttr::getSpelling() const {
   }
 }
 
+bool WeakAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // WeakImportAttr implementation
 
@@ -54767,6 +57425,15 @@ const char *WeakImportAttr::getSpelling() const {
   }
 }
 
+bool WeakImportAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // WeakRefAttr implementation
 
@@ -54907,6 +57574,22 @@ const char *WeakRefAttr::getSpelling() const {
   }
 }
 
+bool WeakRefAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getAliasee().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getAliasee(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getAliasee().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // WebAssemblyExportNameAttr implementation
 
@@ -55040,6 +57723,22 @@ const char *WebAssemblyExportNameAttr::getSpelling() const {
   }
 }
 
+bool WebAssemblyExportNameAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getExportName().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getExportName(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getExportName().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // WebAssemblyFuncrefAttr implementation
 
@@ -55247,6 +57946,22 @@ const char *WebAssemblyImportModuleAttr::getSpelling() const {
   }
 }
 
+bool WebAssemblyImportModuleAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getImportModule().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getImportModule(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getImportModule().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // WebAssemblyImportNameAttr implementation
 
@@ -55380,6 +58095,22 @@ const char *WebAssemblyImportNameAttr::getSpelling() const {
   }
 }
 
+bool WebAssemblyImportNameAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!getImportName().empty()) {    args.push_back(StringLiteral::Create(C,
+                                         getImportName(),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, getImportName().size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // WorkGroupSizeHintAttr implementation
 
@@ -55601,6 +58332,15 @@ const char *X86ForceAlignArgPointerAttr::getSpelling() const {
   }
 }
 
+bool X86ForceAlignArgPointerAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // XRayInstrumentAttr implementation
 
@@ -55757,6 +58497,15 @@ const char *XRayInstrumentAttr::getSpelling() const {
   }
 }
 
+bool XRayInstrumentAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 
 // XRayLogArgsAttr implementation
 
@@ -56052,6 +58801,22 @@ const char *ZeroCallUsedRegsAttr::getSpelling() const {
   }
 }
 
+bool ZeroCallUsedRegsAttr::extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const {
+  SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2> args;
+  SmallVector<void *, 2> typeArgs;
+  const AttributeCommonInfo* info = this;
+  IdentifierInfo &attrName = C.Idents.get(info->getAttrName()->getName());
+
+  if (!StringRef(ConvertZeroCallUsedRegsKindToStr(getZeroCallUsedRegs())).empty()) {    args.push_back(StringLiteral::Create(C,
+                                         StringRef(ConvertZeroCallUsedRegsKindToStr(getZeroCallUsedRegs())),
+                                         StringLiteralKind::Unevaluated,
+                                         false,
+                                         C.getConstantArrayType(C.CharTy, llvm::APInt(32, StringRef(ConvertZeroCallUsedRegsKindToStr(getZeroCallUsedRegs())).size() + 1), nullptr, ArraySizeModifier::Normal, 0),
+                                         srcLocation));
+  }
+
+  return onSyntax(&attrName, args, typeArgs, info->getForm());
+}
 const char *Attr::getSpelling() const {
   switch (getKind()) {
   case attr::AArch64SVEPcs:
@@ -56232,6 +58997,8 @@ const char *Attr::getSpelling() const {
     return cast<CUDASharedAttr>(this)->getSpelling();
   case attr::CXX11NoReturn:
     return cast<CXX11NoReturnAttr>(this)->getSpelling();
+  case attr::CXX26Annotation:
+    return cast<CXX26AnnotationAttr>(this)->getSpelling();
   case attr::CXXAssume:
     return cast<CXXAssumeAttr>(this)->getSpelling();
   case attr::CallableWhen:
@@ -56442,6 +59209,8 @@ const char *Attr::getSpelling() const {
     return cast<InitPriorityAttr>(this)->getSpelling();
   case attr::InitSeg:
     return cast<InitSegAttr>(this)->getSpelling();
+  case attr::InstantiationDependent:
+    return cast<InstantiationDependentAttr>(this)->getSpelling();
   case attr::IntelOclBicc:
     return cast<IntelOclBiccAttr>(this)->getSpelling();
   case attr::InternalLinkage:
@@ -57170,6 +59939,8 @@ Attr *Attr::clone(ASTContext &C) const {
     return cast<CUDASharedAttr>(this)->clone(C);
   case attr::CXX11NoReturn:
     return cast<CXX11NoReturnAttr>(this)->clone(C);
+  case attr::CXX26Annotation:
+    return cast<CXX26AnnotationAttr>(this)->clone(C);
   case attr::CXXAssume:
     return cast<CXXAssumeAttr>(this)->clone(C);
   case attr::CallableWhen:
@@ -57380,6 +60151,8 @@ Attr *Attr::clone(ASTContext &C) const {
     return cast<InitPriorityAttr>(this)->clone(C);
   case attr::InitSeg:
     return cast<InitSegAttr>(this)->clone(C);
+  case attr::InstantiationDependent:
+    return cast<InstantiationDependentAttr>(this)->clone(C);
   case attr::IntelOclBicc:
     return cast<IntelOclBiccAttr>(this)->clone(C);
   case attr::InternalLinkage:
@@ -58108,6 +60881,8 @@ void Attr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
     return cast<CUDASharedAttr>(this)->printPretty(OS, Policy);
   case attr::CXX11NoReturn:
     return cast<CXX11NoReturnAttr>(this)->printPretty(OS, Policy);
+  case attr::CXX26Annotation:
+    return cast<CXX26AnnotationAttr>(this)->printPretty(OS, Policy);
   case attr::CXXAssume:
     return cast<CXXAssumeAttr>(this)->printPretty(OS, Policy);
   case attr::CallableWhen:
@@ -58318,6 +61093,8 @@ void Attr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
     return cast<InitPriorityAttr>(this)->printPretty(OS, Policy);
   case attr::InitSeg:
     return cast<InitSegAttr>(this)->printPretty(OS, Policy);
+  case attr::InstantiationDependent:
+    return cast<InstantiationDependentAttr>(this)->printPretty(OS, Policy);
   case attr::IntelOclBicc:
     return cast<IntelOclBiccAttr>(this)->printPretty(OS, Policy);
   case attr::InternalLinkage:
@@ -59048,6 +61825,8 @@ if (getKind() != Other.getKind()) return false;
     return cast<CUDASharedAttr>(this)->isEquivalent(cast<CUDASharedAttr>(Other), Context);
   case attr::CXX11NoReturn:
     return cast<CXX11NoReturnAttr>(this)->isEquivalent(cast<CXX11NoReturnAttr>(Other), Context);
+  case attr::CXX26Annotation:
+    return cast<CXX26AnnotationAttr>(this)->isEquivalent(cast<CXX26AnnotationAttr>(Other), Context);
   case attr::CXXAssume:
     return cast<CXXAssumeAttr>(this)->isEquivalent(cast<CXXAssumeAttr>(Other), Context);
   case attr::CallableWhen:
@@ -59258,6 +62037,8 @@ if (getKind() != Other.getKind()) return false;
     return cast<InitPriorityAttr>(this)->isEquivalent(cast<InitPriorityAttr>(Other), Context);
   case attr::InitSeg:
     return cast<InitSegAttr>(this)->isEquivalent(cast<InitSegAttr>(Other), Context);
+  case attr::InstantiationDependent:
+    return cast<InstantiationDependentAttr>(this)->isEquivalent(cast<InstantiationDependentAttr>(Other), Context);
   case attr::IntelOclBicc:
     return cast<IntelOclBiccAttr>(this)->isEquivalent(cast<IntelOclBiccAttr>(Other), Context);
   case attr::InternalLinkage:
@@ -59986,6 +62767,8 @@ void Attr::Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const {
     return cast<CUDASharedAttr>(this)->Profile(ID, Ctx);
   case attr::CXX11NoReturn:
     return cast<CXX11NoReturnAttr>(this)->Profile(ID, Ctx);
+  case attr::CXX26Annotation:
+    return cast<CXX26AnnotationAttr>(this)->Profile(ID, Ctx);
   case attr::CXXAssume:
     return cast<CXXAssumeAttr>(this)->Profile(ID, Ctx);
   case attr::CallableWhen:
@@ -60196,6 +62979,8 @@ void Attr::Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const {
     return cast<InitPriorityAttr>(this)->Profile(ID, Ctx);
   case attr::InitSeg:
     return cast<InitSegAttr>(this)->Profile(ID, Ctx);
+  case attr::InstantiationDependent:
+    return cast<InstantiationDependentAttr>(this)->Profile(ID, Ctx);
   case attr::IntelOclBicc:
     return cast<IntelOclBiccAttr>(this)->Profile(ID, Ctx);
   case attr::InternalLinkage:

@@ -101,6 +101,13 @@ struct ReadDispatcher<CallingConv> {
   }
 };
 template <>
+struct ReadDispatcher<char> {
+  template <class BasicReader, class... Args>
+  static char read(BasicReader &R, Args &&... args) {
+    return R.readChar(std::forward<Args>(args)...);
+  }
+};
+template <>
 struct ReadDispatcher<ConceptDecl*> {
   template <class BasicReader, class... Args>
   static ConceptDecl* read(BasicReader &R, Args &&... args) {
@@ -311,6 +318,13 @@ struct ReadDispatcher<RefQualifierKind> {
   }
 };
 template <>
+struct ReadDispatcher<ReflectionKind> {
+  template <class BasicReader, class... Args>
+  static ReflectionKind read(BasicReader &R, Args &&... args) {
+    return R.readReflectionKind(std::forward<Args>(args)...);
+  }
+};
+template <>
 struct ReadDispatcher<Selector> {
   template <class BasicReader, class... Args>
   static Selector read(BasicReader &R, Args &&... args) {
@@ -322,6 +336,13 @@ struct ReadDispatcher<SourceLocation> {
   template <class BasicReader, class... Args>
   static SourceLocation read(BasicReader &R, Args &&... args) {
     return R.readSourceLocation(std::forward<Args>(args)...);
+  }
+};
+template <>
+struct ReadDispatcher<SpliceSpecifier*> {
+  template <class BasicReader, class... Args>
+  static SpliceSpecifier* read(BasicReader &R, Args &&... args) {
+    return R.readSpliceSpecifierRef(std::forward<Args>(args)...);
   }
 };
 template <>
@@ -474,6 +495,12 @@ struct UnpackOptionalValue<CXXRecordDecl*> {
   }
 };
 template <>
+struct UnpackOptionalValue<char> {
+  static std::optional<char> unpack(char value) {
+    return value ? std::optional<char>(value - 1) : std::nullopt;
+  }
+};
+template <>
 struct UnpackOptionalValue<ConceptDecl*> {
   static std::optional<ConceptDecl*> unpack(ConceptDecl* value) {
     return value ? std::optional<ConceptDecl*>(value) : std::nullopt;
@@ -543,6 +570,12 @@ template <>
 struct UnpackOptionalValue<QualType> {
   static std::optional<QualType> unpack(QualType value) {
     return value.isNull() ? std::nullopt : std::optional<QualType>(value);
+  }
+};
+template <>
+struct UnpackOptionalValue<SpliceSpecifier*> {
+  static std::optional<SpliceSpecifier*> unpack(SpliceSpecifier* value) {
+    return value ? std::optional<SpliceSpecifier*>(value) : std::nullopt;
   }
 };
 template <>
@@ -744,6 +777,137 @@ public:
     Stmt* rhs = subR.find("rhs").readStmtRef();
     
     return APValue(cast<AddrLabelExpr>(lhs), cast<AddrLabelExpr>(rhs));
+  
+    }
+
+    case APValue::Reflection: {
+    uint32_t depth = subR.find("depth").readUInt32();
+    std::optional<QualType> reflectedResultType;
+    if ( depth > 0 ) {
+      reflectedResultType.emplace(subR.find("reflectedResultType").readQualType());
+    }
+    ReflectionKind kind = subR.find("kind").readReflectionKind();
+    std::optional<QualType> baseType;
+    if ( kind == ReflectionKind::Type ) {
+      baseType.emplace(subR.find("baseType").readQualType());
+    }
+    std::optional<APValue> baseAPValue;
+    if ( depth > 0 ) {
+      baseAPValue.emplace(subR.find("baseAPValue").readAPValue());
+    }
+    std::optional<ValueDecl*> baseDecl;
+    if ( kind == ReflectionKind::Declaration ) {
+      baseDecl.emplace(subR.find("baseDecl").readValueDeclRef());
+    }
+    std::optional<TemplateName> baseTemplate;
+    if ( kind == ReflectionKind::Template ) {
+      baseTemplate.emplace(subR.find("baseTemplate").readTemplateName());
+    }
+    std::optional<Decl*> baseNamespace;
+    if ( kind == ReflectionKind::Namespace ) {
+      baseNamespace.emplace(subR.find("baseNamespace").readDeclRef());
+    }
+    std::optional<UsingShadowDecl*> baseEntityProxy;
+    if ( kind == ReflectionKind::EntityProxy ) {
+      baseEntityProxy.emplace(subR.find("baseEntityProxy").readUsingShadowDeclRef());
+    }
+    std::optional<Decl*> baseParameter;
+    if ( kind == ReflectionKind::Parameter  ) {
+      baseParameter.emplace(subR.find("baseParameter").readDeclRef());
+    }
+    std::optional<CXXRecordDecl*> baseBaseSpecDerivedFrom;
+    if ( kind == ReflectionKind::BaseSpecifier ) {
+      baseBaseSpecDerivedFrom.emplace(subR.find("baseBaseSpecDerivedFrom").readCXXRecordDeclRef());
+    }
+    std::optional<uint32_t> baseBaseSpecIdx;
+    if ( kind == ReflectionKind::BaseSpecifier ) {
+      baseBaseSpecIdx.emplace(subR.find("baseBaseSpecIdx").readUInt32());
+    }
+    std::optional<QualType> baseTdmsType;
+    if ( kind == ReflectionKind::DataMemberSpec ) {
+      baseTdmsType.emplace(subR.find("baseTdmsType").readQualType());
+    }
+    std::optional<bool> baseTdmsHasName;
+    if ( kind == ReflectionKind::DataMemberSpec ) {
+      baseTdmsHasName.emplace(subR.find("baseTdmsHasName").readBool());
+    }
+    llvm::SmallVector<char, 8> baseTdmsName_buffer_0;
+    std::optional<llvm::ArrayRef<char>> baseTdmsName;
+    if ( kind == ReflectionKind::DataMemberSpec ) {
+      baseTdmsName.emplace(subR.find("baseTdmsName").template readArray<char>(baseTdmsName_buffer_0));
+    }
+    std::optional<bool> baseTdmsHasAlignment;
+    if ( kind == ReflectionKind::DataMemberSpec ) {
+      baseTdmsHasAlignment.emplace(subR.find("baseTdmsHasAlignment").readBool());
+    }
+    std::optional<uint32_t> baseTdmsAlignment;
+    if ( kind == ReflectionKind::DataMemberSpec ) {
+      baseTdmsAlignment.emplace(subR.find("baseTdmsAlignment").readUInt32());
+    }
+    std::optional<bool> baseTdmsHasBitWidth;
+    if ( kind == ReflectionKind::DataMemberSpec ) {
+      baseTdmsHasBitWidth.emplace(subR.find("baseTdmsHasBitWidth").readBool());
+    }
+    std::optional<uint32_t> baseTdmsBitWidth;
+    if ( kind == ReflectionKind::DataMemberSpec ) {
+      baseTdmsBitWidth.emplace(subR.find("baseTdmsBitWidth").readUInt32());
+    }
+    std::optional<bool> baseTdmsNoUniqueAddress;
+    if ( kind == ReflectionKind::DataMemberSpec ) {
+      baseTdmsNoUniqueAddress.emplace(subR.find("baseTdmsNoUniqueAddress").readBool());
+    }
+    
+    APValue V;
+    switch (kind) {
+    case ReflectionKind::Null:
+      V = APValue(kind, nullptr);
+      break;
+    case ReflectionKind::Type:
+      V = APValue(kind, (*baseType).getAsOpaquePtr());
+      break;
+    case ReflectionKind::Object:
+    case ReflectionKind::Value:
+      V = *baseAPValue;
+      break;
+    case ReflectionKind::Declaration:
+      V = APValue(kind, *baseDecl);
+      break;
+    case ReflectionKind::Template:
+      V = APValue(kind, (*baseTemplate).getAsVoidPointer());
+      break;
+    case ReflectionKind::Namespace:
+      V = APValue(kind, *baseNamespace);
+      break;
+    case ReflectionKind::EntityProxy:
+      V = APValue(kind, *baseEntityProxy);
+      break;
+    case ReflectionKind::Parameter:
+      V = APValue(kind, *baseParameter);
+      break;
+    case ReflectionKind::BaseSpecifier:
+      V = APValue(
+            kind,
+            (*baseBaseSpecDerivedFrom)->bases().begin() + (*baseBaseSpecIdx));
+      break;
+    case ReflectionKind::DataMemberSpec: {
+      TagDataMemberSpec *TDMS = new (ctx) TagDataMemberSpec {};
+      TDMS->Ty = *baseTdmsType;
+      if (*baseTdmsHasName)
+        TDMS->Name = std::string(baseTdmsName->begin(), baseTdmsName->end());
+      if (*baseTdmsHasAlignment)
+        TDMS->Alignment = *baseTdmsAlignment;
+      if (*baseTdmsHasBitWidth)
+        TDMS->BitWidth = *baseTdmsBitWidth;
+      TDMS->NoUniqueAddress = *baseTdmsNoUniqueAddress;
+
+      V = APValue(kind, TDMS);
+    }
+    }
+
+    for (unsigned k = 0; k < depth; ++k)
+      V = V.Lift(*reflectedResultType);
+
+    return V;
   
     }
 
@@ -996,6 +1160,9 @@ public:
   }
   RefQualifierKind readRefQualifierKind() {
     return asImpl().template readEnum<RefQualifierKind>();
+  }
+  ReflectionKind readReflectionKind() {
+    return asImpl().template readEnum<ReflectionKind>();
   }
   TagDecl* readTagDeclRef() {
     return cast_or_null<TagDecl>(asImpl().readDeclRef());

@@ -1816,6 +1816,8 @@ that appears to be capable of returning to its caller.
 The ``[[_Noreturn]]`` spelling is deprecated and only exists to ease code
 migration for code using ``[[noreturn]]`` after including ``<stdnoreturn.h>``.)reST";
 
+static const char AttrDoc_CXX26Annotation[] = R"reST()reST";
+
 static const char AttrDoc_CXXAssume[] = R"reST(The ``assume`` attribute is used to indicate to the optimizer that a
 certain condition is assumed to be true at a certain point in the
 program. If this condition is violated at runtime, the behavior is
@@ -4060,6 +4062,8 @@ after the standard ``.CRT$XCU`` sections. See the init_seg_
 documentation on MSDN for more information.
 
 .. _init_seg: http://msdn.microsoft.com/en-us/library/7977wcck(v=vs.110).aspx)reST";
+
+static const char AttrDoc_InstantiationDependent[] = R"reST()reST";
 
 static const char AttrDoc_IntelOclBicc[] = R"reST(No documentation.)reST";
 

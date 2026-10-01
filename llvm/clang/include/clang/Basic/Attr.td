@@ -761,6 +761,8 @@ class Attr {
   // the attribute. This function will be automatically called by
   // `Sema::CheckAttributesOnDeducedType()`.
   bit IsTypeDependent = 0;
+  // We may want to opt out of reflection even in case where it would be supported
+  bit EscapeReflection = 0;
   // Lists language options, one of which is required to be true for the
   // attribute to be applicable. If empty, no language options are required.
   list<LangOpt> LangOpts = [];
@@ -772,6 +774,9 @@ class Attr {
   string comparisonFn = "";
   string profileFn = "";
 
+  // Any additional text that should be included verbatim after instantiating
+  // an attribute on a template.
+  code AdditionalInstantiationStmts =[{}];
   // Any documentation that should be associated with the attribute. Since an
   // attribute may be documented under multiple categories, more than one
   // Documentation entry may be listed.
@@ -1048,6 +1053,55 @@ def AnnotateType : TypeAttr {
   let HasCustomParsing = 1;
   let AcceptsExprPack = 1;
   let Documentation = [AnnotateTypeDocs];
+}
+
+def CXX26Annotation : InheritableParamAttr {
+  let Spellings = [];
+  let Args = [ExprArgument<"Arg">];
+  let AdditionalMembers = [{
+private:
+  APValue Value;
+  SourceLocation EqLoc;
+
+public:
+  static CXX26AnnotationAttr *Create(ASTContext &Ctx, \
+                                     const AttributeCommonInfo &CommonInfo) {
+    return CXX26AnnotationAttr::Create(Ctx, nullptr,  CommonInfo);
+  }
+  static CXX26AnnotationAttr *CreateImplicit( \
+          ASTContext &Ctx, \
+          const AttributeCommonInfo &CommonInfo) {
+    return CXX26AnnotationAttr::CreateImplicit(Ctx, nullptr, CommonInfo);
+  }
+
+  APValue getValue() const { return Value; }
+  void setValue(APValue V) { Value = V; }
+
+  SourceLocation getEqLoc() const { return EqLoc; }
+  void setEqLoc(SourceLocation Loc) { EqLoc = Loc; }
+  }];
+
+  let AdditionalInstantiationStmts = [{
+    Expr::EvalResult V;
+    if (!Result->getArg()->isValueDependent() &&
+        !Result->getArg()->EvaluateAsRValue(V, C, true))
+      llvm_unreachable("failed to evaluate annotation expression");
+
+    Result->setValue(V.Val);
+    Result->setEqLoc(A->getEqLoc());
+  }];
+
+  let HasCustomParsing = 1;
+  let TemplateDependent = 1;
+  let MeaningfulToClassTemplateDefinition = 1;
+  let Documentation = [InternalOnly];
+}
+
+def InstantiationDependent : Attr {
+  let Spellings = [CXX11<"clang", "instantiation_dependent">];
+  let TemplateDependent = 1;
+  let Subjects = SubjectList<[Function]>;
+  let Documentation = [InternalOnly];
 }
 
 def ARMInterrupt : InheritableAttr, TargetSpecificAttr<TargetARM> {
@@ -3543,7 +3597,7 @@ def ZeroCallUsedRegs : InheritableAttr {
 def Pascal : DeclOrTypeAttr {
   let Spellings = [Clang<"pascal">, CustomKeyword<"__pascal">,
                    CustomKeyword<"_pascal">];
-//  let Subjects = [Function, ObjCMethod];
+//  let Subjects = [Function, ObjCMethod]; 
   let Documentation = [Undocumented];
 }
 

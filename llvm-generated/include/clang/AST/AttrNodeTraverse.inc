@@ -96,6 +96,10 @@
     Visit(SA->getMinBlocks());
     Visit(SA->getMaxBlocks());
   }
+  void VisitCXX26AnnotationAttr(const CXX26AnnotationAttr *A) {
+    const auto *SA = cast<CXX26AnnotationAttr>(A); (void)SA;
+    Visit(SA->getArg());
+  }
   void VisitCXXAssumeAttr(const CXXAssumeAttr *A) {
     const auto *SA = cast<CXXAssumeAttr>(A); (void)SA;
     Visit(SA->getAssumption());

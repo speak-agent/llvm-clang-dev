@@ -4011,9 +4011,34 @@ defm application_extension : BoolFOption<"application-extension",
   NegFlag<SetFalse>>;
 defm reflection : BoolFOption<"reflection",
   LangOpts<"Reflection">, DefaultFalse,
-  PosFlag<SetTrue, [], [CC1Option],
-          "Enable C++26 reflection">,
+  PosFlag<SetTrue, [], [ClangOption, CC1Option],
+          "Enable C++26 reflection as described by P2996">,
   NegFlag<SetFalse>>, ShouldParseIf<cplusplus.KeyPath>;
+defm parameter_reflection : BoolFOption<"parameter-reflection",
+  LangOpts<"ParameterReflection">, DefaultFalse,
+  PosFlag<SetTrue, [], [ClangOption, CC1Option],
+          "Enable function parameter reflection as described by P3096 (needs -freflection)">,
+  NegFlag<SetFalse>>;
+defm attribute_reflection : BoolFOption<"attribute-reflection",
+  LangOpts<"AttributeReflection">, DefaultFalse,
+  PosFlag<SetTrue, [], [ClangOption, CC1Option],
+          "Enable standard attribute reflection as described by P3385 (needs -freflection)">,
+  NegFlag<SetFalse>>;
+defm annotation_attributes : BoolFOption<"annotation-attributes",
+  LangOpts<"AnnotationAttributes">, DefaultFalse,
+  PosFlag<SetTrue, [], [ClangOption, CC1Option],
+          "Enable annotations as described by P3394">,
+  NegFlag<SetFalse>>;
+defm entity_proxy_reflection : BoolFOption<"entity-proxy-reflection",
+  LangOpts<"EntityProxyReflection">, DefaultFalse,
+  PosFlag<SetTrue, [], [ClangOption, CC1Option],
+          "Enable reflection of entity proxies (needs -freflection)">,
+  NegFlag<SetFalse>>;
+defm reflection_latest : BoolFOption<"reflection-latest",
+  LangOpts<"ReflectionLatest">, DefaultFalse,
+  PosFlag<SetTrue, [], [ClangOption, CC1Option],
+          "Enable all reflection features supported by this compiler (-freflection and the options above)">,
+  NegFlag<SetFalse>>;
 defm sized_deallocation : BoolFOption<"sized-deallocation",
   LangOpts<"SizedDeallocation">, Default<cpp14.KeyPath>,
   PosFlag<SetTrue, [], [], "Enable C++14 sized global deallocation functions">,

@@ -2659,6 +2659,14 @@ bool VarDecl::checkForConstantInitialization(
 
   assert(!getInit()->isValueDependent());
 
+  // TODO(P2996): A proper upstream implementation would need a means of piping
+  // back through to 'evaluateValueImpl' that the constant evaluation failed
+  // due to premature evaluation of 'define_aggregate', and not because it isn't
+  // necessarily a constant expression. As written, this is a blanket
+  // pessimization for result caching, but that need not be the case.
+  if (getDescribedVarTemplate())
+    return true;
+
   // Evaluate the initializer to check whether it's a constant expression.
   Eval->HasConstantInitialization =
       evaluateValueImpl(&Notes, true) && Notes.empty();
@@ -3310,6 +3318,8 @@ bool FunctionDecl::isImmediateEscalating() const {
 
   // - a function that results from the instantiation of a templated entity
   // defined with the constexpr specifier.
+  if (getDeclContext()->isDependentContext())
+    return true;
   TemplatedKind TK = getTemplatedKind();
   if (TK != TK_NonTemplate && TK != TK_DependentNonTemplate &&
       isConstexprSpecified())
@@ -5226,6 +5236,7 @@ RecordDecl::RecordDecl(Kind DK, TagKind TK, const ASTContext &C,
   setParamDestroyedInCallee(false);
   setArgPassingRestrictions(RecordArgPassingKind::CanPassInRegs);
   setIsRandomized(false);
+  setIsConstevalOnly(false);
   setODRHash(0);
 }
 
@@ -5293,6 +5304,23 @@ void RecordDecl::completeDefinition() {
   TagDecl::completeDefinition();
 
   ASTContext &Ctx = getASTContext();
+
+  // Compute whether this is a consteval-only type.
+  for (FieldDecl *FD : fields()) {
+    if (FD->getType()->isConstevalOnly()) {
+      setIsConstevalOnly(true);
+      break;
+    }
+  }
+  if (auto CXXRD = dyn_cast<CXXRecordDecl>(this);
+      CXXRD && !isConstevalOnly()) {
+    for (CXXBaseSpecifier BaseSpecifier : CXXRD->bases()) {
+      if (BaseSpecifier.getType()->isConstevalOnly()) {
+        setIsConstevalOnly(true);
+        break;
+      }
+    }
+  }
 
   // Layouts are dumped when computed, so if we are dumping for all complete
   // types, we need to force usage to get types that wouldn't be used elsewhere.

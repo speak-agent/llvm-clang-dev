@@ -1059,6 +1059,17 @@
     New->setPackExpansion(isPackExpansion);
     break;
   }
+  case attr::CXX26Annotation: {
+    bool isInherited = Record.readInt();
+    bool isImplicit = Record.readInt();
+    bool isPackExpansion = Record.readInt();
+    Expr * arg = Record.readExpr();
+    New = new (Context) CXX26AnnotationAttr(Context, Info, arg);
+    cast<InheritableAttr>(New)->setInherited(isInherited);
+    New->setImplicit(isImplicit);
+    New->setPackExpansion(isPackExpansion);
+    break;
+  }
   case attr::CXXAssume: {
     bool isImplicit = Record.readInt();
     bool isPackExpansion = Record.readInt();
@@ -2159,6 +2170,14 @@
     bool isPackExpansion = Record.readInt();
     std::string section= Record.readString();
     New = new (Context) InitSegAttr(Context, Info, section);
+    New->setImplicit(isImplicit);
+    New->setPackExpansion(isPackExpansion);
+    break;
+  }
+  case attr::InstantiationDependent: {
+    bool isImplicit = Record.readInt();
+    bool isPackExpansion = Record.readInt();
+    New = new (Context) InstantiationDependentAttr(Context, Info);
     New->setImplicit(isImplicit);
     New->setPackExpansion(isPackExpansion);
     break;

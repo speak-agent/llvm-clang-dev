@@ -585,6 +585,7 @@ if (ScopeName == "") {
     .Case("diagnose_as_builtin", (1))
     .Case("noderef", (1))
     .Case("objc_bridge", (1))
+    .Case("instantiation_dependent", (1))
     .Case("set_typestate", (1))
     .Case("coro_lifetimebound", (1))
     .Case("objc_protocol_requires_explicit_implementation", (1))

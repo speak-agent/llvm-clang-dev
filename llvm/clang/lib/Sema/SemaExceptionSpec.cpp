@@ -1161,6 +1161,9 @@ CanThrowResult Sema::canThrow(const Stmt *S) {
     return mergeCanThrow(CT, canSubStmtsThrow(*this, CE));
   }
 
+  case Expr::ExplDependentCallExprClass:
+    return canThrow(cast<ExplDependentCallExpr>(S)->getSubExpr());
+
   case Expr::CXXConstructExprClass:
   case Expr::CXXTemporaryObjectExprClass: {
     auto *CE = cast<CXXConstructExpr>(S);
@@ -1364,6 +1367,7 @@ CanThrowResult Sema::canThrow(const Stmt *S) {
   case Expr::DependentScopeDeclRefExprClass:
   case Expr::CXXFoldExprClass:
   case Expr::RecoveryExprClass:
+  case Expr::CXXDependentMemberSpliceExprClass:
     return CT_Dependent;
 
   case Expr::AsTypeExprClass:
@@ -1396,6 +1400,10 @@ CanThrowResult Sema::canThrow(const Stmt *S) {
   case Expr::CXXNullPtrLiteralExprClass:
   case Expr::CXXPseudoDestructorExprClass:
   case Expr::CXXReflectExprClass:
+  case Expr::CXXMetafunctionExprClass:
+  case Expr::CXXSpliceExprClass:
+  case Expr::StackLocationExprClass:
+  case Expr::ExtractLValueExprClass:
   case Expr::CXXScalarValueInitExprClass:
   case Expr::CXXThisExprClass:
   case Expr::CXXUuidofExprClass:

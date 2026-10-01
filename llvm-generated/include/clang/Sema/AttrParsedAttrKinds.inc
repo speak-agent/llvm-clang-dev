@@ -4854,10 +4854,10 @@ static AttributeCommonInfo::Kind getAttrKind(StringRef Name, AttributeCommonInfo
       return AttributeCommonInfo::AT_PatchableFunctionEntry;	 // "gnu::patchable_function_entry"
     }
     break;
-  case 30:	 // 6 strings to match.
+  case 30:	 // 7 strings to match.
     switch (Name[0]) {
     default: break;
-    case 'c':	 // 5 strings to match.
+    case 'c':	 // 6 strings to match.
       if (memcmp(Name.data()+1, "lang::", 6) != 0)
         break;
       switch (Name[7]) {
@@ -4866,6 +4866,10 @@ static AttributeCommonInfo::Kind getAttrKind(StringRef Name, AttributeCommonInfo
         if (memcmp(Name.data()+8, "f_returns_not_retained", 22) != 0)
           break;
         return AttributeCommonInfo::AT_CFReturnsNotRetained;	 // "clang::cf_returns_not_retained"
+      case 'i':	 // 1 string to match.
+        if (memcmp(Name.data()+8, "nstantiation_dependent", 22) != 0)
+          break;
+        return AttributeCommonInfo::AT_InstantiationDependent;	 // "clang::instantiation_dependent"
       case 'n':	 // 2 strings to match.
         if (memcmp(Name.data()+8, "s_returns_", 10) != 0)
           break;

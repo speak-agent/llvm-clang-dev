@@ -533,6 +533,11 @@ LANGOPT(EnableLifetimeSafetyTUAnalysis, 1, 0, Benign, "Lifetime safety at transl
 
 LANGOPT(PreserveVec3Type, 1, 0, NotCompatible, "Preserve 3-component vector type")
 LANGOPT(Reflection      , 1, 0, NotCompatible, "C++26 Reflection")
+LANGOPT(ParameterReflection , 1, 0, NotCompatible, "Augments C++26 Reflection with function parameter reflection (P3096)")
+LANGOPT(AttributeReflection , 1, 0, NotCompatible, "Augments C++26 Reflection with standard attribute reflection (P3385)")
+LANGOPT(AnnotationAttributes, 1, 0, NotCompatible, "C++26 support for annotations (P3394)")
+LANGOPT(EntityProxyReflection, 1, 0, NotCompatible, "Augments C++26 Reflection with entity proxy reflection")
+LANGOPT(ReflectionLatest    , 1, 0, NotCompatible, "Enable all reflection features supported by the P2996 port")
 
 #undef LANGOPT
 #undef ENUM_LANGOPT

@@ -1,5 +1,7 @@
 //===- IdentifierTable.cpp - Hash table for identifier lookup -------------===//
 //
+// Copyright 2024 Bloomberg Finance L.P.
+//
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
@@ -166,6 +168,8 @@ static KeywordStatus getKeywordStatusHelper(const LangOptions &LangOpts,
     return LangOpts.FixedPoint ? KS_Enabled : KS_Disabled;
   case KEYDEFERTS:
     return LangOpts.DeferTS ? KS_Enabled : KS_Disabled;
+  case KEYREFLECT:
+    return LangOpts.Reflection ? KS_Extension : KS_Unknown;
   default:
     llvm_unreachable("Unknown KeywordStatus flag");
   }

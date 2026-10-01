@@ -40,6 +40,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const AArch64SVEPcsAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -71,6 +81,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const AArch64VectorPcsAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -107,6 +127,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Expr * getMin() const {
     return min;
   }
@@ -157,6 +187,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Expr * getMaxNumWorkGroupsX() const {
     return maxNumWorkGroupsX;
   }
@@ -282,6 +322,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Expr * getMin() const {
     return min;
   }
@@ -336,6 +386,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   ARMInterruptAttr::InterruptType getInterrupt() const {
     return interrupt;
   }
@@ -440,6 +500,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const AVRInterruptAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -471,6 +541,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const AVRSignalAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -507,6 +587,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   typedef StringRef* tags_iterator;
   tags_iterator tags_begin() const { return tags_; }
   tags_iterator tags_end() const { return tags_ + tags_Size; }
@@ -617,6 +707,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getHandleType() const {
     return llvm::StringRef(handleType, handleTypeLength);
   }
@@ -809,6 +909,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getAliasee() const {
     return llvm::StringRef(aliasee, aliaseeLength);
   }
@@ -1117,6 +1227,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const AlwaysDestroyAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -1155,6 +1275,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Spelling getSemanticSpelling() const;
   bool isClangAlwaysInline() const { return getAttributeSpellingListIndex() == 3 ||
     getAttributeSpellingListIndex() == 4; }
@@ -1386,6 +1516,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const AnyX86InterruptAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -1417,6 +1557,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const AnyX86NoCallerSavedRegistersAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -1448,6 +1598,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const AnyX86NoCfCheckAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -1479,6 +1639,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ArcWeakrefUnavailableAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -1943,6 +2113,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ArtificialAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -2101,6 +2281,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Expr * getAlignment() const {
     return alignment;
   }
@@ -2509,6 +2699,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const AvailableOnlyInDefaultEvalMethodAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -2540,6 +2740,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const BPFFastCallAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -2571,6 +2781,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const BPFPreserveAccessIndexAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -2602,6 +2822,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const BPFPreserveStaticOffsetAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -2637,6 +2867,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getBTFDeclTag() const {
     return llvm::StringRef(bTFDeclTag, bTFDeclTagLength);
   }
@@ -2768,6 +3008,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   BlocksAttr::BlockType getType() const {
     return type;
   }
@@ -2898,6 +3148,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const CDeclAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -2929,6 +3189,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const CFAuditedTransferAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -2960,6 +3230,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const CFConsumedAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -3037,6 +3317,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const CFICanonicalJumpTableAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -3147,6 +3437,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const CFReturnsNotRetainedAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -3178,6 +3478,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const CFReturnsRetainedAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -3209,6 +3519,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const CFUnknownTransferAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -3721,12 +4041,73 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Spelling getSemanticSpelling() const;
   bool isEquivalent(const CXX11NoReturnAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
 
   static bool classof(const Attr *A) { return A->getKind() == attr::CXX11NoReturn; }
+};
+
+class CLANG_ABI CXX26AnnotationAttr : public InheritableParamAttr {
+Expr * arg;
+
+public:
+  // Factory methods
+  static CXX26AnnotationAttr *CreateImplicit(ASTContext &Ctx, Expr * Arg, const AttributeCommonInfo &CommonInfo);
+  static CXX26AnnotationAttr *Create(ASTContext &Ctx, Expr * Arg, const AttributeCommonInfo &CommonInfo);
+  static CXX26AnnotationAttr *CreateImplicit(ASTContext &Ctx, Expr * Arg, SourceRange Range = {});
+  static CXX26AnnotationAttr *Create(ASTContext &Ctx, Expr * Arg, SourceRange Range = {});
+
+  // Constructors
+  CXX26AnnotationAttr(ASTContext &Ctx, const AttributeCommonInfo &CommonInfo
+              , Expr * Arg
+             );
+
+  CXX26AnnotationAttr *clone(ASTContext &C) const;
+  void printPretty(raw_ostream &OS,
+                   const PrintingPolicy &Policy) const;
+  const char *getSpelling() const;
+  Expr * getArg() const {
+    return arg;
+  }
+
+  bool isEquivalent(const CXX26AnnotationAttr &Other, StructuralEquivalenceContext &Context) const;
+  void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
+
+private:
+  APValue Value;
+  SourceLocation EqLoc;
+
+public:
+  static CXX26AnnotationAttr *Create(ASTContext &Ctx, \
+                                     const AttributeCommonInfo &CommonInfo) {
+    return CXX26AnnotationAttr::Create(Ctx, nullptr,  CommonInfo);
+  }
+  static CXX26AnnotationAttr *CreateImplicit( \
+          ASTContext &Ctx, \
+          const AttributeCommonInfo &CommonInfo) {
+    return CXX26AnnotationAttr::CreateImplicit(Ctx, nullptr, CommonInfo);
+  }
+
+  APValue getValue() const { return Value; }
+  void setValue(APValue V) { Value = V; }
+
+  SourceLocation getEqLoc() const { return EqLoc; }
+  void setEqLoc(SourceLocation Loc) { EqLoc = Loc; }
+  
+
+  static bool classof(const Attr *A) { return A->getKind() == attr::CXX26Annotation; }
 };
 
 class CLANG_ABI CXXAssumeAttr : public StmtAttr {
@@ -3757,6 +4138,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Expr * getAssumption() const {
     return assumption;
   }
@@ -3804,6 +4195,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   typedef ConsumedState* callableStates_iterator;
   callableStates_iterator callableStates_begin() const { return callableStates_; }
   callableStates_iterator callableStates_end() const { return callableStates_ + callableStates_Size; }
@@ -3888,6 +4289,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const CalledOnceAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -3924,6 +4335,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Spelling getSemanticSpelling() const;
   bool isShared() const { return getAttributeSpellingListIndex() == 2 ||
     getAttributeSpellingListIndex() == 3; }
@@ -3993,6 +4414,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const CarriesDependencyAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -4069,6 +4500,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ClspvLibclcBuiltinAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -4149,6 +4590,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Expr * getAlignment() const {
     return alignment;
   }
@@ -4191,6 +4642,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::CodeModel::Model getModel() const {
     return model;
   }
@@ -4268,6 +4729,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ColdAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -4299,6 +4770,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const CommonAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -4330,6 +4811,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ConstAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -4361,6 +4852,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Spelling getSemanticSpelling() const;
   bool isConstinit() const { return getAttributeSpellingListIndex() == 0; }
   bool isEquivalent(const ConstInitAttr &Other, StructuralEquivalenceContext &Context) const;
@@ -4399,6 +4900,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Expr * getPriority() const {
     return priority;
   }
@@ -4481,6 +4992,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ConsumableAutoCastAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -4511,6 +5032,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ConsumableSetOnReadAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -4542,6 +5073,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ConvergentAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -4573,6 +5114,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const CoroAwaitElidableAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -4604,6 +5155,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const CoroAwaitElidableArgumentAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -4635,6 +5196,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const CoroDisableLifetimeBoundAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -4666,6 +5237,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const CoroLifetimeBoundAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -4697,6 +5278,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const CoroOnlyDestroyWhenCompleteAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -4728,6 +5319,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const CoroReturnTypeAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -4759,6 +5360,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const CoroWrapperAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -4799,6 +5410,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Expr * getCount() const {
     return count;
   }
@@ -4847,6 +5468,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Expr * getCount() const {
     return count;
   }
@@ -4887,6 +5518,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const DLLExportAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -4965,6 +5606,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const DLLImportAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -5039,6 +5690,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getMessage() const {
     return llvm::StringRef(message, messageLength);
   }
@@ -5101,6 +5762,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Expr * getPriority() const {
     return priority;
   }
@@ -5145,6 +5816,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Spelling getSemanticSpelling() const;
   bool isEquivalent(const DeviceKernelAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
@@ -5367,6 +6048,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const DisableSanitizerInstrumentationAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -5398,6 +6089,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const DisableTailCallsAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -5503,6 +6204,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getTCBName() const {
     return llvm::StringRef(tCBName, tCBNameLength);
   }
@@ -5551,6 +6262,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getTCBName() const {
     return llvm::StringRef(tCBName, tCBNameLength);
   }
@@ -5648,6 +6369,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Spelling getSemanticSpelling() const;
   bool isError() const { return getAttributeSpellingListIndex() == 0 ||
     getAttributeSpellingListIndex() == 1 ||
@@ -5699,6 +6430,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ExcludeFromExplicitInstantiationAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -5730,6 +6471,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ExplicitInitAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -5816,6 +6567,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getLanguage() const {
     return llvm::StringRef(language, languageLength);
   }
@@ -5893,6 +6654,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const FallThroughAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -5925,6 +6696,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const FastCallAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -5988,6 +6769,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const FlagEnumAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -6019,6 +6810,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const FlattenAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -6203,6 +7004,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   FunctionReturnThunksAttr::Kind getThunkType() const {
     return thunkType;
   }
@@ -6240,6 +7051,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const GCCStructAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -6271,6 +7092,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const GNUInlineAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -6337,6 +7168,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const GuardedVarAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -7185,6 +8026,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   int getBinding() const {
     return binding;
   }
@@ -7219,6 +8070,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   int getId() const {
     return id;
   }
@@ -7309,6 +8170,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   int getLocation() const {
     return location;
   }
@@ -7336,6 +8207,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const HLSLVkPushConstantAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -7425,6 +8306,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const HotAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -7457,6 +8348,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const HybridPatchableAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -7488,6 +8389,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const IBActionAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -7519,6 +8430,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const IBOutletAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -7555,6 +8476,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   QualType getInterface() const {
     return interface_->getType();
   }  TypeSourceInfo * getInterfaceLoc() const {
@@ -7596,6 +8527,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getResolver() const {
     return llvm::StringRef(resolver, resolverLength);
   }
@@ -7720,6 +8661,39 @@ public:
   static bool classof(const Attr *A) { return A->getKind() == attr::InitSeg; }
 };
 
+class CLANG_ABI InstantiationDependentAttr : public Attr {
+public:
+  // Factory methods
+  static InstantiationDependentAttr *CreateImplicit(ASTContext &Ctx, const AttributeCommonInfo &CommonInfo);
+  static InstantiationDependentAttr *Create(ASTContext &Ctx, const AttributeCommonInfo &CommonInfo);
+  static InstantiationDependentAttr *CreateImplicit(ASTContext &Ctx, SourceRange Range = {});
+  static InstantiationDependentAttr *Create(ASTContext &Ctx, SourceRange Range = {});
+
+  // Constructors
+  InstantiationDependentAttr(ASTContext &Ctx, const AttributeCommonInfo &CommonInfo
+             );
+
+  InstantiationDependentAttr *clone(ASTContext &C) const;
+  void printPretty(raw_ostream &OS,
+                   const PrintingPolicy &Policy) const;
+  const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
+  bool isEquivalent(const InstantiationDependentAttr &Other, StructuralEquivalenceContext &Context) const;
+  void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
+
+
+  static bool classof(const Attr *A) { return A->getKind() == attr::InstantiationDependent; }
+};
+
 class CLANG_ABI IntelOclBiccAttr : public InheritableAttr {
 public:
   enum Spelling {
@@ -7743,6 +8717,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const IntelOclBiccAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -7774,6 +8758,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const InternalLinkageAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -7805,6 +8799,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const LTOVisibilityPublicAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -7866,6 +8870,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const LeafAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -7897,6 +8911,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const LifetimeBoundAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -8024,6 +9048,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const LikelyAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -8055,6 +9089,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const LoaderUninitializedAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -8314,6 +9358,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const M68kRTDAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -8345,6 +9399,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const MIGServerRoutineAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -8376,6 +9440,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const MSABIAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -8422,6 +9496,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const MSConstexprAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -8567,6 +9651,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const MSStructAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -8630,6 +9724,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const MallocSpanAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -8691,6 +9795,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const MayAliasAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -8722,6 +9836,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const MaybeUndefAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -8753,6 +9877,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const MicroMipsAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -8784,6 +9918,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const MinSizeAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -8853,6 +9997,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const Mips16Attr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -8900,6 +10054,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   MipsInterruptAttr::InterruptType getInterrupt() const {
     return interrupt;
   }
@@ -8940,6 +10104,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Spelling getSemanticSpelling() const;
   bool isEquivalent(const MipsLongCallAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
@@ -8975,6 +10149,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Spelling getSemanticSpelling() const;
   bool isEquivalent(const MipsShortCallAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
@@ -9115,6 +10299,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const MustTailAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9146,6 +10340,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NSConsumedAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9177,6 +10381,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NSConsumesSelfAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9238,6 +10452,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NSReturnsAutoreleasedAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9269,6 +10493,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NSReturnsNotRetainedAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9300,6 +10534,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NSReturnsRetainedAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9332,6 +10576,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NakedAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9392,6 +10646,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   typedef StringRef* builtinNames_iterator;
   builtinNames_iterator builtinNames_begin() const { return builtinNames_; }
   builtinNames_iterator builtinNames_end() const { return builtinNames_ + builtinNames_Size; }
@@ -9430,6 +10694,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoCommonAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9462,6 +10736,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoConvergentAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9493,6 +10777,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoDebugAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9554,6 +10848,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoDestroyAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9585,6 +10889,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoDuplicateAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9616,6 +10930,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoEscapeAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9647,6 +10971,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoFieldProtectionAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9684,6 +11018,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isStmtNoInline() const { return getAttributeSpellingListIndex() == 4 ||
     getAttributeSpellingListIndex() == 5 ||
     getAttributeSpellingListIndex() == 6 ||
@@ -9719,6 +11063,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoInstrumentFunctionAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9750,6 +11104,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoMergeAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9781,6 +11145,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoMicroMipsAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9812,6 +11186,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoMips16Attr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9843,6 +11227,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoOutlineAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9874,6 +11268,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoProfileFunctionAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9905,6 +11309,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoRandomizeLayoutAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9937,6 +11351,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoReturnAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -9976,6 +11400,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   typedef StringRef* sanitizers_iterator;
   sanitizers_iterator sanitizers_begin() const { return sanitizers_; }
   sanitizers_iterator sanitizers_end() const { return sanitizers_ + sanitizers_Size; }
@@ -10033,6 +11467,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getMessage() const {
     return llvm::StringRef(message, messageLength);
   }
@@ -10077,6 +11521,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoSpeculativeLoadHardeningAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -10108,6 +11562,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoSplitStackAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -10142,6 +11606,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Spelling getSemanticSpelling() const;
   bool isEquivalent(const NoStackProtectorAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
@@ -10174,6 +11648,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoThreadSafetyAnalysisAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -10206,6 +11690,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoThrowAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -10259,6 +11753,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoUniqueAddressAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -10290,6 +11794,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NoUwtableAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -10453,6 +11967,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NonStringAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -10484,6 +12008,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const NotTailCalledAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -10571,6 +12105,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getAssumption() const {
     return llvm::StringRef(assumption, assumptionLength);
   }
@@ -11071,6 +12615,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const OSConsumedAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11102,6 +12656,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const OSConsumesThisAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11133,6 +12697,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const OSReturnsNotRetainedAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11164,6 +12738,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const OSReturnsRetainedAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11195,6 +12779,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const OSReturnsRetainedOnNonZeroAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11226,6 +12820,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const OSReturnsRetainedOnZeroAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11257,6 +12861,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ObjCBoxableAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11416,6 +13030,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ObjCClassStubAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11447,6 +13071,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ObjCDesignatedInitializerAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11478,6 +13112,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ObjCDirectAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11509,6 +13153,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ObjCDirectMembersAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11540,6 +13194,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ObjCExceptionAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11571,6 +13235,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ObjCExplicitProtocolImplAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11602,6 +13276,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ObjCExternallyRetainedAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11671,6 +13355,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ObjCIndependentClassAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11798,6 +13492,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ObjCNSObjectAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11829,6 +13533,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ObjCNonLazyClassAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11860,6 +13574,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ObjCNonRuntimeProtocolAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11929,6 +13653,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ObjCPreciseLifetimeAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11960,6 +13694,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ObjCRequiresPropertyDefsAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -11991,6 +13735,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ObjCRequiresSuperAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -12022,6 +13776,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ObjCReturnsInnerPointerAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -12053,6 +13817,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ObjCRootClassAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -12088,6 +13862,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getMetadataName() const {
     return llvm::StringRef(metadataName, metadataNameLength);
   }
@@ -12132,6 +13916,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ObjCRuntimeVisibleAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -12163,6 +13957,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ObjCSubclassingRestrictedAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -12570,6 +14374,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const OptimizeNoneAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -12639,6 +14453,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const OverloadableAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -12690,6 +14514,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   QualType getDerefType() const {
     return derefType->getType();
   }  TypeSourceInfo * getDerefTypeLoc() const {
@@ -12802,6 +14636,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const PackedAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -12880,6 +14724,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const PascalAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -12917,6 +14771,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Spelling getSemanticSpelling() const;
   bool isDynamic() const { return getAttributeSpellingListIndex() == 3 ||
     getAttributeSpellingListIndex() == 4 ||
@@ -13032,6 +14896,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   PcsAttr::PCSType getPCS() const {
     return pCS;
   }
@@ -13104,6 +14978,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   QualType getDerefType() const {
     return derefType->getType();
   }  TypeSourceInfo * getDerefTypeLoc() const {
@@ -13188,6 +15072,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const PointerFieldProtectionAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -13421,6 +15315,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   QualType getTypedefType() const {
     return typedefType->getType();
   }  TypeSourceInfo * getTypedefTypeLoc() const {
@@ -13463,6 +15367,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   QualType getType() const {
     return type->getType();
   }  TypeSourceInfo * getTypeLoc() const {
@@ -13500,6 +15414,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const PreserveAllAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -13531,6 +15455,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const PreserveMostAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -13562,6 +15496,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const PreserveNoneAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -13628,6 +15572,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const PtGuardedVarAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -13705,6 +15659,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const PureAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -13753,6 +15717,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   typedef InterruptType* interrupt_iterator;
   interrupt_iterator interrupt_begin() const { return interrupt_; }
   interrupt_iterator interrupt_end() const { return interrupt_ + interrupt_Size; }
@@ -13838,6 +15812,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Spelling getSemanticSpelling() const;
   bool isEquivalent(const RISCVVectorCCAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
@@ -13870,6 +15854,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const RandomizeLayoutAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -13901,6 +15895,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ReadOnlyPlacementAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -13932,6 +15936,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ReentrantCapabilityAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -13964,6 +15978,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const RegCallAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -13994,6 +16018,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ReinitializesAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -14102,6 +16136,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getHandleType() const {
     return llvm::StringRef(handleType, handleTypeLength);
   }
@@ -14310,6 +16354,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const RetainAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -14387,6 +16441,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ReturnsNonNullAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -14418,6 +16482,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ReturnsTwiceAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -14508,6 +16582,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const SYCLExternalAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -14539,6 +16623,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const SYCLKernelAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -14621,6 +16715,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const SYCLSpecialClassAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -14651,6 +16755,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ScopedLockableAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -14687,6 +16801,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Spelling getSemanticSpelling() const;
   llvm::StringRef getName() const {
     return llvm::StringRef(name, nameLength);
@@ -14733,6 +16857,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const SelectAnyAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -14772,6 +16906,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   int getSentinel() const {
     return sentinel;
   }
@@ -14870,6 +17014,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Expr * getSize() const {
     return size;
   }
@@ -14918,6 +17072,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Expr * getSize() const {
     return size;
   }
@@ -14957,6 +17121,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const SpeculativeLoadHardeningAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -14988,6 +17162,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const StackProtectorIgnoreAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -15018,6 +17202,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const StandaloneDebugAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -15050,6 +17244,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const StdCallAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -15134,6 +17338,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isGSL() const { return getAttributeSpellingListIndex() == 0; }
   typedef StringRef* diagnosticIdentifiers_iterator;
   diagnosticIdentifiers_iterator diagnosticIdentifiers_begin() const { return diagnosticIdentifiers_; }
@@ -15230,6 +17444,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const SwiftAsyncCallAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -15261,6 +17485,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const SwiftAsyncContextAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -15493,6 +17727,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const SwiftCallAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -15524,6 +17768,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const SwiftContextAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -15596,6 +17850,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const SwiftErrorResultAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -15673,6 +17937,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const SwiftIndirectResultAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -16019,6 +18293,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const SysVABIAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -16054,6 +18338,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getModel() const {
     return llvm::StringRef(model, modelLength);
   }
@@ -16102,6 +18396,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getFeaturesStr() const {
     return llvm::StringRef(featuresStr, featuresStrLength);
   }
@@ -16182,6 +18486,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   typedef StringRef* featuresStrs_iterator;
   featuresStrs_iterator featuresStrs_begin() const { return featuresStrs_; }
   featuresStrs_iterator featuresStrs_end() const { return featuresStrs_ + featuresStrs_Size; }
@@ -16288,6 +18602,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getNamesStr() const {
     return llvm::StringRef(namesStr, namesStrLength);
   }
@@ -16395,6 +18719,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const ThisCallAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -16449,6 +18783,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const TransparentUnionAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -16479,6 +18823,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const TrivialABIAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -16751,6 +19105,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   TypeVisibilityAttr::VisibilityType getVisibility() const {
     return visibility;
   }
@@ -16884,6 +19248,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const UninitializedAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -16914,6 +19288,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const UnlikelyAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -16945,6 +19329,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const UnsafeBufferUsageAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -16978,6 +19372,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Spelling getSemanticSpelling() const;
   bool isEquivalent(const UnusedAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
@@ -17014,6 +19418,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getHandleType() const {
     return llvm::StringRef(handleType, handleTypeLength);
   }
@@ -17058,6 +19472,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const UsedAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -17088,6 +19512,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const UsingIfExistsAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -17220,6 +19654,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   VTablePointerAuthenticationAttr::VPtrAuthKeyType getKey() const {
     return key;
   }
@@ -17272,6 +19716,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const VecReturnAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -17336,6 +19790,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const VectorCallAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -17377,6 +19841,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   VisibilityAttr::VisibilityType getVisibility() const {
     return visibility;
   }
@@ -17414,6 +19888,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const WarnUnusedAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -17454,6 +19938,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Spelling getSemanticSpelling() const;
   llvm::StringRef getMessage() const {
     return llvm::StringRef(message, messageLength);
@@ -17505,6 +19999,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const WeakAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -17536,6 +20040,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const WeakImportAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -17573,6 +20087,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getAliasee() const {
     return llvm::StringRef(aliasee, aliaseeLength);
   }
@@ -17621,6 +20145,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getExportName() const {
     return llvm::StringRef(exportName, exportNameLength);
   }
@@ -17692,6 +20226,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getImportModule() const {
     return llvm::StringRef(importModule, importModuleLength);
   }
@@ -17740,6 +20284,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   llvm::StringRef getImportName() const {
     return llvm::StringRef(importName, importNameLength);
   }
@@ -17828,6 +20382,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   bool isEquivalent(const X86ForceAlignArgPointerAttr &Other, StructuralEquivalenceContext &Context) const;
   void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Ctx) const;
 
@@ -17862,6 +20426,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   Spelling getSemanticSpelling() const;
   bool alwaysXRayInstrument() const { return getAttributeSpellingListIndex() == 0 ||
     getAttributeSpellingListIndex() == 1 ||
@@ -17954,6 +20528,16 @@ public:
   void printPretty(raw_ostream &OS,
                    const PrintingPolicy &Policy) const;
   const char *getSpelling() const;
+  using OnSyntacticArgument
+    = std::function<bool(
+        IdentifierInfo *,
+        SmallVector<llvm::PointerUnion<Expr *, IdentifierLoc *>, 2>,
+        SmallVector<void *, 2>,
+        AttributeCommonInfo::Form
+      )>;
+
+  bool extractSyntacticArguments(ASTContext& C, OnSyntacticArgument onSyntax, SourceLocation srcLocation) const;
+
   ZeroCallUsedRegsAttr::ZeroCallUsedRegsKind getZeroCallUsedRegs() const {
     return zeroCallUsedRegs;
   }

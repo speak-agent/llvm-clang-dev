@@ -23,6 +23,7 @@
 #include "clang/AST/DeclTemplate.h"
 #include "clang/AST/DependenceFlags.h"
 #include "clang/AST/Expr.h"
+#include "clang/AST/ExprCXX.h"
 #include "clang/AST/NestedNameSpecifier.h"
 #include "clang/AST/PrettyPrinter.h"
 #include "clang/AST/TemplateBase.h"
@@ -726,6 +727,52 @@ bool Type::isStructureTypeWithFlexibleArrayMember() const {
   if (!Decl->isStruct())
     return false;
   return Decl->getDefinitionOrSelf()->hasFlexibleArrayMember();
+}
+
+bool Type::isConstevalOnly() const {
+  // A type is consteval-only ([basic.types.general]) if it is std::meta::info,
+  // a pointer, reference, array, or function type involving such a type, or a
+  // class with a consteval-only member or base class. This is computed on
+  // demand from the canonical type (dependent types are never consteval-only).
+  const Type *T = getCanonicalTypeInternal().getTypePtr();
+  switch (T->getTypeClass()) {
+  case Type::Builtin:
+    return cast<BuiltinType>(T)->getKind() == BuiltinType::MetaInfo;
+  case Type::Pointer:
+    return cast<PointerType>(T)->getPointeeType()->isConstevalOnly();
+  case Type::LValueReference:
+  case Type::RValueReference:
+    return cast<ReferenceType>(T)->getPointeeType()->isConstevalOnly();
+  case Type::ConstantArray:
+  case Type::IncompleteArray:
+  case Type::VariableArray:
+  case Type::DependentSizedArray:
+    return cast<ArrayType>(T)->getElementType()->isConstevalOnly();
+  case Type::Vector:
+  case Type::ExtVector:
+    return cast<VectorType>(T)->getElementType()->isConstevalOnly();
+  case Type::Complex:
+    return cast<ComplexType>(T)->getElementType()->isConstevalOnly();
+  case Type::Atomic:
+    return cast<AtomicType>(T)->getValueType()->isConstevalOnly();
+  case Type::MemberPointer:
+    return cast<MemberPointerType>(T)->getPointeeType()->isConstevalOnly();
+  case Type::FunctionNoProto:
+    return cast<FunctionType>(T)->getReturnType()->isConstevalOnly();
+  case Type::FunctionProto: {
+    const auto *FPT = cast<FunctionProtoType>(T);
+    if (FPT->getReturnType()->isConstevalOnly())
+      return true;
+    for (QualType PT : FPT->param_types())
+      if (PT->isConstevalOnly())
+        return true;
+    return false;
+  }
+  case Type::Record:
+    return cast<RecordType>(T)->getDecl()->isConstevalOnly();
+  default:
+    return false;
+  }
 }
 
 bool Type::isObjCBoxableRecordType() const {
@@ -2103,6 +2150,10 @@ public:
     return Visit(T->getPattern());
   }
 
+  Type *VisitReflectionSpliceType(const ReflectionSpliceType *T) {
+    return Visit(T->getUnderlyingType());
+  }
+
   Type *VisitAtomicType(const AtomicType *T) {
     return Visit(T->getValueType());
   }
@@ -2470,6 +2521,8 @@ Type::ScalarTypeKind Type::getScalarTypeKind() const {
       return STK_Floating;
     if (BT->isFixedPointType())
       return STK_FixedPoint;
+    if (BT->isReflectionType())
+      return STK_Reflection;
     llvm_unreachable("unknown scalar builtin type");
   } else if (isa<PointerType>(T)) {
     return STK_CPointer;
@@ -3599,6 +3652,8 @@ StringRef BuiltinType::getName(const PrintingPolicy &Policy) const {
     return "char32_t";
   case NullPtr:
     return Policy.NullptrTypeInNamespace ? "std::nullptr_t" : "nullptr_t";
+  case MetaInfo:
+    return "meta::info";
   case Overload:
     return "<overloaded function type>";
   case BoundMember:
@@ -4298,6 +4353,47 @@ DependentDecltypeType::DependentDecltypeType(Expr *E)
 void DependentDecltypeType::Profile(llvm::FoldingSetNodeID &ID,
                                     const ASTContext &Context, Expr *E) {
   E->Profile(ID, Context, true);
+}
+
+TypeDependence
+ReflectionSpliceType::computeDependence(QualType Canon,
+                                        SpliceSpecifier *Splice) {
+  TypeDependence Result = Canon->getDependence();
+  if (Splice->getDependence() & SpliceSpecifierDependence::UnexpandedPack)
+    Result |= TypeDependence::UnexpandedPack;
+
+  return Result;
+}
+
+ReflectionSpliceType::ReflectionSpliceType(SourceLocation TypenameKWLoc,
+                                           SpliceSpecifier *Splice,
+                                           QualType Canon)
+    : Type(ReflectionSplice, Canon,
+           ReflectionSpliceType::computeDependence(Canon, Splice)),
+      TypenameKWLoc(TypenameKWLoc), Splice(Splice), UnderlyingTy(Canon) {}
+
+QualType ReflectionSpliceType::desugar() const {
+  if (isSugared())
+    return getUnderlyingType();
+  else
+    return QualType(this, 0);
+}
+
+bool ReflectionSpliceType::isSugared() const {
+  // A reflected type is sugared if it's non-dependent.
+  return !isDependentType();
+}
+
+DependentReflectionSpliceType::DependentReflectionSpliceType(
+    const ASTContext &Context, SourceLocation TypenameKWLoc,
+    SpliceSpecifier *Splice)
+    : ReflectionSpliceType(TypenameKWLoc, Splice, Context.DependentTy),
+      Context(Context) {}
+
+void DependentReflectionSpliceType::Profile(llvm::FoldingSetNodeID &ID,
+                                            const ASTContext &Context,
+                                            Expr *Operand) {
+  Operand->Profile(ID, Context, true);
 }
 
 PackIndexingType::PackIndexingType(QualType Canonical, QualType Pattern,
@@ -5196,6 +5292,7 @@ bool Type::canHaveNullability(bool ResultIfUnknown) const {
   case Type::SubstBuiltinTemplatePack:
   case Type::DependentName:
   case Type::Auto:
+  case Type::ReflectionSplice:
     return ResultIfUnknown;
 
   // Dependent template specializations could instantiate to pointer types.
@@ -5260,6 +5357,7 @@ bool Type::canHaveNullability(bool ResultIfUnknown) const {
 #include "clang/Basic/HLSLIntangibleTypes.def"
     case BuiltinType::BuiltinFn:
     case BuiltinType::NullPtr:
+    case BuiltinType::MetaInfo:
     case BuiltinType::IncompleteMatrixIdx:
     case BuiltinType::ArraySection:
     case BuiltinType::OMPArrayShaping:

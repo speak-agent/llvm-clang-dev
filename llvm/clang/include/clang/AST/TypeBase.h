@@ -19,6 +19,7 @@
 
 #include "clang/AST/DependenceFlags.h"
 #include "clang/AST/NestedNameSpecifierBase.h"
+#include "clang/AST/SpliceSpecifier.h"
 #include "clang/AST/TemplateName.h"
 #include "clang/Basic/AddressSpaces.h"
 #include "clang/Basic/AttrKinds.h"
@@ -2649,6 +2650,7 @@ public:
   bool isRealType() const;         // C99 6.2.5p17 (real floating + integer)
   bool isArithmeticType() const;   // C99 6.2.5p18 (integer + floating)
   bool isVoidType() const;         // C99 6.2.5p19
+  bool isReflectionType() const;   // C++2c reflection [P2996]
   bool isScalarType() const;       // C99 6.2.5p21 (arithmetic + pointers)
   bool isAggregateType() const;
   bool isFundamentalType() const;
@@ -2689,6 +2691,8 @@ public:
   bool isClassType() const;
   bool isStructureType() const;
   bool isStructureTypeWithFlexibleArrayMember() const;
+  /// Whether this is a consteval-only type ([basic.types.general], P2996).
+  bool isConstevalOnly() const;
   bool isObjCBoxableRecordType() const;
   bool isInterfaceType() const;
   bool isStructureOrClassType() const;
@@ -2826,7 +2830,8 @@ public:
     STK_Floating,
     STK_IntegralComplex,
     STK_FloatingComplex,
-    STK_FixedPoint
+    STK_FixedPoint,
+    STK_Reflection,
   };
 
   /// Given that this is a scalar type, classify it.
@@ -7674,6 +7679,69 @@ public:
   }
 };
 
+/// Represents a type formed by evaluating a reflection splice (C++2c, P2996).
+///
+/// A reflection splice wraps a potentially dependent constant expression whose
+/// resulting APValue is a reflection; this is expected to hold a type in the
+/// context of a 'ReflectionSpliceType'.
+class ReflectionSpliceType : public Type {
+  SourceLocation TypenameKWLoc;
+  SpliceSpecifier *Splice;
+  QualType UnderlyingTy;
+
+  static TypeDependence computeDependence(QualType Canon,
+                                          SpliceSpecifier *Splice);
+
+protected:
+  friend class ASTContext;
+
+  ReflectionSpliceType(SourceLocation TypenameKWLoc, SpliceSpecifier *Splice,
+                       QualType Canon = QualType());
+
+public:
+  /// Returns the location of the 'typename' keyword (if any).
+  SourceLocation getTypenameKWLoc() const { return TypenameKWLoc; }
+
+  /// Returns the splice specifier.
+  SpliceSpecifier *getSplice() const { return Splice; }
+
+  /// Returns the underlying type (i.e., the one spliced).
+  QualType getUnderlyingType() const { return UnderlyingTy; }
+
+  /// Removes a single level of sugar.
+  QualType desugar() const;
+
+  /// Returns whether this type directly provides sugar.
+  bool isSugared() const;
+
+  static bool classof(const Type *T) {
+    return T->getTypeClass() == ReflectionSplice;
+  }
+};
+
+/// Represents a dependent type formed by evaluating a reflection splice
+/// (C++2c, P2996).
+///
+/// For these types, we won't actually know what the type is until the
+/// splice operand is evaluated, at which point this will become a
+/// ReflectionSpliceType.
+class DependentReflectionSpliceType : public ReflectionSpliceType,
+                                      public llvm::FoldingSetNode {
+  const ASTContext &Context;
+
+public:
+  DependentReflectionSpliceType(const ASTContext &Context,
+                                SourceLocation TypenameKWLoc,
+                                SpliceSpecifier *Splice);
+
+  void Profile(llvm::FoldingSetNodeID &ID) {
+    ID.AddPointer(getSplice());
+  }
+
+  static void Profile(llvm::FoldingSetNodeID &ID, const ASTContext &Context,
+                      Expr *Operand);
+};
+
 /// This class wraps the list of protocol qualifiers. For types that can
 /// take ObjC protocol qualifers, they can subclass this class.
 template <class T>
@@ -8647,6 +8715,7 @@ inline bool QualType::isCForbiddenLValueType() const {
 inline bool Type::isFundamentalType() const {
   return isVoidType() ||
          isNullPtrType() ||
+         isReflectionType() ||
          // FIXME: It's really annoying that we don't have an
          // 'isArithmeticType()' which agrees with the standard definition.
          (isArithmeticType() && !isEnumeralType());
@@ -9051,6 +9120,12 @@ inline bool Type::isVoidType() const {
   return isSpecificBuiltinType(BuiltinType::Void);
 }
 
+inline bool Type::isReflectionType() const {
+  if (const auto *BT = dyn_cast<BuiltinType>(CanonicalType))
+    return BT->getKind() == BuiltinType::MetaInfo;
+  return false;
+}
+
 inline bool Type::isHalfType() const {
   // FIXME: Should we allow complex __fp16? Probably not.
   return isSpecificBuiltinType(BuiltinType::Half);
@@ -9156,7 +9231,7 @@ inline bool Type::isUnsignedFixedPointType() const {
 inline bool Type::isScalarType() const {
   if (const auto *BT = dyn_cast<BuiltinType>(CanonicalType))
     return BT->getKind() > BuiltinType::Void &&
-           BT->getKind() <= BuiltinType::NullPtr;
+           BT->getKind() <= BuiltinType::MetaInfo;
   if (const EnumType *ET = dyn_cast<EnumType>(CanonicalType))
     // Enums are scalar types, but only if they are defined.  Incomplete enums
     // are not treated as scalar types.

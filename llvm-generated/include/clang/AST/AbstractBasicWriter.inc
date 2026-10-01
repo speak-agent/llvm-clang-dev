@@ -108,6 +108,13 @@ struct WriteDispatcher<CallingConv> {
   }
 };
 template <>
+struct WriteDispatcher<char> {
+  template <class BasicWriter, class... Args>
+  static void write(BasicWriter &W, Args &&... args) {
+    return W.writeChar(std::forward<Args>(args)...);
+  }
+};
+template <>
 struct WriteDispatcher<ConceptDecl*> {
   template <class BasicWriter, class... Args>
   static void write(BasicWriter &W, Args &&... args) {
@@ -395,6 +402,13 @@ struct WriteDispatcher<RefQualifierKind> {
   }
 };
 template <>
+struct WriteDispatcher<ReflectionKind> {
+  template <class BasicWriter, class... Args>
+  static void write(BasicWriter &W, Args &&... args) {
+    return W.writeReflectionKind(std::forward<Args>(args)...);
+  }
+};
+template <>
 struct WriteDispatcher<Selector> {
   template <class BasicWriter, class... Args>
   static void write(BasicWriter &W, Args &&... args) {
@@ -406,6 +420,13 @@ struct WriteDispatcher<SourceLocation> {
   template <class BasicWriter, class... Args>
   static void write(BasicWriter &W, Args &&... args) {
     return W.writeSourceLocation(std::forward<Args>(args)...);
+  }
+};
+template <>
+struct WriteDispatcher<SpliceSpecifier*> {
+  template <class BasicWriter, class... Args>
+  static void write(BasicWriter &W, Args &&... args) {
+    return W.writeSpliceSpecifierRef(std::forward<Args>(args)...);
   }
 };
 template <>
@@ -613,6 +634,12 @@ struct PackOptionalValue<const CXXRecordDecl*> {
   }
 };
 template <>
+struct PackOptionalValue<char> {
+  static char pack(std::optional<char> value) {
+    return value ? *value + 1 : 0;
+  }
+};
+template <>
 struct PackOptionalValue<ConceptDecl*> {
   static ConceptDecl* pack(std::optional<ConceptDecl*> value) {
     return value.value_or(nullptr);
@@ -748,6 +775,12 @@ template <>
 struct PackOptionalValue<QualType> {
   static QualType pack(std::optional<QualType> value) {
     return value ? *value : QualType();
+  }
+};
+template <>
+struct PackOptionalValue<SpliceSpecifier*> {
+  static SpliceSpecifier* pack(std::optional<SpliceSpecifier*> value) {
+    return value.value_or(nullptr);
   }
 };
 template <>
@@ -1003,6 +1036,119 @@ public:
     return;
     }
 
+    case APValue::Reflection: {
+    
+    APValue base = node;
+    ReflectionKind baseKind = node.getReflectionKind();
+    {
+      while (base.getReflectionDepth() > 1)
+        base = base.Lower();
+      baseKind = base.getReflectionKind();
+
+      if (base.getReflectionDepth() == 1)
+        base = base.Lower();
+      if (base.isReflection())
+        baseKind = base.getReflectionKind();
+    }
+
+    size_t baseSpecIdx = 0;
+    if (baseKind == ReflectionKind::BaseSpecifier) {
+      CXXBaseSpecifier *specifier = base.getReflectedBaseSpecifier();
+      for (const CXXBaseSpecifier &s : specifier->getDerived()->bases()) {
+        if (&s == specifier)
+          break;
+        ++baseSpecIdx;
+      }
+
+      assert(baseSpecIdx < specifier->getDerived()->getNumBases());
+    }
+
+    ArrayRef<char> baseTdmsNameArray;
+    if (baseKind == ReflectionKind::DataMemberSpec) {
+      TagDataMemberSpec *TDMS = base.getReflectedDataMemberSpec();
+      if (TDMS->Name.has_value())
+        baseTdmsNameArray = ArrayRef(TDMS->Name->data(), TDMS->Name->size());
+    }
+  
+    uint32_t depth = ( node.getReflectionDepth() );
+    subW.find("depth").writeUInt32(depth);
+    if ( depth > 0 ) {
+    QualType reflectedResultType = ( node.getTypeOfReflectedResult(getASTContext()) );
+    subW.find("reflectedResultType").writeQualType(reflectedResultType);
+    }
+    ReflectionKind kind = ( baseKind );
+    subW.find("kind").writeReflectionKind(kind);
+    if ( kind == ReflectionKind::Type ) {
+    QualType baseType = ( base.getReflectedType() );
+    subW.find("baseType").writeQualType(baseType);
+    }
+    if ( depth > 0 ) {
+    APValue baseAPValue = ( base );
+    subW.find("baseAPValue").writeAPValue(baseAPValue);
+    }
+    if ( kind == ReflectionKind::Declaration ) {
+    const ValueDecl* baseDecl = ( base.getReflectedDecl() );
+    subW.find("baseDecl").writeValueDeclRef(baseDecl);
+    }
+    if ( kind == ReflectionKind::Template ) {
+    TemplateName baseTemplate = ( base.getReflectedTemplate() );
+    subW.find("baseTemplate").writeTemplateName(baseTemplate);
+    }
+    if ( kind == ReflectionKind::Namespace ) {
+    const Decl* baseNamespace = ( base.getReflectedNamespace() );
+    subW.find("baseNamespace").writeDeclRef(baseNamespace);
+    }
+    if ( kind == ReflectionKind::EntityProxy ) {
+    const UsingShadowDecl* baseEntityProxy = ( base.getReflectedEntityProxy() );
+    subW.find("baseEntityProxy").writeUsingShadowDeclRef(baseEntityProxy);
+    }
+    if ( kind == ReflectionKind::Parameter  ) {
+    const Decl* baseParameter = ( base.getReflectedParameter() );
+    subW.find("baseParameter").writeDeclRef(baseParameter);
+    }
+    if ( kind == ReflectionKind::BaseSpecifier ) {
+    const CXXRecordDecl* baseBaseSpecDerivedFrom = ( base.getReflectedBaseSpecifier()->getDerived() );
+    subW.find("baseBaseSpecDerivedFrom").writeCXXRecordDeclRef(baseBaseSpecDerivedFrom);
+    }
+    if ( kind == ReflectionKind::BaseSpecifier ) {
+    uint32_t baseBaseSpecIdx = ( baseSpecIdx );
+    subW.find("baseBaseSpecIdx").writeUInt32(baseBaseSpecIdx);
+    }
+    if ( kind == ReflectionKind::DataMemberSpec ) {
+    QualType baseTdmsType = ( base.getReflectedDataMemberSpec()->Ty );
+    subW.find("baseTdmsType").writeQualType(baseTdmsType);
+    }
+    if ( kind == ReflectionKind::DataMemberSpec ) {
+    bool baseTdmsHasName = ( base.getReflectedDataMemberSpec()->Name.has_value() );
+    subW.find("baseTdmsHasName").writeBool(baseTdmsHasName);
+    }
+    if ( kind == ReflectionKind::DataMemberSpec ) {
+    llvm::ArrayRef<char> baseTdmsName = ( baseTdmsNameArray );
+    subW.find("baseTdmsName").writeArray(baseTdmsName);
+    }
+    if ( kind == ReflectionKind::DataMemberSpec ) {
+    bool baseTdmsHasAlignment = ( base.getReflectedDataMemberSpec()->Alignment.has_value() );
+    subW.find("baseTdmsHasAlignment").writeBool(baseTdmsHasAlignment);
+    }
+    if ( kind == ReflectionKind::DataMemberSpec ) {
+    uint32_t baseTdmsAlignment = ( base.getReflectedDataMemberSpec()->Alignment.value_or(0) );
+    subW.find("baseTdmsAlignment").writeUInt32(baseTdmsAlignment);
+    }
+    if ( kind == ReflectionKind::DataMemberSpec ) {
+    bool baseTdmsHasBitWidth = ( base.getReflectedDataMemberSpec()->BitWidth.has_value() );
+    subW.find("baseTdmsHasBitWidth").writeBool(baseTdmsHasBitWidth);
+    }
+    if ( kind == ReflectionKind::DataMemberSpec ) {
+    uint32_t baseTdmsBitWidth = ( base.getReflectedDataMemberSpec()->BitWidth.value_or(0) );
+    subW.find("baseTdmsBitWidth").writeUInt32(baseTdmsBitWidth);
+    }
+    if ( kind == ReflectionKind::DataMemberSpec ) {
+    bool baseTdmsNoUniqueAddress = ( base.getReflectedDataMemberSpec()->NoUniqueAddress );
+    subW.find("baseTdmsNoUniqueAddress").writeBool(baseTdmsNoUniqueAddress);
+    }
+    return;
+    }
+
     case APValue::MemberPointer: {
     bool isDerived = ( node.isMemberPointerToDerivedMember() );
     subW.find("isDerived").writeBool(isDerived);
@@ -1235,6 +1381,9 @@ public:
     asImpl().writeEnum(value);
   }
   void writeRefQualifierKind(RefQualifierKind value) {
+    asImpl().writeEnum(value);
+  }
+  void writeReflectionKind(ReflectionKind value) {
     asImpl().writeEnum(value);
   }
   void writeTagDeclRef(const TagDecl* value) {

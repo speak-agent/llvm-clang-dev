@@ -588,6 +588,14 @@ ABSTRACT_DECL(NAMESPACEBASE(NamespaceBase, NamedDecl))
 #  define NAMESPACE(Type, Base) NAMESPACEBASE(Type, Base)
 #endif
 NAMESPACE(Namespace, NamespaceBaseDecl)
+#ifndef DEPENDENTNAMESPACE
+#  define DEPENDENTNAMESPACE(Type, Base) NAMESPACE(Type, Base)
+#endif
+DEPENDENTNAMESPACE(DependentNamespace, NamespaceDecl)
+#undef DEPENDENTNAMESPACE
+
+DECL_RANGE(Namespace, Namespace, DependentNamespace)
+
 #undef NAMESPACE
 
 #ifndef NAMESPACEALIAS
@@ -684,6 +692,12 @@ EXPLICITINSTANTIATION(ExplicitInstantiation, Decl)
 EMPTY(Empty, Decl)
 #undef EMPTY
 
+#ifndef CONSTEVALBLOCK
+#  define CONSTEVALBLOCK(Type, Base) DECL(Type, Base)
+#endif
+CONSTEVALBLOCK(ConstevalBlock, Decl)
+#undef CONSTEVALBLOCK
+
 #ifndef ACCESSSPEC
 #  define ACCESSSPEC(Type, Base) DECL(Type, Base)
 #endif
@@ -722,6 +736,7 @@ DECL_CONTEXT(CXXDestructor)
 DECL_CONTEXT(HLSLBuffer)
 DECL_CONTEXT(LinkageSpec)
 DECL_CONTEXT(Namespace)
+DECL_CONTEXT(DependentNamespace)
 DECL_CONTEXT(OMPDeclareMapper)
 DECL_CONTEXT(OMPDeclareReduction)
 DECL_CONTEXT(ObjCCategory)
