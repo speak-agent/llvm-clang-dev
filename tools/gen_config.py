@@ -20,7 +20,12 @@ UP = ROOT / "llvm"
 OUT = ROOT / "llvm-generated" / "include"
 
 VERSION = (23, 1, 0)
+# Where the compiler runs (an openkal program: static, musl) and what it compiles for when a command
+# names no target. The two differ on purpose: MC++'s compiler is used as the llvm toolchain of a
+# Linux distribution's glibc (xim:llvm's layout and default, MC5 section 7), and a build tool that
+# passes --no-default-config for a native build gets the host's target, not the compiler's own libc.
 TRIPLE = "x86_64-unknown-linux-musl"
+DEFAULT_TARGET = "x86_64-unknown-linux-gnu"
 
 values = {
     # Version and identity.
@@ -28,7 +33,7 @@ values = {
     "PACKAGE_VERSION": "%d.%d.%d" % VERSION, "PACKAGE_NAME": "LLVM", "PACKAGE_STRING": "LLVM %d.%d.%d" % VERSION,
     "PACKAGE_BUGREPORT": "https://github.com/llvm/llvm-project/issues/", "PACKAGE_VENDOR": "",
     "BUG_REPORT_URL": "https://github.com/llvm/llvm-project/issues/",
-    "LLVM_DEFAULT_TARGET_TRIPLE": TRIPLE, "LLVM_HOST_TRIPLE": TRIPLE, "LLVM_TARGET_TRIPLE_ENV": "",
+    "LLVM_DEFAULT_TARGET_TRIPLE": DEFAULT_TARGET, "LLVM_HOST_TRIPLE": TRIPLE, "LLVM_TARGET_TRIPLE_ENV": "",
     "LLVM_NATIVE_ARCH": "X86", "LLVM_ON_UNIX": 1, "LLVM_PLUGIN_EXT": ".so", "LTDL_SHLIB_EXT": ".so",
     "HOST_LINK_VERSION": "", "LLVM_GISEL_COV_PREFIX": "",
     # Features this port turns off: no compression libraries, no network, no JIT helpers.
@@ -139,13 +144,91 @@ def emit(template: pathlib.Path, output: pathlib.Path):
     print("wrote", output.relative_to(ROOT))
 
 
+# What depends on the platform the libraries run on: the host and default triples, the native
+# architecture, a shared library's extension. On every one the C library is openkal-musl and the
+# program an openkal one, so the HAVE_* answers above hold everywhere; these two headers are written
+# per platform into llvm-generated/platform/<os>/, which the manifest adds for that target only.
+# openkal's Windows target compiles as x86_64-pc-cygwin (a POSIX world, LLVM_ON_UNIX), its macOS
+# target as a Darwin one; the default target is what a toolchain on that platform is asked for.
+PLATFORMS = {
+    "linux": {"LLVM_HOST_TRIPLE": TRIPLE, "LLVM_DEFAULT_TARGET_TRIPLE": DEFAULT_TARGET, "LLVM_NATIVE_ARCH": "X86",
+              "LLVM_PLUGIN_EXT": ".so", "LTDL_SHLIB_EXT": ".so"},
+    # MSVC's triple as the default, as xim's LLVM for Windows has: a build tool passes
+    # --no-default-config for a std module there (mcpp), and the compiler must then build for MSVC,
+    # whose toolset and STL it is given -- not for the MinGW world the program itself runs in.
+    "windows": {"LLVM_HOST_TRIPLE": "x86_64-w64-windows-gnu", "LLVM_DEFAULT_TARGET_TRIPLE": "x86_64-pc-windows-msvc",
+                "LLVM_NATIVE_ARCH": "X86", "LLVM_PLUGIN_EXT": ".dll", "LTDL_SHLIB_EXT": ".dll",
+                "LLVM_WINDOWS_PREFER_FORWARD_SLASH": 1},
+    "macos": {"LLVM_HOST_TRIPLE": "arm64-apple-darwin", "LLVM_DEFAULT_TARGET_TRIPLE": "arm64-apple-macosx",
+              "LLVM_NATIVE_ARCH": "AArch64", "LLVM_PLUGIN_EXT": ".dylib", "LTDL_SHLIB_EXT": ".dylib"},
+}
+PLATFORM_OUT = ROOT / "llvm-generated" / "platform"
+
 cfg = UP / "llvm/include/llvm/Config"
-for name in ["config.h", "llvm-config.h", "abi-breaking.h", "Targets.h"]:
+common = dict(values)
+for os_name, answers in PLATFORMS.items():
+    values.clear()
+    values.update(common, **answers)
+    for name in ["config.h", "llvm-config.h", "abi-breaking.h"]:
+        emit(cfg / (name + ".cmake"), PLATFORM_OUT / os_name / "llvm/Config" / name)
+    if os_name == "windows":
+        # The check it enforces is a weak definition in every unit that includes it, which upstream
+        # leaves out for _WIN32 and __CYGWIN__ (COFF); this PE target has neither macro.
+        out = PLATFORM_OUT / os_name / "llvm/Config/abi-breaking.h"
+        out.write_text("/* openkal's Windows target: a PE object (tools/gen_config.py). */\n"
+                       "#ifndef LLVM_DISABLE_ABI_BREAKING_CHECKS_ENFORCING\n#define LLVM_DISABLE_ABI_BREAKING_CHECKS_ENFORCING 1\n#endif\n"
+                       + out.read_text())
+        # A PE object with neither _WIN32 nor __ELF__: Clang's export annotation (clang/Support/Compiler.h,
+        # which includes this header first) has no case for it. These are static libraries -- what
+        # CLANG_BUILD_STATIC says -- for the libraries and for every program that includes their headers.
+        out = PLATFORM_OUT / os_name / "llvm/Config/llvm-config.h"
+        out.write_text(out.read_text() + "\n/* openkal's Windows target: static libraries (tools/gen_config.py). */\n"
+                       "#ifndef CLANG_BUILD_STATIC\n#define CLANG_BUILD_STATIC 1\n#endif\n")
+values.clear()
+values.update(common)
+for stale in ["config.h", "llvm-config.h", "abi-breaking.h"]:
+    (OUT / "llvm/Config" / stale).unlink(missing_ok=True)
+# A path on openkal's Windows target has a drive (`C:/Users/x`; no name there starts with `/`), which
+# LLVM's POSIX rules read as relative, and Clang then prefixes with its working directory. LLVM has
+# Windows' rules -- the native style its Path.h picks when _WIN32 is defined, which this target does not
+# define. Its Path.h is written here from upstream's with that one condition also true for the target
+# (__MCPP_TARGET_WINDOWS__, which every unit built for it has, so the libraries and every program that
+# includes the header agree), and '/' preferred (LLVM_WINDOWS_PREFER_FORWARD_SLASH above).
+path_h = (UP / "llvm/include/llvm/Support/Path.h").read_text()
+condition = "constexpr bool is_style_posix(Style S) {\n  if (S == Style::posix)\n    return true;\n  if (S != Style::native)\n    return false;\n#if defined(_WIN32)"
+assert path_h.count(condition) == 1, "upstream Path.h changed: update gen_config.py"
+out = PLATFORM_OUT / "windows/llvm/Support/Path.h"
+out.parent.mkdir(parents=True, exist_ok=True)
+out.write_text("// Written by tools/gen_config.py from upstream's llvm/Support/Path.h: on openkal's Windows target the\n"
+               "// native path style is Windows' (a path has a drive), as it is where _WIN32 is defined.\n"
+               + path_h.replace(condition, condition.replace("#if defined(_WIN32)", "#if defined(_WIN32) || defined(__MCPP_TARGET_WINDOWS__)")))
+print("wrote", out.relative_to(ROOT))
+
+# A header the C library has under another name on a non-Linux target: LLVM's bit.h asks for
+# <machine/endian.h> where neither __linux__ nor _WIN32 is defined.
+for os_name in ["windows", "macos"]:
+    shim = PLATFORM_OUT / os_name / "machine/endian.h"
+    shim.parent.mkdir(parents=True, exist_ok=True)
+    shim.write_text("// openkal-musl has <endian.h>; LLVM asks for the BSD spelling off Linux.\n#pragma once\n#include <endian.h>\n")
+# openkal's Windows target compiles as x86_64-pc-cygwin with __CYGWIN__ taken away: __unix__, and no
+# __linux__, __CYGWIN__ or _WIN32. Its C library is openkal-musl, Linux's C interface over openkal's
+# kernel layer, which is what LLVM's Linux branches expect; so its host code is read as Linux's. Forced
+# in by the manifest for that target (-include), before any source line.
+(PLATFORM_OUT / "windows/openkal-host.h").write_text(
+    "// Forced in on openkal's Windows target (tools/gen_config.py): LLVM's host code reads the platform\n"
+    "// from __linux__, which this world implements through openkal-musl.\n"
+    "#ifndef __linux__\n#define __linux__ 1\n#define __linux 1\n#endif\n")
+for name in ["Targets.h"]:
     emit(cfg / (name + ".cmake"), OUT / "llvm/Config" / name)
 for name in ["Targets.def", "AsmPrinters.def", "AsmParsers.def", "Disassemblers.def", "TargetMCAs.def", "TargetExegesis.def"]:
     emit(cfg / (name + ".in"), OUT / "llvm/Config" / name)
 emit(UP / "clang/include/clang/Config/config.h.cmake", OUT / "clang/Config/config.h")
 emit(UP / "clang/include/clang/Basic/Version.inc.in", OUT / "clang/Basic/Version.inc")
+
+# llvm/include/llvm/CMakeLists.txt: file(READ InstrumentorRuntimeHelper.h) into a raw string of
+# InstrumentorVariables.inc (the Instrumentor pass, in llvm.codegen-dev).
+values["LLVM_INSTRUMENTOR_RUNTIME_HELPER"] = (UP / "llvm/include/llvm/Transforms/IPO/InstrumentorRuntimeHelper.h").read_text()
+emit(UP / "llvm/include/llvm/Transforms/IPO/InstrumentorVariables.inc.in", OUT / "llvm/Transforms/IPO/InstrumentorVariables.inc")
 
 rev = (ROOT / "UPSTREAM-REV").read_text().split()[0] if (ROOT / "UPSTREAM-REV").exists() else "llvmorg-%d.%d.%d" % VERSION
 (OUT / "llvm/Support").mkdir(parents=True, exist_ok=True)

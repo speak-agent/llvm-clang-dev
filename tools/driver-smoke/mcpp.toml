@@ -1,0 +1,22 @@
+# clang as a program over llvm.clang-driver: the driver, cc1 and cc1as in process, the link step
+# spawned as clang spawns it.
+[package]
+name    = "driver-smoke"
+version = "0.1.0"
+
+[targets.driver-smoke]
+kind = "bin"
+main = "src/main.cpp"
+
+[build]
+ldflags = ["-Wl,--error-limit=0"]
+
+[dependencies]
+openkal-llvm-runtime = "0.15.2"
+# The C library MC++'s compiler is built with (mcpp-safe's root names it): speak-agent's fork, whose
+# macOS start records the arguments and the environment before any constructor runs (0.19.5) --
+# openkal-llvm-runtime asks for ^0.19.2 by version, and a root's git declaration wins.
+openkal-musl = { git = "https://github.com/speak-agent/openkal-musl.git", tag = "0.19.9" }
+
+[dependencies.llvm]
+clang-driver = { path = "../../driver" }

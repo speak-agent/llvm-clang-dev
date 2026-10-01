@@ -39,6 +39,149 @@ jobs:
           smoke=$(find target -type f -name clang-dev-smoke -path '*/bin/*' | head -1)
           "$smoke" | tee smoke.txt
           grep -q 'module=m .* errors=0' smoke.txt
+      # clang itself over llvm.clang-driver (and so llvm.codegen-dev): the driver, cc1 and cc1as in
+      # process, the link step spawned, for both back ends.
+      - name: clang in process (llvm.clang-driver)
+        working-directory: tools/driver-smoke
+        run: |
+          set -euo pipefail
+          mcpp build -j auto
+          clang=$(find target -type f -name driver-smoke -path '*/bin/*' | head -1)
+          "$clang" --version
+          printf 'export module m;\nexport int answer() { return 42; }\n' > m.cppm
+          "$clang" -std=c++23 --precompile m.cppm -o m.pcm
+          # The backport of llvm/llvm-project#219151 (README, Backports): std::align_val_t declared in
+          # extern "C++" in a named module, as MSVC's std module has it, is not ambiguous.
+          printf 'export module fake_std;\nextern "C++" {\nnamespace std {\n  using size_t = decltype(sizeof 0);\n  export enum class align_val_t : size_t {};\n}\nexport void *operator new(std::size_t, std::align_val_t);\nnamespace std {\nvoid foo() { align_val_t x{}; }\n}\n}\n' > pr218152.cppm
+          "$clang" -std=c++20 -fsyntax-only -x c++-module pr218152.cppm
+          # The resource directory's generated intrinsics headers (llvm-generated/clang-lib/Headers).
+          printf '#include <arm_neon.h>\nfloat32x4_t twice(float32x4_t v) { return vaddq_f32(v, v); }\n' > neon.cpp
+          "$clang" --target=aarch64-unknown-linux-gnu -ffreestanding -fsyntax-only -nostdinc \
+              -isystem ../../llvm-generated/clang-lib/Headers -isystem ../../llvm/clang/lib/Headers neon.cpp
+          printf 'extern "C" int puts(const char*);\nint main() { puts("hello from in-process clang"); }\n' > hello.cpp
+          "$clang" --target=aarch64-unknown-linux-gnu -c hello.cpp -o hello-arm64.o
+          "$clang" --target=x86_64-unknown-linux-gnu -O2 --ld-path="$HOME/.mcpp/registry/data/xpkgs/xim-x-llvm/$LLVM_VERSION/bin/ld.lld" hello.cpp -o hello
+          ./hello | grep -q 'hello from in-process clang'
+
+  # The other platforms, as mcppls builds them: one Linux host cross-builds for openkal's Windows target
+  # (x86_64-pc-cygwin without __CYGWIN__: a POSIX world over openkal, musl above it) and its macOS one,
+  # and the executables run on the platforms themselves (the Windows one also under wine here).
+  cross-build:
+    name: cross-build from Linux (${{ matrix.target }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { target: x86_64-windows-gnu, exe: '.exe', format: 'PE32+ executable' }
+          - { target: aarch64-macos,      exe: '',     format: 'Mach-O 64-bit arm64' }
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-mcpp
+      - name: Build the libraries for ${{ matrix.target }}
+        run: mcpp build -j auto --target ${{ matrix.target }}
+      - name: The smoke program for ${{ matrix.target }}
+        working-directory: tools/smoke
+        run: |
+          set -euo pipefail
+          mcpp build -j auto --target ${{ matrix.target }}
+          smoke=$(find target -type f -name "clang-dev-smoke${{ matrix.exe }}" -path '*/bin/*' | head -1)
+          file "$smoke" | tee /dev/stderr | grep -q '${{ matrix.format }}'
+          mkdir -p ../../cross && cp "$smoke" ../../cross/
+      # The code generator and clang itself for the target (llvm.codegen-dev, llvm.clang-driver): what
+      # MC++'s compiler is built from there (E-XIM-3). Built only for Linux here before, so a macOS-only
+      # break (INT64_C's type, 23.1.0.7) was first seen building mcxx.
+      - name: clang in process (llvm.clang-driver) for ${{ matrix.target }}
+        working-directory: tools/driver-smoke
+        run: |
+          set -euo pipefail
+          mcpp build -j auto --target ${{ matrix.target }}
+          clang=$(find target -type f -name "driver-smoke${{ matrix.exe }}" -path '*/bin/*' | head -1)
+          file "$clang" | tee /dev/stderr | grep -q '${{ matrix.format }}'
+          cp "$clang" ../../cross/
+      - name: Under wine
+        if: matrix.target == 'x86_64-windows-gnu'
+        run: |
+          set -euo pipefail
+          sudo apt-get update -q > /dev/null
+          sudo apt-get install -y wine64 > /dev/null || sudo apt-get install -y wine > /dev/null
+          WINEDEBUG=-all wine cross/clang-dev-smoke.exe | tee smoke.txt
+          grep -q 'module=m .* errors=0' smoke.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cross-${{ matrix.target }}
+          path: cross
+          retention-days: 7
+
+  run-cross:
+    name: run on ${{ matrix.os }} (${{ matrix.target }})
+    needs: cross-build
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-2022, target: x86_64-windows-gnu, exe: '.exe' }
+          - { os: macos-14,     target: aarch64-macos,      exe: '' }
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: cross-${{ matrix.target }}
+          path: cross
+      - name: The smoke program parses a module interface
+        run: |
+          set -euo pipefail
+          chmod +x "cross/clang-dev-smoke${{ matrix.exe }}" || true
+          # arm64 macOS runs only signed code: an ad hoc signature, as whoever ships the program adds.
+          if [ "${{ runner.os }}" = macOS ]; then codesign -s - "cross/clang-dev-smoke"; fi
+          "cross/clang-dev-smoke${{ matrix.exe }}" | tee smoke.txt
+          grep -q 'module=m .* errors=0' smoke.txt
+      - name: clang in process compiles for this platform
+        run: |
+          set -euo pipefail
+          clang="cross/driver-smoke${{ matrix.exe }}"
+          chmod +x "$clang" || true
+          if [ "${{ runner.os }}" = macOS ]; then codesign -s - "$clang"; fi
+          "$clang" --version | tee version.txt
+          grep -q 'clang version 23.1' version.txt
+          printf 'int answer(int x) { return x * 2 + 42; }\n' > answer.c
+          target=x86_64-pc-windows-msvc; [ "${{ runner.os }}" = macOS ] && target=arm64-apple-macos14
+          "$clang" --target=$target -ffreestanding -nostdinc -O2 -c answer.c -o answer.o
+          ls -la answer.o
+          # The program knows where it is (its resource directory and configuration files are found from
+          # there): on macOS through _NSGetExecutablePath, which took the kernel's 0 for a failure before
+          # 23.1.0.8 and left it with no directory.
+          if [ "${{ runner.os }}" = macOS ]; then
+            grep "^InstalledDir: $(cd cross && pwd -P)\$" version.txt
+            # and its host is Darwin's release, the kernel's (not openkal-musl's version: darwin0.19.8)
+            test "$("$clang" -dumpmachine)" = "arm64-apple-darwin$(uname -r)"
+          fi
+      # On Windows LLVM, built as for Linux there, has no /proc/self/exe and cannot resolve a drive path
+      # itself: started by its absolute path with -no-canonical-prefixes (what mcxx does for such a path)
+      # it takes that path, and its resource directory is where clang puts it relative to the program.
+      - name: Its own path, given absolute, on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $exe = Join-Path $PWD 'cross\driver-smoke.exe'
+          # Its default target is MSVC's (23.1.0.9), as a build tool's --no-default-config gets it.
+          $machine = & $exe --no-default-config -dumpmachine
+          Write-Output $machine
+          if ($machine -ne 'x86_64-pc-windows-msvc') { throw "default target: $machine" }
+          $dir = & $exe -no-canonical-prefixes -print-resource-dir
+          Write-Output $dir
+          # <its directory>/../lib/clang/23, as clang lays it out, with either separator (LLVM prefers '/'
+          # there): the resource directory of a program in cross/ is lib/clang/23 beside cross/.
+          $want = (Join-Path $PWD 'lib/clang/23').Replace('\', '/').ToLower()
+          if ("$dir".Replace('\', '/').ToLower() -ne $want) { throw "resource directory not beside the program: $dir (want $want)" }
 
   # llvm-generated/ is what upstream's CMake would produce from llvm/: regenerating it from the
   # sources here must change nothing.
