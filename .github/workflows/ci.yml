@@ -62,12 +62,26 @@ jobs:
           "$clang" --target=aarch64-unknown-linux-gnu -c hello.cpp -o hello-arm64.o
           "$clang" --target=x86_64-unknown-linux-gnu -O2 --ld-path="$HOME/.mcpp/registry/data/xpkgs/xim-x-llvm/$LLVM_VERSION/bin/ld.lld" hello.cpp -o hello
           ./hello | grep -q 'hello from in-process clang'
+      # The C++26 / C++29 language tests (lang/README.md): each paper's tests, by the clang just built.
+      - name: Language tests (lang/)
+        run: |
+          set -euo pipefail
+          clang=$(find tools/driver-smoke/target -type f -name driver-smoke -path '*/bin/*' | head -1)
+          python3 lang/run.py --clang "$clang" --ld-path "$HOME/.mcpp/registry/data/xpkgs/xim-x-llvm/$LLVM_VERSION/bin/ld.lld" --report lang-report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lang-report
+          path: lang-report.json
+          if-no-files-found: ignore
 
   # The other platforms, as mcppls builds them: one Linux host cross-builds for openkal's Windows target
   # (x86_64-pc-cygwin without __CYGWIN__: a POSIX world over openkal, musl above it) and its macOS one,
   # and the executables run on the platforms themselves (the Windows one also under wine here).
   cross-build:
     name: cross-build from Linux (${{ matrix.target }})
+    # A paper's branch (ml/*) is built and tested on Linux only; the other platforms build what is merged.
+    if: ${{ !startsWith(github.ref, 'refs/heads/ml/') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 150
     strategy:
