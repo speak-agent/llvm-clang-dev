@@ -1609,12 +1609,9 @@ static llvm::SmallString<5> codepointAsHexString(uint32_t C) {
   return CharBuf;
 }
 
-// To mitigate https://github.com/llvm/llvm-project/issues/54732,
-// we allow "Mathematical Notation Characters" in identifiers.
-// This is a proposed profile that extends the XID_Start/XID_continue
-// with mathematical symbols, superscipts and subscripts digits
-// found in some production software.
-// https://www.unicode.org/L2/L2022/22230-math-profile.pdf
+// The mathematical compatibility notation profile extends XID_Start and
+// XID_Continue with mathematical symbols, superscript and subscript digits.
+// https://www.unicode.org/reports/tr31/#Mathematical_Compatibility_Notation
 static bool isMathematicalExtensionID(uint32_t C, const LangOptions &LangOpts,
                                       bool IsStart, bool &IsExtension) {
   static const llvm::sys::UnicodeCharSet MathStartChars(
@@ -1683,8 +1680,10 @@ static bool isAllowedInitiallyIDChar(uint32_t C, const LangOptions &LangOpts,
   return !C99DisallowedInitialIDChars.contains(C);
 }
 
-static void diagnoseExtensionInIdentifier(DiagnosticsEngine &Diags, uint32_t C,
-                                          CharSourceRange Range) {
+static void
+diagnoseMathematicalNotationInIdentifier(DiagnosticsEngine &Diags,
+                                         const LangOptions &LangOpts,
+                                         uint32_t C, CharSourceRange Range) {
 
   static const llvm::sys::UnicodeCharSet MathStartChars(
       MathematicalNotationProfileIDStartRanges);
@@ -1695,7 +1694,11 @@ static void diagnoseExtensionInIdentifier(DiagnosticsEngine &Diags, uint32_t C,
   (void)MathContinueChars;
   assert((MathStartChars.contains(C) || MathContinueChars.contains(C)) &&
          "Unexpected mathematical notation codepoint");
-  Diags.Report(Range.getBegin(), diag::ext_mathematical_notation)
+  unsigned DiagID = LangOpts.CPlusPlus
+                        ? DiagnosticIDs::getCXXCompatDiagId(
+                              LangOpts, diag_compat::mathematical_notation)
+                        : diag::ext_mathematical_notation;
+  Diags.Report(Range.getBegin(), DiagID)
       << codepointAsHexString(C) << Range;
 }
 
@@ -1867,8 +1870,9 @@ bool Lexer::tryConsumeIdentifierUCN(const char *&CurPtr, unsigned Size,
     // Carry on as if the codepoint was valid for recovery purposes.
   } else if (!isLexingRawMode()) {
     if (IsExtension)
-      diagnoseExtensionInIdentifier(PP->getDiagnostics(), CodePoint,
-                                    makeCharRange(*this, CurPtr, UCNPtr));
+      diagnoseMathematicalNotationInIdentifier(
+          PP->getDiagnostics(), LangOpts, CodePoint,
+          makeCharRange(*this, CurPtr, UCNPtr));
 
     maybeDiagnoseIDCharCompat(PP->getDiagnostics(), CodePoint,
                               makeCharRange(*this, CurPtr, UCNPtr),
@@ -1923,8 +1927,8 @@ bool Lexer::tryConsumeIdentifierUTF8Char(const char *&CurPtr, Token &Result) {
     // valid for recovery purposes.
   } else if (!isLexingRawMode()) {
     if (IsExtension)
-      diagnoseExtensionInIdentifier(
-          PP->getDiagnostics(), CodePoint,
+      diagnoseMathematicalNotationInIdentifier(
+          PP->getDiagnostics(), LangOpts, CodePoint,
           makeCharRange(*this, CharStart, UnicodePtr));
     maybeDiagnoseIDCharCompat(PP->getDiagnostics(), CodePoint,
                               makeCharRange(*this, CharStart, UnicodePtr),
@@ -1948,8 +1952,9 @@ bool Lexer::LexUnicodeIdentifierStart(Token &Result, uint32_t C,
     if (!isLexingRawMode() && !ParsingPreprocessorDirective &&
         !PP->isPreprocessedOutput()) {
       if (IsExtension)
-        diagnoseExtensionInIdentifier(PP->getDiagnostics(), C,
-                                      makeCharRange(*this, BufferPtr, CurPtr));
+        diagnoseMathematicalNotationInIdentifier(
+            PP->getDiagnostics(), LangOpts, C,
+            makeCharRange(*this, BufferPtr, CurPtr));
       maybeDiagnoseIDCharCompat(PP->getDiagnostics(), C,
                                 makeCharRange(*this, BufferPtr, CurPtr),
                                 /*IsFirst=*/true);
