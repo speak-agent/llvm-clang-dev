@@ -26,11 +26,31 @@ MinGW triple the program itself runs as does not build for.
 
 ## Backports
 
-Upstream commits after `UPSTREAM-REV` that `llvm/` carries, each unchanged:
+Upstream commits after `UPSTREAM-REV` that `llvm/` carries, each unchanged (but where its row says a name differs):
 
 | Commit | Since | What it fixes |
 |---|---|---|
 | [`5277447`](https://github.com/llvm/llvm-project/commit/52774473867e49b5891ab9381accf4e5a3ce0024) (#219151, llvm/llvm-project#218152) | 23.1.0.6 | `std::align_val_t` declared inside `extern "C++"` in a named module (MSVC's STL builds its `std` module so) was not taken as the one Clang declares implicitly -- which 23.1 puts in `std`'s lookup table (#187347) -- and every use of it was ambiguous: MSVC's `std.ixx` did not compile. `clang/lib/Sema/SemaDecl.cpp`, one line. |
+| [`2f6ec89`](https://github.com/llvm/llvm-project/commit/2f6ec89938aa12ba5190477032b974524c956b54) (#212131, P3658R1; branch `ml/s4-preprocessor`, commit `f14d380`) | unreleased | C++ identifiers follow UAX #31's mathematical compatibility notation profile (`∇f`, `x²`), a defect report against all C++ modes: Clang had accepted the characters since 2022 as an extension, and now says they are a C++2d extension (`-Wc++2d-extensions`) before C++2d and `-Wpre-c++2d-compat` in it. `Lexer.cpp`, `UnicodeCharSets.h` (comments), `DiagnosticLexKinds.td`; two names differ from upstream's text because 23.1 has them under older ones (`getCXXCompatDiagId`, `codepointAsHexString`; see `lang/cpp29/p3658-unicode-identifiers/README.md`). |
+
+## Language features (lang/)
+
+C++26 and C++29 core-language papers that Clang 23.1 lacks, one directory per paper under `lang/<generation>/`
+(`lang/README.md`: the harness; `lang/run.py` runs every test with the clang this repository builds). Each paper's
+`README.md` names its commits, where it came from and its option.
+
+Line S4 (branch `ml/s4-preprocessor`): the preprocessor and lexer papers.
+
+| Paper | Source | Option | Changed files (under `llvm/clang`) |
+|---|---|---|---|
+| P1967R14 `#embed` (C++26): `lang/cpp26/p1967-embed` | ours, on Clang's C23 `#embed`; `__cpp_pp_embed`, no extension warning in C++26, `__has_include` in `__has_embed` an error, `__has_embed`'s `limit` fix | `-std=c++2c` | `lib/Lex/PPDirectives.cpp`, `lib/Lex/PPMacroExpansion.cpp`, `lib/Frontend/InitPreprocessor.cpp`, `include/clang/Lex/Preprocessor.h`, `include/clang/Basic/DiagnosticLexKinds.td` |
+| P3540R3 `offset` (C++2d): `lang/cpp29/p3540-embed-offset` | ours, `offset` is `clang::offset` | `-std=c++2d` | `lib/Lex/PPDirectives.cpp` |
+| P2843R3 preprocessing is never undefined (C++26): `lang/cpp26/p2843-preprocessing-never-undefined` | ours (upstream's was reverted twice and is not in LLVM main) | `-std=c++2c`; warnings `-Wpreprocessing-undefined` | `lib/Lex/PPDirectives.cpp`, `include/clang/Basic/DiagnosticLexKinds.td`, `DiagnosticGroups.td` |
+| P3658R1 identifiers (C++2d, a DR against all modes): `lang/cpp29/p3658-unicode-identifiers` | backport of LLVM `2f6ec89938` (Backports above) | warnings by mode | `lib/Lex/Lexer.cpp`, `lib/Lex/UnicodeCharSets.h`, `include/clang/Basic/DiagnosticLexKinds.td` |
+
+Every change to a `.td` file regenerates `llvm-generated/` (`tools/gen_tablegen.py`): diagnostic ids are numbered
+across all components, so a new diagnostic touches every `Diagnostic*Kinds.inc`; two branches that both add
+diagnostics merge by regenerating, not by merging the generated files.
 
 ## Platforms
 
