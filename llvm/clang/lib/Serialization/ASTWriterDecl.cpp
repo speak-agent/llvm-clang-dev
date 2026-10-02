@@ -720,6 +720,7 @@ void ASTDeclWriter::VisitRecordDecl(RecordDecl *D) {
   RecordDeclBits.addBit(D->hasUninitializedExplicitInitFields());
   RecordDeclBits.addBit(D->isParamDestroyedInCallee());
   RecordDeclBits.addBits(llvm::to_underlying(D->getArgPassingRestrictions()), 2);
+  RecordDeclBits.addBit(D->isConstevalOnly());
   Record.push_back(RecordDeclBits);
 
   // Only compute this for C/Objective-C, in C++ this is computed as part
@@ -2671,7 +2672,7 @@ void ASTWriter::WriteDeclAbbrevs() {
   // RecordDecl
   Abv->Add(BitCodeAbbrevOp(
       BitCodeAbbrevOp::Fixed,
-      14)); // Packed Record Decl Bits: FlexibleArrayMember,
+      15)); // Packed Record Decl Bits: FlexibleArrayMember,
             // AnonymousStructUnion, hasObjectMember, hasVolatileMember,
             // isNonTrivialToPrimitiveDefaultInitialize,
             // isNonTrivialToPrimitiveCopy, isNonTrivialToPrimitiveDestroy,
@@ -2679,7 +2680,7 @@ void ASTWriter::WriteDeclAbbrevs() {
             // hasNonTrivialToPrimitiveDestructCUnion,
             // hasNonTrivialToPrimitiveCopyCUnion,
             // hasUninitializedExplicitInitFields, isParamDestroyedInCallee,
-            // getArgPassingRestrictions
+            // getArgPassingRestrictions, isConstevalOnly
   // ODRHash
   Abv->Add(BitCodeAbbrevOp(BitCodeAbbrevOp::Fixed, 26));
 

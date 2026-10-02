@@ -304,7 +304,7 @@ Decl *Parser::ParseNamespaceAlias(SourceLocation NamespaceLoc,
 
     return Actions.ActOnNamespaceAliasDef(getCurScope(), NamespaceLoc, AliasLoc,
                                           Alias, SS, NSLoc,
-                                          cast<NamedDecl>(DR.get()));
+                                          cast<NamespaceBaseDecl>(DR.get()));
   } else if (Tok.isNot(tok::identifier)) {
     Diag(Tok, diag::err_expected_namespace_name);
     // Skip to end of the definition and eat the ';'.

@@ -203,11 +203,34 @@ static IterableExpansionStmtData TryBuildIterableExpansionStmtInitializer(
   if (BeginStmt.isInvalid())
     return Data;
 
-  // TODO: Build 'constexpr auto iter = begin + decltype(begin - begin){i};'.
-  S.Diag(ColonLoc, diag::err_iterating_expansion_stmt_unsupported);
-  return Data;
+  // [stmt.expand]p5.2: 'iter' is 'constexpr[opt] auto iter = begin +
+  // decltype(begin - begin){i};', where 'i' is the expansion index and
+  // 'constexpr' is present iff the for-range-declaration is 'constexpr'.
+  auto BuildBeginRef = [&] {
+    return S.BuildDeclRefExpr(Info.BeginVar,
+                              Info.BeginVar->getType().getNonReferenceType(),
+                              VK_LValue, ColonLoc);
+  };
+  ExprResult BeginMinusBegin =
+      S.BuildBinOp(Scope, ColonLoc, BO_Sub, BuildBeginRef(), BuildBeginRef());
+  if (BeginMinusBegin.isInvalid())
+    return Data;
 
-#if 0 // This will be used once we support iterating expansion statements.
+  QualType DiffTy = S.getDecltypeForExpr(BeginMinusBegin.get());
+  TypeSourceInfo *DiffTSI =
+      S.Context.getTrivialTypeSourceInfo(DiffTy, ColonLoc);
+  Expr *IndexArg = Index;
+  ExprResult DiffInit = S.BuildCXXTypeConstructExpr(
+      DiffTSI, ColonLoc, MultiExprArg(&IndexArg, 1), ColonLoc,
+      /*ListInitialization=*/true);
+  if (DiffInit.isInvalid())
+    return Data;
+
+  ExprResult BeginPlusI =
+      S.BuildBinOp(Scope, ColonLoc, BO_Add, BuildBeginRef(), DiffInit.get());
+  if (BeginPlusI.isInvalid())
+    return Data;
+
   // Store it in a variable.
   // See also Sema::BuildCXXForRangeBeginEndVars().
   const auto DepthStr = std::to_string(Scope->getDepth() / 2);
@@ -233,7 +256,6 @@ static IterableExpansionStmtData TryBuildIterableExpansionStmtInitializer(
   Data.IterDecl = IterVarStmt.getAs<DeclStmt>();
   Data.TheState = IterableExpansionStmtData::IsIterableResult::Iterable;
   return Data;
-#endif
 }
 
 static StmtResult BuildDestructuringDecompositionDecl(
@@ -620,26 +642,36 @@ Sema::ComputeExpansionSize(CXXExpansionStmtPattern *Expansion) {
     EnterExpressionEvaluationContext ExprEvalCtx(
         *this, ExpressionEvaluationContext::ConstantEvaluated);
 
-    // TODO: Build the lambda and evaluate it.
-    Diag(Loc, diag::err_iterating_expansion_stmt_unsupported);
-    return std::nullopt;
+    // The size is 'end - begin': the iterator must be a random access
+    // iterator anyway ('begin + i' is used to reach the i-th element), and
+    // this avoids building and evaluating the lambda of the wording.
+    VarDecl *RangeVar = Expansion->getRangeVar();
+    ForRangeBeginEndInfo Info = BuildCXXForRangeBeginEndVars(
+        getCurScope(), RangeVar, Loc, /*CoawaitLoc=*/{},
+        /*LifetimeExtendTemps=*/{}, BFRK_Build, RangeVar->isConstexpr());
+    if (!Info.isValid())
+      return std::nullopt;
 
-#if 0 // This will be used once we support iterating expansion statements.
+    ExprResult Distance =
+        BuildBinOp(getCurScope(), Loc, BO_Sub, Info.EndExpr, Info.BeginExpr);
+    if (Distance.isInvalid())
+      return std::nullopt;
+
     Expr::EvalResult ER;
     SmallVector<PartialDiagnosticAt, 4> Notes;
     ER.Diag = &Notes;
-    if (!Call.get()->EvaluateAsInt(ER, Context)) {
+    if (!Distance.get()->EvaluateAsInt(ER, Context)) {
       Diag(Loc, diag::err_expansion_size_expr_not_ice);
       for (const auto &[Location, PDiag] : Notes)
         Diag(Location, PDiag);
       return std::nullopt;
     }
 
-    // It shouldn't be possible for this to be negative since we compute this
-    // via the built-in '++' on a ptrdiff_t.
-    assert(ER.Val.getInt().isNonNegative());
+    if (ER.Val.getInt().isNegative()) {
+      Diag(Loc, diag::err_expansion_size_expr_not_ice);
+      return std::nullopt;
+    }
     return ER.Val.getInt().getZExtValue();
-#endif
   }
 
   assert(Expansion->isDestructuring());

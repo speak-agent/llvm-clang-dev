@@ -848,6 +848,7 @@ RedeclarableResult ASTDeclReader::VisitRecordDeclImpl(RecordDecl *RD) {
   RD->setParamDestroyedInCallee(RecordDeclBits.getNextBit());
   RD->setArgPassingRestrictions(
       (RecordArgPassingKind)RecordDeclBits.getNextBits(/*Width=*/2));
+  RD->setIsConstevalOnly(RecordDeclBits.getNextBit());
   return Redecl;
 }
 
