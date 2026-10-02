@@ -4110,6 +4110,7 @@ static constexpr char DiagStableIDsStorage[] =
   "ext_elaborated_enum_class\0"
   "ext_ellipsis_exception_spec\0"
   "ext_embedded_directive\0"
+  "ext_embedded_directive_cxx26\0"
   "ext_empty_character\0"
   "ext_empty_fnmacro_arg\0"
   "ext_empty_struct_union\0"
@@ -4293,6 +4294,7 @@ static constexpr char DiagStableIDsStorage[] =
   "ext_pp_bad_vaargs_use\0"
   "ext_pp_bad_vaopt_use\0"
   "ext_pp_comma_expr\0"
+  "ext_pp_cxx26_reserved_macro_name\0"
   "ext_pp_embed_directive\0"
   "ext_pp_extra_tokens_at_eol\0"
   "ext_pp_gnu_line_directive\0"
@@ -4301,7 +4303,9 @@ static constexpr char DiagStableIDsStorage[] =
   "ext_pp_include_next_directive\0"
   "ext_pp_include_search_ms\0"
   "ext_pp_line_too_big\0"
+  "ext_pp_line_too_big_cxx26\0"
   "ext_pp_line_zero\0"
+  "ext_pp_line_zero_cxx26\0"
   "ext_pp_macro_redef\0"
   "ext_pp_opencl_variadic_macros\0"
   "ext_pp_operator_used_as_macro_name\0"
@@ -7378,7 +7382,7 @@ DiagStableIDs = DiagStableIDsStorage;
 
 static const uint32_t DiagLegacyStableIDs[] = {
   0,
-  215385, 0,
+  215496, 0,
 };
 
 #endif // GET_DIAG_STABLE_ID_ARRAYS

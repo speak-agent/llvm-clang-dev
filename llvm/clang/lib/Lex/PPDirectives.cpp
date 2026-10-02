@@ -362,6 +362,47 @@ findSimilarStr(StringRef LHS, const std::vector<StringRef> &Candidates) {
   }
 }
 
+/// P2843R3 ([cpp.replace.general]/9): a translation unit shall not #define or
+/// #undef macro names lexically identical to keywords, to the identifiers with
+/// special meaning ([lex.name]), or to attribute-tokens ([dcl.attr]), except
+/// that likely and unlikely may be defined as function-like macros and may be
+/// undefined. Returns the kind of name (the index of the diagnostic's select)
+/// or -1 if the name may be a macro's.
+enum CXX26ReservedMacroName {
+  CRMN_Keyword = 0,
+  CRMN_SpecialIdentifier = 1,
+  CRMN_AttributeToken = 2,
+  CRMN_None = -1,
+};
+
+static int classifyCXX26ReservedMacroName(Preprocessor &PP, IdentifierInfo *II,
+                                          bool IsDefine) {
+  const LangOptions &Lang = PP.getLangOpts();
+  // An alternative token is diagnosed as an error by the caller already.
+  if (II->isCPlusPlusOperatorKeyword())
+    return CRMN_None;
+  StringRef Name = II->getName();
+  // [lex.name], the identifiers with special meaning of C++26 (import and
+  // module are keywords of Clang's when modules are on).
+  if (Name == "final" || Name == "override" || Name == "import" ||
+      Name == "module" || Name == "pre" || Name == "post")
+    return CRMN_SpecialIdentifier;
+  if (II->isKeyword(Lang))
+    return CRMN_Keyword;
+  bool IsLikelyOrUnlikely = Name == "likely" || Name == "unlikely";
+  if (IsLikelyOrUnlikely && !IsDefine)
+    return CRMN_None;
+  if (IsLikelyOrUnlikely && PP.isNextPPTokenOneOf(tok::l_paren))
+    return CRMN_None;
+  // The attribute-tokens are lower-case names; most macro names are not.
+  if (!isLowercase(Name[0]) || llvm::any_of(Name, isUppercase))
+    return CRMN_None;
+  if (hasAttribute(AttributeCommonInfo::AS_CXX11, /*Scope=*/nullptr, II,
+                   PP.getTargetInfo(), Lang, /*CheckPlugins=*/false) > 0)
+    return CRMN_AttributeToken;
+  return CRMN_None;
+}
+
 bool Preprocessor::CheckMacroName(Token &MacroNameTok, MacroUse isDefineUndef,
                                   bool *ShadowFlag) {
   // Missing macro name?
@@ -417,6 +458,19 @@ bool Preprocessor::CheckMacroName(Token &MacroNameTok, MacroUse isDefineUndef,
     if (D == MD_ReservedAttributeIdentifier)
       Diag(MacroNameTok, diag::warn_pp_macro_is_reserved_attribute_id)
           << II->getName();
+  }
+
+  // P2843R3: in C++26 defining or undefining a keyword, an identifier with
+  // special meaning or an attribute-token as a macro is ill-formed (it was
+  // not diagnosed before; the program is accepted, as an extension, with a
+  // warning).
+  if (getLangOpts().CPlusPlus26 && isDefineUndef != MU_Other) {
+    int Kind =
+        classifyCXX26ReservedMacroName(*this, II, isDefineUndef == MU_Define);
+    if (Kind != CRMN_None && !SourceMgr.isInSystemHeader(MacroNameLoc) &&
+        !SourceMgr.isInPredefinedFile(MacroNameLoc))
+      Diag(MacroNameTok, diag::ext_pp_cxx26_reserved_macro_name)
+          << (isDefineUndef == MU_Undef) << II << Kind;
   }
 
   // Okay, we got a good identifier.
@@ -1346,7 +1400,8 @@ void Preprocessor::HandleDirective(Token &Result) {
   // not support this for #include-like directives, since that can result in
   // terrible diagnostics, and does not work in GCC.
   if (InMacroArgs) {
-    if (IdentifierInfo *II = Result.getIdentifierInfo()) {
+    IdentifierInfo *DirectiveII = Result.getIdentifierInfo();
+    if (IdentifierInfo *II = DirectiveII) {
       switch (II->getPPKeywordID()) {
       case tok::pp_include:
       case tok::pp_import:
@@ -1367,7 +1422,14 @@ void Preprocessor::HandleDirective(Token &Result) {
         break;
       }
     }
-    Diag(Result, diag::ext_embedded_directive);
+    // P2843R3 ([cpp.replace.general]/13): ill-formed in C++26, accepted as an
+    // extension with a warning by default.
+    if (getLangOpts().CPlusPlus26)
+      Diag(Result, diag::ext_embedded_directive_cxx26)
+          << Introducer.is(tok::hash)
+          << (DirectiveII ? DirectiveII->getName() : StringRef());
+    else
+      Diag(Result, diag::ext_embedded_directive);
   }
 
   // Temporarily enable macro expansion if set so
@@ -1617,8 +1679,11 @@ void Preprocessor::HandleLineDirective() {
   if (GetLineValue(DigitTok, LineNo, diag::err_pp_line_requires_integer,*this))
     return;
 
+  // P2843R3 ([cpp.line]/3): zero and a number greater than 2147483647 are
+  // ill-formed in C++26 (extensions, with a warning by default, before).
   if (LineNo == 0)
-    Diag(DigitTok, diag::ext_pp_line_zero);
+    Diag(DigitTok, LangOpts.CPlusPlus26 ? diag::ext_pp_line_zero_cxx26
+                                        : diag::ext_pp_line_zero);
 
   // Enforce C99 6.10.4p3: "The digit sequence shall not specify ... a
   // number greater than 2147483647".  C90 requires that the line # be <= 32767.
@@ -1626,7 +1691,9 @@ void Preprocessor::HandleLineDirective() {
   if (LangOpts.C99 || LangOpts.CPlusPlus11)
     LineLimit = 2147483648U;
   if (LineNo >= LineLimit)
-    Diag(DigitTok, diag::ext_pp_line_too_big) << LineLimit;
+    Diag(DigitTok, LangOpts.CPlusPlus26 ? diag::ext_pp_line_too_big_cxx26
+                                        : diag::ext_pp_line_too_big)
+        << LineLimit;
   else if (LangOpts.CPlusPlus11 && LineNo >= 32768U)
     Diag(DigitTok, diag::warn_cxx98_compat_pp_line_too_big);
 

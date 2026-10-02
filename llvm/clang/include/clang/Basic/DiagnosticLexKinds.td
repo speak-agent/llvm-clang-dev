@@ -437,6 +437,12 @@ def note_pp_ambiguous_macro_other : Note<
   "other definition of %0">;
 def warn_pp_macro_hides_keyword : Extension<
   "keyword is hidden by macro definition">, InGroup<KeywordAsMacro>;
+// P2843R3: a keyword, an identifier with special meaning or an attribute-token
+// as a macro name is ill-formed in C++26.
+def ext_pp_cxx26_reserved_macro_name : ExtWarn<
+  "%select{defining|undefining}0 %1 as a macro is ill-formed in C++26: it is "
+  "%select{a keyword|an identifier with special meaning|an attribute-token}2">,
+  InGroup<PreprocessingUndefined>;
 def warn_pp_macro_is_reserved_id : Warning<
   "macro name is a reserved identifier">, DefaultIgnore,
   InGroup<ReservedIdAsMacro>;
@@ -526,7 +532,12 @@ def err_embedded_directive : Error<"embedding a %select{|#}0%1 directive "
                                    "within macro arguments is not supported">;
 def ext_embedded_directive : Extension<
   "embedding a directive within macro arguments has undefined behavior">,
-  InGroup<DiagGroup<"embedded-directive">>;
+  InGroup<EmbeddedDirective>;
+// P2843R3: ill-formed in C++26.
+def ext_embedded_directive_cxx26 : ExtWarn<
+  "embedding a %select{|#}0%1 directive within macro arguments is ill-formed "
+  "in C++26">,
+  InGroup<PreprocessingUndefined>;
 def ext_c_missing_varargs_arg : Extension<
   "passing no argument for the '...' parameter of a variadic macro is "
   "a C23 extension">, InGroup<VariadicMacroArgumentsOmitted>;
@@ -817,6 +828,9 @@ def err_pp_illegal_floating_literal : Error<
   "floating point literal in preprocessor expression">;
 def err_pp_line_requires_integer : Error<
   "#line directive requires a positive integer argument">;
+def ext_pp_line_zero_cxx26 : ExtWarn<
+  "#line directive with zero argument is ill-formed in C++26">,
+  InGroup<PreprocessingUndefined>;
 def ext_pp_line_zero : Extension<
   "#line directive with zero argument is a GNU extension">,
   InGroup<GNUZeroLineDirective>;
@@ -834,6 +848,9 @@ def err_pp_linemarker_invalid_flag : Error<
   "invalid flag line marker directive">;
 def err_pp_linemarker_invalid_pop : Error<
   "invalid line marker flag '2': cannot pop empty include stack">;
+def ext_pp_line_too_big_cxx26 : ExtWarn<
+  "#line number must be less than %0 in C++26">,
+  InGroup<PreprocessingUndefined>;
 def ext_pp_line_too_big : Extension<
   "C requires #line number to be less than %0, allowed as extension">;
 def warn_cxx98_compat_pp_line_too_big : Warning<

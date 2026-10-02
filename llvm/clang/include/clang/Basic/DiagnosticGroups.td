@@ -746,6 +746,11 @@ def DllexportExplicitInstantiation :
             [DllexportExplicitInstantiationDecl]>;
 def ExcessInitializers : DiagGroup<"excess-initializers">;
 def ExpansionToDefined : DiagGroup<"expansion-to-defined">;
+def EmbeddedDirective : DiagGroup<"embedded-directive">;
+// What preprocessing and lexing left undefined before C++26 and P2843R3 makes
+// ill-formed in it; Clang accepts those with a warning (an error with
+// -pedantic-errors or -Werror=preprocessing-undefined).
+def PreprocessingUndefined : DiagGroup<"preprocessing-undefined">;
 def FlagEnum : DiagGroup<"flag-enum">;
 def IncrementBool : DiagGroup<"increment-bool", [DeprecatedIncrementBool]>;
 def InfiniteRecursion : DiagGroup<"infinite-recursion">;
