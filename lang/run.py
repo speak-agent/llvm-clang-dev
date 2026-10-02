@@ -43,7 +43,9 @@ def header(path):
 def check(path):
     generation = path.relative_to(root).parts[0]
     run, args = header(path)
-    common = [clang, STANDARD[generation], *args]
+    # --embed-dir: the test's own directory is where `#embed <name>` looks for a resource (a "name" finds it
+    # next to the file anyway), so a test brings its data files; nothing else reads the option.
+    common = [clang, STANDARD[generation], f"--embed-dir={path.parent}", *args]
     if run == "verify":
         p = subprocess.run([*common, "-fsyntax-only", "-Xclang", "-verify", str(path)], capture_output=True, text=True)
         return p.returncode == 0, p.stdout + p.stderr

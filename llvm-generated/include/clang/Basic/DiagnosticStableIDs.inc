@@ -34,6 +34,7 @@ static constexpr char DiagStableIDsStorage[] =
   "compat_cxx23_constexpr_static_var\0"
   "compat_cxx23_cxx23_constexpr_body_invalid_stmt\0"
   "compat_cxx26_decomp_decl_cond\0"
+  "compat_cxx26_pp_embed_directive\0"
   "compat_cxx29_mathematical_notation\0"
   "compat_pre_cxx11_enum_fixed_underlying_type\0"
   "compat_pre_cxx11_nonclass_type_friend\0"
@@ -61,6 +62,7 @@ static constexpr char DiagStableIDsStorage[] =
   "compat_pre_cxx23_constexpr_static_var\0"
   "compat_pre_cxx23_cxx23_constexpr_body_invalid_stmt\0"
   "compat_pre_cxx26_decomp_decl_cond\0"
+  "compat_pre_cxx26_pp_embed_directive\0"
   "compat_pre_cxx29_mathematical_notation\0"
   "err_32_bit_builtin_64_bit_tgt\0"
   "err_64_bit_builtin_32_bit_tgt\0"
@@ -3035,6 +3037,7 @@ static constexpr char DiagStableIDsStorage[] =
   "err_pp_file_not_found\0"
   "err_pp_file_not_found_angled_include_not_fatal\0"
   "err_pp_file_not_found_typo_not_fatal\0"
+  "err_pp_has_include_in_has_embed\0"
   "err_pp_hash_error\0"
   "err_pp_identifier_arg_not_identifier\0"
   "err_pp_illegal_floating_literal\0"
@@ -7375,7 +7378,7 @@ DiagStableIDs = DiagStableIDsStorage;
 
 static const uint32_t DiagLegacyStableIDs[] = {
   0,
-  215285, 0,
+  215385, 0,
 };
 
 #endif // GET_DIAG_STABLE_ID_ARRAYS

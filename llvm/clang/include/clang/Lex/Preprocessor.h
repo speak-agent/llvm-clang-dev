@@ -305,6 +305,11 @@ class Preprocessor {
   /// True if we are pre-expanding macro arguments.
   bool InMacroArgPreExpansion;
 
+  /// True while the embed parameters of a __has_embed expression are lexed:
+  /// P1967R14 makes __has_include in them ill-formed (it is fine in the
+  /// parameters of a #embed directive).
+  bool InHasEmbedParameters = false;
+
   /// Mapping/lookup information for all identifiers in
   /// the program, including program keywords.
   mutable IdentifierTable Identifiers;

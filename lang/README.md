@@ -23,7 +23,10 @@ source file whose first comment lines say what to do:
 |---|---|
 | `// RUN: verify` | `-fsyntax-only -Xclang -verify`: the file's `expected-error`/`expected-warning`/`expected-note` directives, or `expected-no-diagnostics`, are exactly what clang reports |
 | `// RUN: run` | compiled, linked and run; it exits with 0. No C++ library (`-nostdlib++`): it declares the C functions it calls |
-| `// ARGS: ...` | further arguments for this file |
+| `// ARGS: ...` | further arguments for this file (a later `-std=` overrides the generation's: a test of how an earlier standard reads the feature) |
+
+The test's own directory is its `--embed-dir`: an `#embed <name>` finds a data file that lies next to the test
+(a binary file is fine), and an `#include "name"` finds a header there as always.
 
 The standard is the generation's: `cpp26` is `-std=c++2c`, `cpp29` is `-std=c++2d`. Each paper's tests take its
 examples, with the paper's expected outcome. The two baseline papers here (`p2662-pack-indexing`,

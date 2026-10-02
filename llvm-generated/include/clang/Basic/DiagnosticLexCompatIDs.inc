@@ -1,3 +1,4 @@
 DIAG_COMPAT_IDS_BEGIN()
 DIAG_COMPAT_ID(0,mathematical_notation,29,compat_cxx29_mathematical_notation,compat_pre_cxx29_mathematical_notation)
+DIAG_COMPAT_ID(1,pp_embed_directive,26,compat_cxx26_pp_embed_directive,compat_pre_cxx26_pp_embed_directive)
 DIAG_COMPAT_IDS_END()

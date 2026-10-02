@@ -766,6 +766,11 @@ static void InitializeCPlusPlusFeatureTestMacros(const LangOptions &LangOpts,
   Builder.defineMacro("__cpp_variadic_friend", "202403L");
   Builder.defineMacro("__cpp_trivial_relocatability", "202502L");
 
+  // C++26 features: P1967R14 #embed (and, in C++2d, P3540R3's offset
+  // parameter), supported as an extension in earlier language modes.
+  if (LangOpts.CPlusPlus26)
+    Builder.defineMacro("__cpp_pp_embed", "202502L");
+
   if (LangOpts.Char8)
     Builder.defineMacro("__cpp_char8_t", "202207L");
   Builder.defineMacro("__cpp_impl_destroying_delete", "201806L");

@@ -479,8 +479,10 @@ def warn_c23_compat_warning_directive : Warning<
   "#warning is incompatible with C standards before C23">,
   InGroup<CPre23Compat>, DefaultIgnore;
 def ext_pp_embed_directive : ExtWarn<
-  "#embed is a %select{C23|Clang}0 extension">,
+  "#embed is a C23 extension">,
   InGroup<C23>;
+// P1967R14: #embed is C++26's.
+defm pp_embed_directive : CXX26Compat<"#embed is">;
 def warn_compat_pp_embed_directive : Warning<
   "#embed is incompatible with C standards before C23">,
   InGroup<CPre23Compat>, DefaultIgnore;
@@ -782,6 +784,8 @@ def err_pp_module_build_missing_end : Error<
 def err_defined_macro_name : Error<"'defined' cannot be used as a macro name">;
 def err_defined_in_pp_embed : Error<
   "'defined' cannot appear within this context">;
+def err_pp_has_include_in_has_embed : Error<
+  "%0 cannot appear in an embed parameter of '__has_embed'">;
 def err_paste_at_start : Error<
   "'##' cannot appear at start of macro expansion">;
 def err_paste_at_end : Error<"'##' cannot appear at end of macro expansion">;

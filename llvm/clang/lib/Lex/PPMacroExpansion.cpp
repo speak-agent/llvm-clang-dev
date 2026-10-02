@@ -1296,8 +1296,13 @@ EmbedResult Preprocessor::EvaluateHasEmbed(Token &Tok, IdentifierInfo *II) {
   SourceLocation FilenameLoc = Tok.getLocation();
   Token FilenameTok = Tok;
 
+  // P1967R14 [cpp.embed.param.limit]: __has_include cannot appear in the
+  // embed parameters of a __has_embed expression.
+  bool SavedInHasEmbedParameters = InHasEmbedParameters;
+  InHasEmbedParameters = getLangOpts().CPlusPlus26;
   std::optional<LexEmbedParametersResult> Params =
       this->LexEmbedParameters(Tok, /*ForHasEmbed=*/true);
+  InHasEmbedParameters = SavedInHasEmbedParameters;
 
   if (!Params)
     return EmbedResult::Invalid;
@@ -1343,12 +1348,10 @@ EmbedResult Preprocessor::EvaluateHasEmbed(Token &Tok, IdentifierInfo *II) {
 
   // Second, limit the data from the file (this also reduces the amount of data
   // we can read from the file).
-  if (Params->MaybeLimitParam) {
-    if (Params->MaybeLimitParam->Limit > FileSize)
-      FileSize = 0;
-    else
-      FileSize = Params->MaybeLimitParam->Limit;
-  }
+  // A limit larger than what is left does not make the resource empty:
+  // resource-count is the smaller of the two (C23 6.10.3.2p3, P1967R14).
+  if (Params->MaybeLimitParam)
+    FileSize = std::min(FileSize, Params->MaybeLimitParam->Limit);
 
   // If we have no data left to read, the file is empty, otherwise we have the
   // expected resource.
@@ -1933,6 +1936,8 @@ void Preprocessor::ExpandBuiltinMacro(Token &Tok) {
     // The argument to these two builtins should be a parenthesized
     // file name string literal using angle brackets (<>) or
     // double-quotes ("").
+    if (InHasEmbedParameters)
+      Diag(Tok, diag::err_pp_has_include_in_has_embed) << II;
     bool Value;
     if (II == Ident__has_include)
       Value = EvaluateHasInclude(Tok, II);

@@ -3985,7 +3985,10 @@ Preprocessor::LexEmbedParameters(Token &CurTok, bool ForHasEmbed) {
         return std::nullopt;
       Result.MaybeLimitParam =
           PPEmbedParameterLimit{*Limit, {ParamStartLoc, CurTok.getLocation()}};
-    } else if (Parameter == "clang::offset") {
+    } else if (Parameter == "clang::offset" ||
+               (Parameter == "offset" && LangOpts.CPlusPlus29)) {
+      // `offset` is C++2d's (P3540R3); `clang::offset` is the vendor's
+      // spelling of the same parameter (GCC's is `gnu::offset`).
       if (Result.MaybeOffsetParam)
         Diag(CurTok, diag::err_pp_embed_dup_params) << Parameter;
 
@@ -4094,12 +4097,15 @@ void Preprocessor::HandleEmbedDirectiveImpl(
 
 void Preprocessor::HandleEmbedDirective(SourceLocation HashLoc,
                                         Token &EmbedTok) {
-  // Give the usual extension/compatibility warnings.
-  if (LangOpts.C23)
+  // Give the usual extension/compatibility warnings: #embed is C23's and
+  // C++26's (P1967R14).
+  if (LangOpts.CPlusPlus)
+    Diag(EmbedTok, DiagnosticIDs::getCXXCompatDiagId(
+                       LangOpts, diag_compat::pp_embed_directive));
+  else if (LangOpts.C23)
     Diag(EmbedTok, diag::warn_compat_pp_embed_directive);
   else
-    Diag(EmbedTok, diag::ext_pp_embed_directive)
-        << (LangOpts.CPlusPlus ? /*Clang*/ 1 : /*C23*/ 0);
+    Diag(EmbedTok, diag::ext_pp_embed_directive);
 
   // Parse the filename header
   Token FilenameTok;
